@@ -41,7 +41,8 @@
       "entryUrl": "https://ggfw.hrss.gd.gov.cn/gwyks/anouns.do",
       "officialSiteConfirmed": true,
       "alternateEntryUrls": [
-        "https://ggfw.hrss.gd.gov.cn/gwyks/index.do"
+        "https://ggfw.hrss.gd.gov.cn/gwyks/index.do",
+        "https://ggfw.hrss.gd.gov.cn/gwyks/agreement.do"
       ]
     },
     {
@@ -256,10 +257,14 @@
       ],
       "domains": [
         "careers.crc.com.cn",
+        "runjob.crc.com.cn",
         "crc.wintalent.cn"
       ],
-      "entryUrl": "https://careers.crc.com.cn/index.html",
-      "officialSiteConfirmed": true
+      "entryUrl": "https://runjob.crc.com.cn/#/complex/homepage?id=1769554545615040514",
+      "officialSiteConfirmed": true,
+      "alternateEntryUrls": [
+        "https://careers.crc.com.cn/index.html"
+      ]
     },
     {
       "id": "cec-campus",
@@ -320,10 +325,16 @@
         "国有企业"
       ],
       "domains": [
+        "news.cnpc.com.cn",
         "zhaopin.cnpc.com.cn"
       ],
-      "entryUrl": "https://zhaopin.cnpc.com.cn/",
-      "officialSiteConfirmed": true
+      "entryUrl": "https://news.cnpc.com.cn/system/2026/04/22/030190563.shtml",
+      "officialSiteConfirmed": true,
+      "alternateEntryUrls": [
+        "https://zhaopin.cnpc.com.cn/"
+      ],
+      "accessMode": "browser-official-page",
+      "lastAccessAuditAt": "2026-08-22"
     },
     {
       "id": "sinopec-careers",
@@ -402,18 +413,24 @@
         "国有企业"
       ],
       "domains": [
-        "casic.zhiye.com"
+        "casic.zhiye.com",
+        "sasac.gov.cn"
       ],
-      "entryUrl": "https://casic.zhiye.com/",
+      "entryUrl": "http://wap.sasac.gov.cn/n2588035/n2588325/c35503679/content.html",
       "accessMode": "semantic-health-check-required",
       "semanticFailureSignals": [
         "/404?errorpath=",
         "Not Found"
       ],
-      "currentAccessState": "semantic-404",
+      "currentAccessState": "official-announcement-fallback",
       "recipeRequired": true,
       "lastAccessAuditAt": "2026-08-22",
-      "officialSiteConfirmed": true
+      "officialSiteConfirmed": true,
+      "alternateEntryUrls": [
+        "https://casic.zhiye.com/"
+      ],
+      "transportSecurity": "official-http-fallback",
+      "httpOnlyVerifiedAt": "2026-08-22"
     },
     {
       "id": "spacechina-careers",

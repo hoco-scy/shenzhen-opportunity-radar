@@ -668,16 +668,16 @@
       },
       "availability": {
         "state": "available",
-        "summary": "本轮已打开官方页面并确认可呈现公开内容或筛选界面。",
+        "summary": "官方门户主页已跳转至实际招聘子站；本轮可打开该公开招聘界面。",
         "evidence": [
           {
-            "method": "browser-ui-check",
-            "target": "https://careers.crc.com.cn/index.html",
-            "outcome": "non-error official page",
-            "checkedAt": "2026-08-22T18:11:00+08:00"
+            "method": "official-browser-route-check",
+            "target": "https://runjob.crc.com.cn/#/complex/homepage?id=1769554545615040514",
+            "outcome": "official recruitment subsite reached",
+            "checkedAt": "2026-08-22T18:59:00+08:00"
           }
         ],
-        "nextAction": "下轮仍需先做入口与语义健康检查，不能把本轮结果当作永久可用。"
+        "nextAction": "每轮先从已确认的招聘子站使用浏览器原生筛选；主站只作为备用入口。"
       }
     },
     {
@@ -829,7 +829,7 @@
     },
     {
       "sourceId": "cnpc-careers",
-      "status": "temporarily-unavailable",
+      "status": "route-verified",
       "observedAt": "2026-08-22",
       "officialEntryUrl": "https://zhaopin.cnpc.com.cn/",
       "accessMode": "browser-official-page",
@@ -848,7 +848,7 @@
         "primary": "browser",
         "mode": "browser-official-notice-and-detail",
         "steps": [
-          "在浏览器打开 中国石油 的官方入口，先查看招聘/公告栏目和仍未截止的项目。",
+          "在浏览器先打开中国石油新闻中心的官方招聘公告，核验是否有新的、未过期项目或职位表入口；招聘门户恢复后再进入其公开职位列表。",
           "进入具体公告或岗位详情，确认单位、岗位名称/代码、地点、学历、专业、截止时间与投递路径。",
           "若公告附职位表，下载后用本地结构化解析器筛选；只有官网没有可靠列表筛选时才处理官方分页。",
           "不把单位级新闻或项目名称作为具体岗位发布。"
@@ -857,17 +857,17 @@
         "fallback": "附件无法解析或页面改版时保留待核验记录，下轮从同一官方入口重试。"
       },
       "availability": {
-        "state": "temporarily-unavailable",
-        "summary": "本轮官方招聘主入口返回 502；未据此得出无岗位结论。",
+        "state": "available-via-official-fallback",
+        "summary": "官方招聘门户本轮返回 502；中国石油新闻中心的官方招聘公告可访问，并明确岗位查询须回到官方招聘平台。",
         "evidence": [
           {
-            "method": "official-route-health-check",
-            "target": "https://zhaopin.cnpc.com.cn/",
-            "outcome": "HTTP 502",
-            "checkedAt": "2026-08-22T18:11:00+08:00"
+            "method": "official-announcement-fallback",
+            "target": "https://news.cnpc.com.cn/system/2026/04/22/030190563.shtml",
+            "outcome": "official recruitment announcement page",
+            "checkedAt": "2026-08-22T18:59:00+08:00"
           }
         ],
-        "nextAction": "下轮按重试策略先用浏览器重试主入口，再查集团官网招聘公告栏目；恢复前不可脚本全量采集。"
+        "nextAction": "先在官方公告页追踪新一轮招聘和职位表；门户恢复后再在浏览器核验具体岗位，绝不绕过证书或网关错误。"
       },
       "failureSignals": [
         "http-502",
@@ -1079,7 +1079,7 @@
     },
     {
       "sourceId": "casic-careers",
-      "status": "temporarily-unavailable",
+      "status": "route-verified",
       "observedAt": "2026-08-22",
       "officialEntryUrl": "https://casic.zhiye.com/",
       "accessMode": "browser-official-page",
@@ -1104,7 +1104,7 @@
         "primary": "browser",
         "mode": "browser-official-notice-and-detail",
         "steps": [
-          "在浏览器打开 中国航天科工 的官方入口，先查看招聘/公告栏目和仍未截止的项目。",
+          "在浏览器先打开国务院国资委发布的航天科工官方招聘公告，核验公告日期、职位表和投递入口；只在原门户恢复后再进入其公开岗位列表。",
           "进入具体公告或岗位详情，确认单位、岗位名称/代码、地点、学历、专业、截止时间与投递路径。",
           "若公告附职位表，下载后用本地结构化解析器筛选；只有官网没有可靠列表筛选时才处理官方分页。",
           "不把单位级新闻或项目名称作为具体岗位发布。"
@@ -1113,17 +1113,17 @@
         "fallback": "附件无法解析或页面改版时保留待核验记录，下轮从同一官方入口重试。"
       },
       "availability": {
-        "state": "semantic-404",
-        "summary": "本轮入口最终落入官方域内错误页，不能当作可用招聘列表。",
+        "state": "available-via-official-fallback",
+        "summary": "原招聘门户会落入语义 404；国务院国资委移动端已发布航天科工官方校园招聘公告，可作为公告和职位表追踪入口。",
         "evidence": [
           {
-            "method": "official-route-health-check",
-            "target": "https://casic.zhiye.com/",
-            "outcome": "final URL contains /404?errorpath=",
-            "checkedAt": "2026-08-22T18:11:00+08:00"
+            "method": "official-announcement-fallback",
+            "target": "http://wap.sasac.gov.cn/n2588035/n2588325/c35503679/content.html",
+            "outcome": "official SASAC recruitment announcement page",
+            "checkedAt": "2026-08-22T18:59:00+08:00"
           }
         ],
-        "nextAction": "下轮用浏览器检查集团招聘公告和官方备用网址，重新发现有效公开招聘入口后才恢复采集。"
+        "nextAction": "从官方公告追踪新项目、附件和投递入口；原门户恢复前不把 404 误写成无岗位，也不绕过访问控制。"
       }
     },
     {
