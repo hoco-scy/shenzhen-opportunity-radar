@@ -26,7 +26,7 @@
 
 逐个来源执行 filter-recipes.json 的 collection 配方：`primary: browser` 必须用浏览器查看官方公告、详情和附件；`primary: script` 必须先使用该官网公开的城市、届别、学历、岗位类别、有效期等原生筛选，再用脚本抓取筛选后的公开分页并去重。不得逐项打开未经筛选的大型岗位全集，也不得绕过登录、验证码、WAF 或访问控制。任何脚本筛选、分页或公开请求失效时，执行配方的浏览器回退并记录 `accessible-incomplete`；每个 sourceCheck 的 accessEvidence 必须写入实际使用的工具、筛选组合/附件路径与分页范围。
 
-中国电信来源使用仓库内可执行的零依赖采集器：运行 `node scripts/collect-chinatelecom.mjs --all-pages`。它会自行验证本站城市的官方地点筛选确实把结果缩小；脚本失败时不得改为抓未筛选全国列表，而要走浏览器回退。其输出只是结构化候选，必须继续通过生物医学工程交叉门禁和官方详情核验。
+中国电信来源使用仓库内可执行的零依赖流程：先运行 `node scripts/run-full-workflow.mjs --review-queue`。它会自行验证本站城市的官方地点筛选确实把结果缩小、抓取筛选后分页并读取官网详情；脚本失败时不得改为抓未筛选全国列表，而要走浏览器回退。随后按每批 20—60 个候选阅读职责、专业/学历要求、单位业务和生物医学交叉场景，独立为每项写 `accepted`、`rejected` 或 `deferred` 及公开的 `semanticBasis`，保存到 `data/semantic-review-decisions.json`，再运行 `node scripts/run-full-workflow.mjs --targeted-remediation --write`。这会写入一条仅覆盖中国电信的定向补录，不能伪装成全量扫描。禁止以关键词、职位标题或规则分类器自动决定收录；校验器只检查官网链接、字段、指纹/闭合和隐私边界。
 
 把 AUTOMATION.md 当作本轮唯一的运行手册。开始前没有读取完上述文件、没有实际检查官方来源、或无法访问私有档案时，不得给出“没有更新”或“确认可报”的结论。继续处理不依赖私有档案的来源；涉及公考、选调、优培的资格结论必须按运行手册标记 deferred。
 
@@ -40,7 +40,7 @@
 ```text
 处理 source-plan.json 的 everyRunOfficial 全部官方来源和 everyRunDiscovery 全部发现来源、仍在有效期内的岗位/公告/预公告、距逐岗复查满 24 小时的记录，以及上轮失败或 deferred 项。深圳岗位优先处理，但不能排除或跳过其他地区。优先使用官方招聘站自己的届别、地点、学历、岗位类别、发布时间等筛选，不能直接遍历未筛选的大型岗位全集。
 
-公考必须使用当年官方完整职位表及私有档案的全部硬条件组合筛选；央国企和事业单位必须具体到岗位名称或代码。来源失败时按登记顺序尝试官方备用入口并遵守重试策略；访问失败绝不等于没有公告。以 policyVersion 5 完整写入 everyRunOfficial 的 sourceChecks、screeningMetrics、岗位/公告状态和匿名审核日志。
+公考必须使用当年官方完整职位表及私有档案的全部硬条件组合筛选；央国企和事业单位必须具体到岗位名称或代码。最终结论必须以岗位职责、专业条件、单位业务和是否存在可说明的生物医学交叉场景的综合判断为准，而不是由单一词命中决定。来源失败时按登记顺序尝试官方备用入口并遵守重试策略；访问失败绝不等于没有公告。以 policyVersion 6 完整写入 everyRunOfficial 的 sourceChecks、screeningMetrics、岗位/公告状态和匿名审核日志。
 ```
 
 ## 4. 所有任务共用的收尾

@@ -2,13 +2,218 @@
   "meta": {
     "schemaVersion": 1,
     "initializationStatus": "synchronized",
-    "lastVerifiedAt": "2026-08-22T19:36:00+08:00",
+    "lastVerifiedAt": "2026-08-22T21:46:00+08:00",
     "lastRunStatus": "completed",
     "lastIncompleteSourceCount": 0,
-    "lastDeferredCandidateCount": 22,
+    "lastDeferredCandidateCount": 0,
     "timezone": "Asia/Shanghai",
     "publicationRule": "仅发布能在官方公告、职位表或官方招聘系统中定位到的具体岗位；公考岗位还必须通过全部个人资格硬条件"
   },
-  "jobs": [],
+  "jobs": [
+    {
+      "id": "chinatelecom-6ae3e4c43c1ee698",
+      "track": "央国企",
+      "subtrack": "通信央企",
+      "organization": "广东南方电信规划咨询设计院有限公司",
+      "department": "官方未注明",
+      "title": "信息化咨询工程师(深圳)-广东南方电信规划咨询设计院有限公司",
+      "exactTitle": "信息化咨询工程师(深圳)-广东南方电信规划咨询设计院有限公司",
+      "jobCode": "6ae3e4c43c1ee698",
+      "location": "深圳市",
+      "cohort": "校园招聘",
+      "recruitmentType": "校园招聘",
+      "headcount": "若干",
+      "education": "本科",
+      "degree": "官方未单列",
+      "majors": "1.掌握一定的信息化项目需求调研分析方法； 2.了解信息化行业政策、规划及信息化项目管理流程； 3.工作积极主动，善于沟通，具有较强的逻辑分析和文字表达能力，较高的PPT制作和汇报能力。",
+      "politicalStatus": "官方未单列",
+      "experience": "校园招聘岗位",
+      "responsibilities": [
+        "1.负责公司政府信息化、行业信息化咨询项目的调查、调研等工作； 2.负责政府信息化、行业信息化系统的可行性研究、方案设计、技术评审、信息化造价、管理咨询等工作； 3.负责具体咨询设计成果文件的编写工作； 4.负责编制信息化建议书、可行性研究报告、方案设计等。"
+      ],
+      "requirements": [
+        "1.掌握一定的信息化项目需求调研分析方法； 2.了解信息化行业政策、规划及信息化项目管理流程； 3.工作积极主动，善于沟通，具有较强的逻辑分析和文字表达能力，较高的PPT制作和汇报能力。"
+      ],
+      "publishedAt": "2026-08-21",
+      "deadline": "官网未单列；以招聘系统实时状态为准",
+      "deadlineType": "官方未单列",
+      "status": "招聘中",
+      "priority": 65,
+      "matchLevel": "需要确认",
+      "matchReason": "官方未限制专业，工作以调研、可研和方案设计为主；生物医学工程资格需确认。",
+      "riskNotes": [
+        "官网职位页未单列报名截止日，投递前请以系统实时状态为准。"
+      ],
+      "tags": [
+        "深圳",
+        "中国电信",
+        "校园招聘",
+        "信息化咨询",
+        "可研方案",
+        "专业待确认"
+      ],
+      "sourceId": "chinatelecom-careers",
+      "officialAnnouncementUrl": "https://job.chinatelecom.com.cn/wt/TELE/web/index/campus",
+      "officialApplyUrl": "https://job.chinatelecom.com.cn/wt/TELE/web/index/webPosition210!getOnePosition?postIdEnc=6ae3e4c43c1ee698&recruitType=1&positionType=0%2F1227%2F132803&columnId=1&brandCode=1&importPost=0",
+      "applyInstruction": "打开中国电信官网职位详情后点击“立即申请”。",
+      "verifiedAt": "2026-08-22",
+      "lastSeenAt": "2026-08-22T21:46:00+08:00",
+      "lastSeenStatus": "live",
+      "statusEvidence": "本轮已在中国电信官网职位详情核验岗位字段和“立即申请”入口。",
+      "verifiedFields": [
+        "单位",
+        "岗位名称",
+        "地点",
+        "学历",
+        "职责",
+        "任职要求",
+        "投递路径"
+      ],
+      "verification": {
+        "officialSource": true,
+        "specificPosition": true,
+        "location": true,
+        "eligibility": true,
+        "applicationPath": true,
+        "deadlineChecked": true
+      }
+    },
+    {
+      "id": "chinatelecom-12cfb1860102a4c1",
+      "track": "央国企",
+      "subtrack": "通信央企",
+      "organization": "公诚管理咨询有限公司",
+      "department": "官方未注明",
+      "title": "信息化咨询工程师(深圳)-公诚管理咨询有限公司",
+      "exactTitle": "信息化咨询工程师(深圳)-公诚管理咨询有限公司",
+      "jobCode": "12cfb1860102a4c1",
+      "location": "深圳市",
+      "cohort": "校园招聘",
+      "recruitmentType": "校园招聘",
+      "headcount": "若干",
+      "education": "本科",
+      "degree": "官方未单列",
+      "majors": "1.具备一定的资料收集分析能力、信息系统项目文档编写能力， 2.对电子政务行业趋势和政策有一定的理解和认识， 3.具备政府行业相关软件开发、运维或实施经验者优先， 4.有较强的书面及口头表达能力，及优秀的文档处理能力。良好的文字表达能力，能够进行文档的编写； 5.能熟练运用office软件及相关工具软件如（PROJECT、VISIO、POWERPOINT等）",
+      "politicalStatus": "官方未单列",
+      "experience": "校园招聘岗位",
+      "responsibilities": [
+        "1.信息化设计：1）了解业主需求，进行需求调研；2）整理调研资料，搭建主体框架；3）沟通技术团队；4）编制可行性研究报告暨初步设计方案；5）检查审核方案内容；6）与业主/专家汇报方案内容。 2.项目管理：对项目设计、造价、项目招标、监理、验收等阶段进行全流程管理，掌握每个节点的工作进度和要点，确保项目正常进行。 3.信息化监理：1）熟知前期资料，比如批复、设计方案、承建合同等，可利用甘特图安排项目进度；2）按照监理流程进行每个节点监督和管理，出现问题及时汇报和整改；3）软件开发完毕后，需对照设计方案检查功能点是否完备；4）编制监理资料；5）检查审核承建单位资料。"
+      ],
+      "requirements": [
+        "1.具备一定的资料收集分析能力、信息系统项目文档编写能力， 2.对电子政务行业趋势和政策有一定的理解和认识， 3.具备政府行业相关软件开发、运维或实施经验者优先， 4.有较强的书面及口头表达能力，及优秀的文档处理能力。良好的文字表达能力，能够进行文档的编写； 5.能熟练运用office软件及相关工具软件如（PROJECT、VISIO、POWERPOINT等）"
+      ],
+      "publishedAt": "2026-08-21",
+      "deadline": "官网未单列；以招聘系统实时状态为准",
+      "deadlineType": "官方未单列",
+      "status": "招聘中",
+      "priority": 64,
+      "matchLevel": "需要确认",
+      "matchReason": "官方未限制专业，岗位偏信息化咨询与项目管理；生物医学工程资格需投递前确认。",
+      "riskNotes": [
+        "官网职位页未单列报名截止日，投递前请以系统实时状态为准。"
+      ],
+      "tags": [
+        "深圳",
+        "中国电信",
+        "校园招聘",
+        "信息化咨询",
+        "专业未单列",
+        "专业待确认"
+      ],
+      "sourceId": "chinatelecom-careers",
+      "officialAnnouncementUrl": "https://job.chinatelecom.com.cn/wt/TELE/web/index/campus",
+      "officialApplyUrl": "https://job.chinatelecom.com.cn/wt/TELE/web/index/webPosition210!getOnePosition?postIdEnc=12cfb1860102a4c1&recruitType=1&positionType=0%2F1227%2F132803&columnId=1&brandCode=1&importPost=0",
+      "applyInstruction": "打开中国电信官网职位详情后点击“立即申请”。",
+      "verifiedAt": "2026-08-22",
+      "lastSeenAt": "2026-08-22T21:46:00+08:00",
+      "lastSeenStatus": "live",
+      "statusEvidence": "本轮已在中国电信官网职位详情核验岗位字段和“立即申请”入口。",
+      "verifiedFields": [
+        "单位",
+        "岗位名称",
+        "地点",
+        "学历",
+        "职责",
+        "任职要求",
+        "投递路径"
+      ],
+      "verification": {
+        "officialSource": true,
+        "specificPosition": true,
+        "location": true,
+        "eligibility": true,
+        "applicationPath": true,
+        "deadlineChecked": true
+      }
+    },
+    {
+      "id": "chinatelecom-a93504dd32e79cb6",
+      "track": "央国企",
+      "subtrack": "通信央企",
+      "organization": "深圳分公司",
+      "department": "官方未注明",
+      "title": "解决方案经理",
+      "exactTitle": "解决方案经理",
+      "jobCode": "a93504dd32e79cb6",
+      "location": "深圳市",
+      "cohort": "校园招聘",
+      "recruitmentType": "校园招聘",
+      "headcount": "若干",
+      "education": "本科",
+      "degree": "官方未单列",
+      "majors": "具有较强的组织、学习和解决问题能力，善于沟通表达、乐于合作，富有创新精神，敢于承担责任、挑战困难，能承受压力",
+      "politicalStatus": "官方未单列",
+      "experience": "校园招聘岗位",
+      "responsibilities": [
+        "1.负责售前支持与商机转化。理解客户场景与痛点，引导、挖掘客户需求和商机，为客户经理提供支持 2.统筹解决方案编制。分析客户需求，对标业界实践，发现转型业务价值，组织内部资源，编制解决方案，打造应用生态，探索行业创新的技术与解决方案 3.支撑招投标管理。协同制定投标策略，定制技术相关宣传讲解资料，负责整体解决方案演示和讲解，协同维护招投标资质等 4.支撑售中及项目交付。组织售前售中交接，建立协同工作机制，交付过程中协助项目经理与客户沟通 5.负责方案迭代与沉淀。持续调整和优化解决方案，沉淀模板与标杆案例，经验萃取、沉淀与分享，支持复制推广"
+      ],
+      "requirements": [
+        "具有较强的组织、学习和解决问题能力，善于沟通表达、乐于合作，富有创新精神，敢于承担责任、挑战困难，能承受压力"
+      ],
+      "publishedAt": "2026-08-21",
+      "deadline": "官网未单列；以招聘系统实时状态为准",
+      "deadlineType": "官方未单列",
+      "status": "招聘中",
+      "priority": 62,
+      "matchLevel": "需要确认",
+      "matchReason": "官方未列专业限制，职责偏方案与项目协同；是否接受生物医学工程须投递前确认。",
+      "riskNotes": [
+        "官网职位页未单列报名截止日，投递前请以系统实时状态为准。"
+      ],
+      "tags": [
+        "深圳",
+        "中国电信",
+        "校园招聘",
+        "解决方案",
+        "专业未单列",
+        "专业待确认"
+      ],
+      "sourceId": "chinatelecom-careers",
+      "officialAnnouncementUrl": "https://job.chinatelecom.com.cn/wt/TELE/web/index/campus",
+      "officialApplyUrl": "https://job.chinatelecom.com.cn/wt/TELE/web/index/webPosition210!getOnePosition?postIdEnc=a93504dd32e79cb6&recruitType=1&positionType=0%2F1227%2F132817%2F132893%2F133223&columnId=1&brandCode=1&importPost=0",
+      "applyInstruction": "打开中国电信官网职位详情后点击“立即申请”。",
+      "verifiedAt": "2026-08-22",
+      "lastSeenAt": "2026-08-22T21:46:00+08:00",
+      "lastSeenStatus": "live",
+      "statusEvidence": "本轮已在中国电信官网职位详情核验岗位字段和“立即申请”入口。",
+      "verifiedFields": [
+        "单位",
+        "岗位名称",
+        "地点",
+        "学历",
+        "职责",
+        "任职要求",
+        "投递路径"
+      ],
+      "verification": {
+        "officialSource": true,
+        "specificPosition": true,
+        "location": true,
+        "eligibility": true,
+        "applicationPath": true,
+        "deadlineChecked": true
+      }
+    }
+  ],
   "monitors": []
 }

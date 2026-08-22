@@ -91,7 +91,8 @@ for (const [runIndex, run] of (log.runs || []).entries()) {
       if (failed && ["critical", "active"].includes(source?.tier) && check.attempts < 3) errors.push(`${checkLabel} 关键来源失败前必须至少尝试 3 次`);
     }
   }
-  if (Number(run.policyVersion || 0) >= 5) {
+  const isTargetedRemediation = run.scope === "targeted-remediation";
+  if (Number(run.policyVersion || 0) >= 5 && !isTargetedRemediation) {
     for (const sourceId of everyRunOfficial) {
       if (!checkedSourceIds.has(sourceId)) errors.push(`${label}.sourceChecks 缺少每轮全量官方来源：${sourceId}`);
     }
@@ -111,6 +112,23 @@ for (const [runIndex, run] of (log.runs || []).entries()) {
     if (nativeFilterStrategy && (run.screeningMetrics?.nativeFilteredResults || 0) > (run.screeningMetrics?.portalResultsReported || 0)) errors.push(`${label} 站内筛选结果不能大于入口报告总量`);
     if (nativeFilterStrategy && (run.screeningMetrics?.deduplicatedCandidates || 0) > (run.screeningMetrics?.nativeFilteredResults || 0)) errors.push(`${label} 去重候选不能大于站内筛选结果`);
     if ((run.screeningMetrics?.positionsEscalated || 0) > 20) errors.push(`${label} 高推理升级数超过每轮 20 项上限`);
+  }
+  if (Number(run.candidateProcessingVersion || 0) >= 1) {
+    const telecomChecked = (run.sourceChecks || []).some((check) => check.sourceId === "chinatelecom-careers" && check.status === "checked-full-pagination");
+    const candidates = run.screeningMetrics?.deduplicatedCandidates || 0;
+    const telecomReviews = (run.reviews || []).filter((review) => review.sourceId === "chinatelecom-careers").length;
+    if (telecomChecked && telecomReviews !== candidates) errors.push(`${label} 中国电信已采集候选必须逐项写入审核记录`);
+    if (telecomChecked && (run.screeningMetrics?.positionsBatchReviewed || 0) !== candidates) errors.push(`${label} 中国电信候选必须全部完成批量审核`);
+  }
+  if (Number(run.candidateProcessingVersion || 0) >= 2) {
+    const telecomReviews = (run.reviews || []).filter((review) => review.sourceId === "chinatelecom-careers");
+    for (const [reviewIndex, review] of telecomReviews.entries()) if (!review.semanticBasis) errors.push(`${label} 中国电信语义审核记录 ${reviewIndex} 缺少基于官网字段的判断依据`);
+    if (runIndex === 0) {
+      const acceptedUrls = new Set(telecomReviews.filter((review) => review.decision === "accepted").map((review) => review.officialUrl));
+      const publishedUrls = new Set((opportunities.jobs || []).filter((job) => job.sourceId === "chinatelecom-careers").map((job) => job.officialApplyUrl));
+      for (const url of acceptedUrls) if (!publishedUrls.has(url)) errors.push(`${label} 已接受的中国电信岗位没有写入正文：${url}`);
+      for (const url of publishedUrls) if (!acceptedUrls.has(url)) errors.push(`${label} 正文中的中国电信岗位没有本轮接受结论：${url}`);
+    }
   }
   if (run.status === "completed-partial" && opportunities.meta?.lastRunStatus !== "completed-partial" && runIndex === 0) errors.push("最新运行部分完成时，正文 meta.lastRunStatus 必须同步");
   if (runIndex === 0) {

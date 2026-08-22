@@ -78,6 +78,10 @@ function publicField(value = "") {
 function publicReviewReason(review) {
   const reasons = {
     "enterprise-position-verified": "已在招聘单位官网找到具体岗位，可打开官网查看完整要求和投递方式。",
+    "role-domain-not-aligned": "结合岗位职责、专业条件和服务业务复核后，未发现与生物医学工程背景相符的明确交叉，因此没有加入岗位页。",
+    "broad-eligibility-needs-confirmation": "官网未限定为不相关专业，岗位信息完整；生物医学工程是否符合具体认定，建议投递前确认。",
+    "open-major-solution-role-needs-confirmation": "官网未限制专业，岗位偏方案与项目协同；是否认可生物医学工程背景，建议投递前确认。",
+    "objective-role-risk": "官网岗位说明出现高风险或高强度工作要求，因此没有加入岗位页。",
     "candidate-category-mismatch": "招聘对象与公告要求不一致，因此没有放入岗位页。",
     "full-pagination-incomplete": "目前还不能形成可单独确认的具体岗位，暂时不放入岗位页。",
     "position-fields-incomplete": "关键岗位信息尚未公布完整，暂时不放入岗位页。",
