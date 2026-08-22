@@ -23,7 +23,7 @@
     "accessibleButIncompleteOutcome": "accessible-incomplete"
   },
   "geographyCadence": {
-    "beijing": "every-run",
+    "shenzhen": "every-run",
     "otherRegions": "every-run",
     "otherRegionsNeverImplicitlyRejected": true
   },
@@ -40,7 +40,7 @@
       "executor": "official-site",
       "input": "站点专属筛选配方",
       "output": "多组官方查询结果的并集",
-      "requirements": ["先应用不会误伤资格的结构化筛选", "北京结果每轮检查", "必要时运行广义关键词族并取并集", "不得只依赖单一专业关键词"]
+      "requirements": ["先应用不会误伤资格的结构化筛选", "深圳结果每轮检查", "必要时运行广义关键词族并取并集", "不得只依赖单一专业关键词"]
     },
     {
       "id": "normalize-and-deduplicate",

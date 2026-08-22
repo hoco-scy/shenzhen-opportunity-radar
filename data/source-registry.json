@@ -1,31 +1,498 @@
 {
   "version": 4,
   "sources": [
-    {"id":"national-civil","organization":"国家公务员局","type":"政府官网","role":"authoritative","tier":"critical","cadence":"every-run","coverage":["公务员招录"],"domains":["scs.gov.cn"],"entryUrl":"http://bm.scs.gov.cn/pp/gkweb/core/web/ui/business/home/gkhome.html","alternateEntryUrls":["http://subb.scs.gov.cn/pp/gkweb/core/web/ui/business/home/lxhome.html"],"transportSecurity":"official-http-only","httpOnlyVerifiedAt":"2026-08-22","accessMode":"browser-spa","lastAccessAuditAt":"2026-08-22","officialSiteConfirmed":true},
-    {"id":"beijing-civil","organization":"北京市公务员招考主管部门","type":"政府官网","role":"authoritative","tier":"critical","cadence":"every-run","coverage":["公务员招录","选调优培"],"domains":["beijing.gov.cn"],"entryUrl":"https://www.beijing.gov.cn/gongkai/rsxx/gwyzk/","officialSiteConfirmed":true},
-    {"id":"beijing-personnel-exam","organization":"北京市人事考试通用平台","type":"政府官网","role":"authoritative","tier":"critical","cadence":"every-run","coverage":["公务员招录","选调优培","事业单位","国有企业"],"domains":["rsj.beijing.gov.cn"],"entryUrl":"https://rsj.beijing.gov.cn/ywsite/bjpta/xwzx/zytz/","officialSiteConfirmed":true},
-    {"id":"beijing-institutions","organization":"北京市人力资源和社会保障局事业单位公开招聘","type":"政府官网","role":"authoritative","tier":"critical","cadence":"every-run","coverage":["选调优培","事业单位"],"domains":["rsj.beijing.gov.cn","beijing.gov.cn"],"entryUrl":"https://rsj.beijing.gov.cn/xxgk/gkzp/","officialSiteConfirmed":true},
-    {"id":"central-institutions","organization":"中央和国家机关事业单位公开招聘","type":"政府官网","role":"authoritative","tier":"critical","cadence":"every-run","coverage":["事业单位"],"domains":["mohrss.gov.cn"],"entryUrl":"https://www.mohrss.gov.cn/SYrlzyhshbzb/fwyd/SYkaoshizhaopin/zyhgjjgsydwgkzp/","officialSiteConfirmed":true},
-    {"id":"china-public-recruitment","organization":"中国公共招聘网事业单位公开招聘","type":"政府官网","role":"authoritative","tier":"critical","cadence":"every-run","coverage":["事业单位"],"domains":["job.mohrss.gov.cn"],"entryUrl":"https://job.mohrss.gov.cn/cjobs/institution/listInstitution","alternateEntryUrls":["http://job.mohrss.gov.cn/cjobs/institution/listInstitution"],"transportSecurity":"official-http-fallback","httpOnlyVerifiedAt":"2026-08-22","accessMode":"server-rendered-list","recipeRequired":true,"lastAccessAuditAt":"2026-08-22","officialSiteConfirmed":true},
-    {"id":"central-sasac-recruitment","organization":"国务院国资委央企招聘","type":"政府官网","role":"authoritative","tier":"critical","cadence":"every-run","coverage":["国有企业"],"domains":["sasac.gov.cn"],"entryUrl":"https://www.sasac.gov.cn/n2588035/n2588325/n2588350/index.html","alternateEntryUrls":["http://wap.sasac.gov.cn/n2588035/n2588325/n2588350/index.html"],"transportSecurity":"official-http-fallback","httpOnlyVerifiedAt":"2026-08-22","accessMode":"desktop-with-mobile-fallback","recipeRequired":true,"lastAccessAuditAt":"2026-08-22","officialSiteConfirmed":true},
-    {"id":"central-enterprise-roster","organization":"国务院国资委中央企业名录","type":"政府官网","role":"roster","tier":"critical","cadence":"every-run","coverage":["国有企业"],"domains":["sasac.gov.cn"],"entryUrl":"https://www.sasac.gov.cn/n2588045/n27271785/n27271792/c14159097/content.html","officialSiteConfirmed":true},
-    {"id":"beijing-state-assets","organization":"北京市国资委国企招聘","type":"政府官网","role":"authoritative","tier":"critical","cadence":"every-run","coverage":["国有企业"],"domains":["gzw.beijing.gov.cn"],"entryUrl":"https://gzw.beijing.gov.cn/yggq/gqzp/index.html","officialSiteConfirmed":true},
-    {"id":"picc-campus","organization":"中国人民保险集团","type":"企业官方招聘系统","role":"authoritative","tier":"active","cadence":"every-run","coverage":["国有企业"],"domains":["picc.zhiye.com"],"entryUrl":"https://picc.zhiye.com/custom/xiaoyuan?hideAll=true","officialSiteConfirmed":true},
-    {"id":"boe-campus","organization":"京东方科技集团","type":"企业官方招聘系统","role":"authoritative","tier":"active","cadence":"every-run","coverage":["国有企业"],"domains":["boe.com","campus.boe.com"],"entryUrl":"https://campus.boe.com/custom/xzzw?hideMenu=1","officialSiteConfirmed":true},
-    {"id":"sinopharm-careers","organization":"中国医药集团","type":"企业官网","role":"authoritative","tier":"priority","cadence":"every-run","coverage":["国有企业"],"domains":["sinopharm.com"],"entryUrl":"https://www.sinopharm.com/recruitment.html","officialSiteConfirmed":true},
-    {"id":"genertec-official","organization":"中国通用技术集团","type":"企业官网","role":"authoritative","tier":"priority","cadence":"every-run","coverage":["国有企业"],"domains":["gt.cn"],"entryUrl":"https://www.gt.cn/","officialSiteConfirmed":true},
-    {"id":"crc-careers","organization":"华润集团","type":"企业官方招聘系统","role":"authoritative","tier":"priority","cadence":"every-run","coverage":["国有企业"],"domains":["careers.crc.com.cn","crc.wintalent.cn"],"entryUrl":"https://careers.crc.com.cn/index.html","officialSiteConfirmed":true},
-    {"id":"cec-campus","organization":"中国电子信息产业集团","type":"企业官方招聘系统","role":"authoritative","tier":"priority","cadence":"every-run","coverage":["国有企业"],"domains":["campus.cec.com.cn"],"entryUrl":"https://campus.cec.com.cn/","officialSiteConfirmed":true},
-    {"id":"cetc-recruitment","organization":"中国电子科技集团","type":"企业官网","role":"authoritative","tier":"priority","cadence":"every-run","coverage":["国有企业"],"domains":["cetc.com.cn"],"entryUrl":"https://www.cetc.com.cn/zgdk/1593037/zpjgg/index.html","officialSiteConfirmed":true},
-    {"id":"sgcc-careers","organization":"国家电网","type":"企业官方招聘系统","role":"authoritative","tier":"priority","cadence":"every-run","coverage":["国有企业"],"domains":["zhaopin.sgcc.com.cn"],"entryUrl":"https://zhaopin.sgcc.com.cn/","officialSiteConfirmed":true},
-    {"id":"cnpc-careers","organization":"中国石油","type":"企业官方招聘系统","role":"authoritative","tier":"priority","cadence":"every-run","coverage":["国有企业"],"domains":["zhaopin.cnpc.com.cn"],"entryUrl":"https://zhaopin.cnpc.com.cn/","officialSiteConfirmed":true},
-    {"id":"sinopec-careers","organization":"中国石化","type":"企业官方招聘系统","role":"authoritative","tier":"priority","cadence":"every-run","coverage":["国有企业"],"domains":["job.sinopec.com"],"entryUrl":"https://job.sinopec.com/","alternateEntryUrls":["https://job.sinopec.com/#/school/index"],"accessMode":"browser-spa","recipeRequired":true,"lastAccessAuditAt":"2026-08-22","officialSiteConfirmed":true},
-    {"id":"cmcc-careers","organization":"中国移动","type":"企业官方招聘系统","role":"authoritative","tier":"priority","cadence":"every-run","coverage":["国有企业"],"domains":["job.10086.cn"],"entryUrl":"https://job.10086.cn/personal/job/","alternateEntryUrls":["https://job.10086.cn/"],"accessMode":"filterable-dynamic-list","recipeRequired":true,"lastAccessAuditAt":"2026-08-22","officialSiteConfirmed":true},
-    {"id":"chinatelecom-careers","organization":"中国电信","type":"企业官方招聘系统","role":"authoritative","tier":"priority","cadence":"every-run","coverage":["国有企业"],"domains":["job.chinatelecom.com.cn"],"entryUrl":"https://job.chinatelecom.com.cn/wt/TELE/web/index/campus","alternateEntryUrls":["https://job.chinatelecom.com.cn/"],"accessMode":"filterable-paginated-list","recipeRequired":true,"lastAccessAuditAt":"2026-08-22","officialSiteConfirmed":true},
-    {"id":"casic-careers","organization":"中国航天科工","type":"企业官方招聘系统","role":"authoritative","tier":"priority","cadence":"every-run","coverage":["国有企业"],"domains":["casic.zhiye.com"],"entryUrl":"https://casic.zhiye.com/","accessMode":"semantic-health-check-required","semanticFailureSignals":["/404?errorpath=","Not Found"],"currentAccessState":"semantic-404","recipeRequired":true,"lastAccessAuditAt":"2026-08-22","officialSiteConfirmed":true},
-    {"id":"spacechina-careers","organization":"中国航天科技","type":"企业官方招聘系统","role":"authoritative","tier":"priority","cadence":"every-run","coverage":["国有企业"],"domains":["spacechina.com","spacetalent.com.cn"],"entryUrl":"https://m.spacechina.com/index.html","alternateEntryUrls":["http://www.spacetalent.com.cn/"],"transportSecurity":"official-http-fallback","httpOnlyVerifiedAt":"2026-08-22","accessMode":"browser-antibot","recipeRequired":true,"lastAccessAuditAt":"2026-08-22","officialSiteConfirmed":true},
-    {"id":"chinapost-recruitment","organization":"中国邮政集团","type":"企业官网","role":"authoritative","tier":"priority","cadence":"every-run","coverage":["国有企业"],"domains":["chinapost.com.cn"],"entryUrl":"https://www.chinapost.com.cn/","accessMode":"official-announcement-discovery","semanticFailureSignals":["HTTP 404","页面不存在"],"recipeRequired":true,"lastAccessAuditAt":"2026-08-22","officialSiteConfirmed":true},
-    {"id":"national-college-employment","organization":"国家大学生就业服务平台","type":"国家就业服务平台","role":"discovery","tier":"discovery","cadence":"every-run","coverage":["事业单位","国有企业","发现线索"],"domains":["ncss.cn"],"entryUrl":"https://www.ncss.cn/","officialSiteConfirmed":false},
-    {"id":"iguopin-discovery","organization":"国聘","type":"招聘信息平台","role":"discovery","tier":"discovery","cadence":"every-run","coverage":["事业单位","国有企业","发现线索"],"domains":["iguopin.com"],"entryUrl":"https://www.iguopin.com/","officialSiteConfirmed":false}
+    {
+      "id": "national-civil",
+      "organization": "国家公务员局",
+      "type": "政府官网",
+      "role": "authoritative",
+      "tier": "critical",
+      "cadence": "every-run",
+      "coverage": [
+        "公务员招录"
+      ],
+      "domains": [
+        "scs.gov.cn"
+      ],
+      "entryUrl": "http://bm.scs.gov.cn/pp/gkweb/core/web/ui/business/home/gkhome.html",
+      "alternateEntryUrls": [
+        "http://subb.scs.gov.cn/pp/gkweb/core/web/ui/business/home/lxhome.html"
+      ],
+      "transportSecurity": "official-http-only",
+      "httpOnlyVerifiedAt": "2026-08-22",
+      "accessMode": "browser-spa",
+      "lastAccessAuditAt": "2026-08-22",
+      "officialSiteConfirmed": true
+    },
+    {
+      "id": "shenzhen-civil",
+      "organization": "广东省公务员考试录用管理系统（深圳职位）",
+      "type": "政府官网",
+      "role": "authoritative",
+      "tier": "critical",
+      "cadence": "every-run",
+      "coverage": [
+        "公务员招录",
+        "选调优培"
+      ],
+      "domains": [
+        "ggfw.hrss.gd.gov.cn"
+      ],
+      "entryUrl": "https://ggfw.hrss.gd.gov.cn/gwyks/anouns.do",
+      "officialSiteConfirmed": true,
+      "alternateEntryUrls": [
+        "https://ggfw.hrss.gd.gov.cn/gwyks/index.do"
+      ]
+    },
+    {
+      "id": "shenzhen-personnel-exam",
+      "organization": "深圳市人力资源和社会保障局公职人员招考",
+      "type": "政府官网",
+      "role": "authoritative",
+      "tier": "critical",
+      "cadence": "every-run",
+      "coverage": [
+        "公务员招录",
+        "选调优培",
+        "事业单位"
+      ],
+      "domains": [
+        "hrss.sz.gov.cn"
+      ],
+      "entryUrl": "https://hrss.sz.gov.cn/gzryzk/index.html",
+      "officialSiteConfirmed": true
+    },
+    {
+      "id": "shenzhen-institutions",
+      "organization": "深圳市人力资源和社会保障局事业单位招聘",
+      "type": "政府官网",
+      "role": "authoritative",
+      "tier": "critical",
+      "cadence": "every-run",
+      "coverage": [
+        "事业单位"
+      ],
+      "domains": [
+        "hrss.sz.gov.cn"
+      ],
+      "entryUrl": "https://hrss.sz.gov.cn/gzryzk/index.html",
+      "officialSiteConfirmed": true
+    },
+    {
+      "id": "central-institutions",
+      "organization": "中央和国家机关事业单位公开招聘",
+      "type": "政府官网",
+      "role": "authoritative",
+      "tier": "critical",
+      "cadence": "every-run",
+      "coverage": [
+        "事业单位"
+      ],
+      "domains": [
+        "mohrss.gov.cn"
+      ],
+      "entryUrl": "https://www.mohrss.gov.cn/SYrlzyhshbzb/fwyd/SYkaoshizhaopin/zyhgjjgsydwgkzp/",
+      "officialSiteConfirmed": true
+    },
+    {
+      "id": "china-public-recruitment",
+      "organization": "中国公共招聘网事业单位公开招聘",
+      "type": "政府官网",
+      "role": "authoritative",
+      "tier": "critical",
+      "cadence": "every-run",
+      "coverage": [
+        "事业单位"
+      ],
+      "domains": [
+        "job.mohrss.gov.cn"
+      ],
+      "entryUrl": "https://job.mohrss.gov.cn/cjobs/institution/listInstitution",
+      "alternateEntryUrls": [
+        "http://job.mohrss.gov.cn/cjobs/institution/listInstitution"
+      ],
+      "transportSecurity": "official-http-fallback",
+      "httpOnlyVerifiedAt": "2026-08-22",
+      "accessMode": "server-rendered-list",
+      "recipeRequired": true,
+      "lastAccessAuditAt": "2026-08-22",
+      "officialSiteConfirmed": true
+    },
+    {
+      "id": "central-sasac-recruitment",
+      "organization": "国务院国资委央企招聘",
+      "type": "政府官网",
+      "role": "authoritative",
+      "tier": "critical",
+      "cadence": "every-run",
+      "coverage": [
+        "国有企业"
+      ],
+      "domains": [
+        "sasac.gov.cn"
+      ],
+      "entryUrl": "https://www.sasac.gov.cn/n2588035/n2588325/n2588350/index.html",
+      "alternateEntryUrls": [
+        "http://wap.sasac.gov.cn/n2588035/n2588325/n2588350/index.html"
+      ],
+      "transportSecurity": "official-http-fallback",
+      "httpOnlyVerifiedAt": "2026-08-22",
+      "accessMode": "desktop-with-mobile-fallback",
+      "recipeRequired": true,
+      "lastAccessAuditAt": "2026-08-22",
+      "officialSiteConfirmed": true
+    },
+    {
+      "id": "central-enterprise-roster",
+      "organization": "国务院国资委中央企业名录",
+      "type": "政府官网",
+      "role": "roster",
+      "tier": "critical",
+      "cadence": "every-run",
+      "coverage": [
+        "国有企业"
+      ],
+      "domains": [
+        "sasac.gov.cn"
+      ],
+      "entryUrl": "https://www.sasac.gov.cn/n2588045/n27271785/n27271792/c14159097/content.html",
+      "officialSiteConfirmed": true
+    },
+    {
+      "id": "shenzhen-state-assets",
+      "organization": "深圳市国资委校园招聘",
+      "type": "政府官网",
+      "role": "authoritative",
+      "tier": "critical",
+      "cadence": "every-run",
+      "coverage": [
+        "国有企业"
+      ],
+      "domains": [
+        "gzw.sz.gov.cn"
+      ],
+      "entryUrl": "https://gzw.sz.gov.cn/xyzp/index.html",
+      "officialSiteConfirmed": true
+    },
+    {
+      "id": "picc-campus",
+      "organization": "中国人民保险集团",
+      "type": "企业官方招聘系统",
+      "role": "authoritative",
+      "tier": "active",
+      "cadence": "every-run",
+      "coverage": [
+        "国有企业"
+      ],
+      "domains": [
+        "picc.zhiye.com"
+      ],
+      "entryUrl": "https://picc.zhiye.com/custom/xiaoyuan?hideAll=true",
+      "officialSiteConfirmed": true
+    },
+    {
+      "id": "boe-campus",
+      "organization": "京东方科技集团",
+      "type": "企业官方招聘系统",
+      "role": "authoritative",
+      "tier": "active",
+      "cadence": "every-run",
+      "coverage": [
+        "国有企业"
+      ],
+      "domains": [
+        "boe.com",
+        "campus.boe.com"
+      ],
+      "entryUrl": "https://campus.boe.com/custom/xzzw?hideMenu=1",
+      "officialSiteConfirmed": true
+    },
+    {
+      "id": "sinopharm-careers",
+      "organization": "中国医药集团",
+      "type": "企业官网",
+      "role": "authoritative",
+      "tier": "priority",
+      "cadence": "every-run",
+      "coverage": [
+        "国有企业"
+      ],
+      "domains": [
+        "sinopharm.com"
+      ],
+      "entryUrl": "https://www.sinopharm.com/recruitment.html",
+      "officialSiteConfirmed": true
+    },
+    {
+      "id": "genertec-official",
+      "organization": "中国通用技术集团",
+      "type": "企业官网",
+      "role": "authoritative",
+      "tier": "priority",
+      "cadence": "every-run",
+      "coverage": [
+        "国有企业"
+      ],
+      "domains": [
+        "gt.cn"
+      ],
+      "entryUrl": "https://www.gt.cn/",
+      "officialSiteConfirmed": true
+    },
+    {
+      "id": "crc-careers",
+      "organization": "华润集团",
+      "type": "企业官方招聘系统",
+      "role": "authoritative",
+      "tier": "priority",
+      "cadence": "every-run",
+      "coverage": [
+        "国有企业"
+      ],
+      "domains": [
+        "careers.crc.com.cn",
+        "crc.wintalent.cn"
+      ],
+      "entryUrl": "https://careers.crc.com.cn/index.html",
+      "officialSiteConfirmed": true
+    },
+    {
+      "id": "cec-campus",
+      "organization": "中国电子信息产业集团",
+      "type": "企业官方招聘系统",
+      "role": "authoritative",
+      "tier": "priority",
+      "cadence": "every-run",
+      "coverage": [
+        "国有企业"
+      ],
+      "domains": [
+        "campus.cec.com.cn"
+      ],
+      "entryUrl": "https://campus.cec.com.cn/",
+      "officialSiteConfirmed": true
+    },
+    {
+      "id": "cetc-recruitment",
+      "organization": "中国电子科技集团",
+      "type": "企业官网",
+      "role": "authoritative",
+      "tier": "priority",
+      "cadence": "every-run",
+      "coverage": [
+        "国有企业"
+      ],
+      "domains": [
+        "cetc.com.cn"
+      ],
+      "entryUrl": "https://www.cetc.com.cn/zgdk/1593037/zpjgg/index.html",
+      "officialSiteConfirmed": true
+    },
+    {
+      "id": "sgcc-careers",
+      "organization": "国家电网",
+      "type": "企业官方招聘系统",
+      "role": "authoritative",
+      "tier": "priority",
+      "cadence": "every-run",
+      "coverage": [
+        "国有企业"
+      ],
+      "domains": [
+        "zhaopin.sgcc.com.cn"
+      ],
+      "entryUrl": "https://zhaopin.sgcc.com.cn/",
+      "officialSiteConfirmed": true
+    },
+    {
+      "id": "cnpc-careers",
+      "organization": "中国石油",
+      "type": "企业官方招聘系统",
+      "role": "authoritative",
+      "tier": "priority",
+      "cadence": "every-run",
+      "coverage": [
+        "国有企业"
+      ],
+      "domains": [
+        "zhaopin.cnpc.com.cn"
+      ],
+      "entryUrl": "https://zhaopin.cnpc.com.cn/",
+      "officialSiteConfirmed": true
+    },
+    {
+      "id": "sinopec-careers",
+      "organization": "中国石化",
+      "type": "企业官方招聘系统",
+      "role": "authoritative",
+      "tier": "priority",
+      "cadence": "every-run",
+      "coverage": [
+        "国有企业"
+      ],
+      "domains": [
+        "job.sinopec.com"
+      ],
+      "entryUrl": "https://job.sinopec.com/",
+      "alternateEntryUrls": [
+        "https://job.sinopec.com/#/school/index"
+      ],
+      "accessMode": "browser-spa",
+      "recipeRequired": true,
+      "lastAccessAuditAt": "2026-08-22",
+      "officialSiteConfirmed": true
+    },
+    {
+      "id": "cmcc-careers",
+      "organization": "中国移动",
+      "type": "企业官方招聘系统",
+      "role": "authoritative",
+      "tier": "priority",
+      "cadence": "every-run",
+      "coverage": [
+        "国有企业"
+      ],
+      "domains": [
+        "job.10086.cn"
+      ],
+      "entryUrl": "https://job.10086.cn/personal/job/",
+      "alternateEntryUrls": [
+        "https://job.10086.cn/"
+      ],
+      "accessMode": "filterable-dynamic-list",
+      "recipeRequired": true,
+      "lastAccessAuditAt": "2026-08-22",
+      "officialSiteConfirmed": true
+    },
+    {
+      "id": "chinatelecom-careers",
+      "organization": "中国电信",
+      "type": "企业官方招聘系统",
+      "role": "authoritative",
+      "tier": "priority",
+      "cadence": "every-run",
+      "coverage": [
+        "国有企业"
+      ],
+      "domains": [
+        "job.chinatelecom.com.cn"
+      ],
+      "entryUrl": "https://job.chinatelecom.com.cn/wt/TELE/web/index/campus",
+      "alternateEntryUrls": [
+        "https://job.chinatelecom.com.cn/"
+      ],
+      "accessMode": "filterable-paginated-list",
+      "recipeRequired": true,
+      "lastAccessAuditAt": "2026-08-22",
+      "officialSiteConfirmed": true
+    },
+    {
+      "id": "casic-careers",
+      "organization": "中国航天科工",
+      "type": "企业官方招聘系统",
+      "role": "authoritative",
+      "tier": "priority",
+      "cadence": "every-run",
+      "coverage": [
+        "国有企业"
+      ],
+      "domains": [
+        "casic.zhiye.com"
+      ],
+      "entryUrl": "https://casic.zhiye.com/",
+      "accessMode": "semantic-health-check-required",
+      "semanticFailureSignals": [
+        "/404?errorpath=",
+        "Not Found"
+      ],
+      "currentAccessState": "semantic-404",
+      "recipeRequired": true,
+      "lastAccessAuditAt": "2026-08-22",
+      "officialSiteConfirmed": true
+    },
+    {
+      "id": "spacechina-careers",
+      "organization": "中国航天科技",
+      "type": "企业官方招聘系统",
+      "role": "authoritative",
+      "tier": "priority",
+      "cadence": "every-run",
+      "coverage": [
+        "国有企业"
+      ],
+      "domains": [
+        "spacechina.com",
+        "spacetalent.com.cn"
+      ],
+      "entryUrl": "https://m.spacechina.com/index.html",
+      "alternateEntryUrls": [
+        "http://www.spacetalent.com.cn/"
+      ],
+      "transportSecurity": "official-http-fallback",
+      "httpOnlyVerifiedAt": "2026-08-22",
+      "accessMode": "browser-antibot",
+      "recipeRequired": true,
+      "lastAccessAuditAt": "2026-08-22",
+      "officialSiteConfirmed": true
+    },
+    {
+      "id": "chinapost-recruitment",
+      "organization": "中国邮政集团",
+      "type": "企业官网",
+      "role": "authoritative",
+      "tier": "priority",
+      "cadence": "every-run",
+      "coverage": [
+        "国有企业"
+      ],
+      "domains": [
+        "chinapost.com.cn"
+      ],
+      "entryUrl": "https://www.chinapost.com.cn/",
+      "accessMode": "official-announcement-discovery",
+      "semanticFailureSignals": [
+        "HTTP 404",
+        "页面不存在"
+      ],
+      "recipeRequired": true,
+      "lastAccessAuditAt": "2026-08-22",
+      "officialSiteConfirmed": true
+    },
+    {
+      "id": "national-college-employment",
+      "organization": "国家大学生就业服务平台",
+      "type": "国家就业服务平台",
+      "role": "discovery",
+      "tier": "discovery",
+      "cadence": "every-run",
+      "coverage": [
+        "事业单位",
+        "国有企业",
+        "发现线索"
+      ],
+      "domains": [
+        "ncss.cn"
+      ],
+      "entryUrl": "https://www.ncss.cn/",
+      "officialSiteConfirmed": false
+    },
+    {
+      "id": "iguopin-discovery",
+      "organization": "国聘",
+      "type": "招聘信息平台",
+      "role": "discovery",
+      "tier": "discovery",
+      "cadence": "every-run",
+      "coverage": [
+        "事业单位",
+        "国有企业",
+        "发现线索"
+      ],
+      "domains": [
+        "iguopin.com"
+      ],
+      "entryUrl": "https://www.iguopin.com/",
+      "officialSiteConfirmed": false
+    }
   ]
 }

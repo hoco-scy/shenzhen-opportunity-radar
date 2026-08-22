@@ -23,18 +23,18 @@ const formatDateTime = (value) => value ? new Intl.DateTimeFormat("zh-CN", {
 }).format(new Date(value)).replaceAll("/", ".") : "未记录";
 
 const decisionLabels = { accepted: "已收录", rejected: "不符合", deferred: "还要确认" };
-const runStatusLabels = { completed: "本次更新", "completed-partial": "部分信息待确认", failed: "暂无更新" };
+const runStatusLabels = { completed: "本次更新", "completed-partial": "部分信息待确认", failed: "暂无更新", "not-started": "等待首次更新" };
 const scopeLabels = { announcement: "整份公告", position: "具体岗位", "official-system": "招聘官网" };
 const sourceLabels = {
   "national-civil": "国家公务员局",
-  "beijing-civil": "北京市公务员招考",
-  "beijing-personnel-exam": "北京市人事考试平台",
-  "beijing-institutions": "北京市事业单位招聘",
+  "shenzhen-civil": "深圳市公务员招考",
+  "shenzhen-personnel-exam": "深圳市人事考试平台",
+  "shenzhen-institutions": "深圳市事业单位招聘",
   "central-institutions": "中央和国家机关事业单位招聘",
   "china-public-recruitment": "中国公共招聘网",
   "central-sasac-recruitment": "国务院国资委招聘",
   "central-enterprise-roster": "中央企业名录",
-  "beijing-state-assets": "北京市国资委招聘",
+  "shenzhen-state-assets": "深圳市国资委招聘",
   "picc-campus": "中国人保校园招聘",
   "boe-campus": "京东方校园招聘",
   "cmcc-careers": "中国移动招聘",
@@ -142,6 +142,14 @@ function renderRun(run) {
 }
 
 function render() {
+  if (!auditState.data.runs.length) {
+    document.querySelector("#sync-date").innerHTML = `<i></i>等待首次完整更新`;
+    document.querySelector("#latest-run").textContent = "尚未开始";
+    document.querySelector("#latest-reviewed").textContent = "—";
+    document.querySelector("#latest-published").textContent = "—";
+    document.querySelector("#audit-run-list").innerHTML = `<div class="empty-state"><strong>等待首次完整更新</strong><p>完成官网核验后，这里会留下每次处理和审核的记录。</p></div>`;
+    return;
+  }
   const latest = auditState.data.runs[0];
   document.querySelector("#sync-date").innerHTML = `<i></i>最近更新：${formatDateTime(auditState.data.meta.lastRunAt)}`;
   document.querySelector("#latest-run").textContent = formatDateTime(latest.checkedAt);

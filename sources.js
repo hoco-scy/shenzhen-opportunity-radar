@@ -73,7 +73,8 @@ function renderSources() {
     const status = statusPresentation(check?.status);
     const coverage = (source.coverage || []).filter((item) => item !== "发现线索");
     const tags = coverage.map((item) => `<span>${escapeHTML(item)}</span>`).join("");
-    const checkedAt = check?.checkedAt ? `最近更新 ${formatDateTime(check.checkedAt)}` : "持续关注招聘信息";
+    const checkedAt = check?.checkedAt ? `最近更新 ${formatDateTime(check.checkedAt)}`
+      : sourceState.reviewLog.meta.initializationStatus === "awaiting-first-sync" ? "等待首次完整更新" : "持续关注招聘信息";
     return `<article class="source-directory-card role-${escapeHTML(source.role)}">
       <div class="source-card-topline"><span class="source-role">${escapeHTML(roleLabels[source.role] || source.type)}</span><span class="source-health ${status.className}">${status.label}</span></div>
       <h3>${escapeHTML(source.organization)}</h3>
@@ -104,7 +105,9 @@ async function initSources() {
     ]);
     if (!registryResponse.ok || !reviewResponse.ok) throw new Error("信息源数据读取失败");
     [sourceState.registry, sourceState.reviewLog] = await Promise.all([registryResponse.json(), reviewResponse.json()]);
-    document.querySelector("#sync-date").innerHTML = `<i></i>最近更新：${formatDateTime(sourceState.reviewLog.meta.lastRunAt)}`;
+    document.querySelector("#sync-date").innerHTML = sourceState.reviewLog.meta.initializationStatus === "awaiting-first-sync"
+      ? `<i></i>等待首次完整更新`
+      : `<i></i>最近更新：${formatDateTime(sourceState.reviewLog.meta.lastRunAt)}`;
     bindSourceFilters();
     renderSources();
   } catch (error) {

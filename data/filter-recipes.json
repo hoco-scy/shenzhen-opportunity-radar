@@ -9,13 +9,13 @@
       "accessMode": "browser-spa",
       "nativeFilters": ["招聘项目：科技类/综合类", "集团下属单位", "工作地点：省/市/区县", "发布时间", "职位关键词"],
       "queryPlan": {
-        "everyRun": ["科技类岗位 + 北京市", "综合类岗位 + 北京市"],
-        "keywordRule": "北京安全筛选后的并集不超过 100 时直接复核全部结果，不再使用关键词缩小；超过 150 时才运行广义关键词族并取并集",
+        "everyRun": ["科技类岗位 + 深圳市", "综合类岗位 + 深圳市"],
+        "keywordRule": "深圳安全筛选后的并集不超过 100 时直接复核全部结果，不再使用关键词缩小；超过 150 时才运行广义关键词族并取并集",
         "otherRegions": "按周轮换地区并使用广义关键词族，仅作为低优先级补充"
       },
       "observations": [
-        {"segment":"综合类岗位","unfilteredCount":1888,"beijingCount":57},
-        {"segment":"科技类岗位","unfilteredCount":73,"beijingCount":12}
+        {"segment":"综合类岗位","unfilteredCount":1888,"shenzhenCount":57},
+        {"segment":"科技类岗位","unfilteredCount":73,"shenzhenCount":12}
       ],
       "notes": "职位关键词已验证可命中岗位详情中的专业或背景词，不仅匹配职位标题。数量是观察时快照，不作为未来运行的固定预期。"
     },
@@ -83,7 +83,7 @@
       "accessMode": "filterable-dynamic-list",
       "nativeFilters": ["招聘类型", "招聘单位", "职位类别", "学历要求", "工作地点省/市", "发布日期", "职位关键词"],
       "queryPlan": {
-        "everyRun": ["招聘类型：校园招聘 + 工作地点：北京", "人工智能专区：北京", "当期公司校园招聘页：北京"],
+        "everyRun": ["招聘类型：校园招聘 + 工作地点：深圳", "人工智能专区：深圳", "当期公司校园招聘页：深圳"],
         "keywordRule": "结构化筛选并集超过 150 时才运行工学、理工、技术、数据、生物医学工程和不限专业等广义关键词族",
         "completionRule": "动态加载结果必须滚动或翻页至末项，并按职位代码或详情地址去重"
       },
@@ -98,8 +98,8 @@
       "accessMode": "filterable-paginated-list",
       "nativeFilters": ["职位关键词或专业", "工作地点", "职位类别", "招聘单位", "发布时间"],
       "queryPlan": {
-        "everyRun": ["校园招聘 + 工作地点：北京", "人工智能公司/研究院 + 北京", "北京公司 + 全部职位类别"],
-        "keywordRule": "北京结构化结果超过 150 时再运行广义关键词族并取并集",
+        "everyRun": ["校园招聘 + 工作地点：深圳", "人工智能公司/研究院 + 深圳", "深圳公司 + 全部职位类别"],
+        "keywordRule": "深圳结构化结果超过 150 时再运行广义关键词族并取并集",
         "completionRule": "以筛选后的页数为准翻到末页，不得用未筛选的 61 页总量作为待处理量"
       },
       "observations": [
@@ -127,7 +127,7 @@
       "accessMode": "browser-antibot",
       "nativeFilters": [],
       "queryPlan": {
-        "everyRun": ["先从航天科技集团官网确认人才招聘链接", "使用真实浏览器低频打开中国航天人才网", "优先筛选北京和校园招聘"],
+        "everyRun": ["先从航天科技集团官网确认人才招聘链接", "使用真实浏览器低频打开中国航天人才网", "优先筛选深圳和校园招聘"],
         "fallback": "人才网触发频率或指纹拦截时，转查集团官网和所属院所官方招聘公告；未完成时记为 accessible-incomplete",
         "completionRule": "通过反自动化校验不等于完成，仍须记录筛选范围和职位结果数量"
       },
@@ -142,7 +142,7 @@
       "accessMode": "official-announcement-discovery",
       "nativeFilters": ["集团首页站内检索", "集团公告", "各省分公司和直属单位招聘公告"],
       "queryPlan": {
-        "everyRun": ["在集团官网检索校园招聘、社会招聘、2027 和北京", "打开当期官方公告", "只跟随公告明确给出的临时招聘专题或投递链接"],
+        "everyRun": ["在集团官网检索校园招聘、社会招聘、2027 和深圳", "打开当期官方公告", "只跟随公告明确给出的临时招聘专题或投递链接"],
         "fallback": "年度专题不存在或 DNS 失效时回到集团公告，不复用往年招聘专题",
         "completionRule": "没有固定职位门户时按公告生命周期跟踪；当期公告未发布可记 checked-no-active-campaign"
       },

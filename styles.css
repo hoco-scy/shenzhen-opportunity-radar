@@ -48,6 +48,8 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .topbar nav a { color: var(--ink-soft); font-size: 14px; transition: color .2s; }
 .topbar nav a:hover { color: var(--orange); }
 .topbar nav a.nav-current { color: var(--green); font-weight: 800; }
+.topbar nav a.city-switch { padding: 7px 10px; border: 1px solid var(--line); border-radius: 99px; color: var(--green); font-size: 12px; font-weight: 700; }
+.topbar nav a.city-switch:hover { border-color: var(--green); background: var(--green-light); }
 .sync-status { justify-self: end; color: #6b7a80; font-size: 12px; }
 .sync-status i { display: inline-block; width: 7px; height: 7px; margin-right: 8px; background: #52a274; border-radius: 50%; box-shadow: 0 0 0 4px rgba(82,162,116,.13); }
 

@@ -7,7 +7,7 @@ const state = {
 };
 
 const tasks = [
-  "先看快截止和招满即止的北京岗位",
+  "先看快截止和招满即止的深圳岗位",
   "把“相关专业”说不清的岗位单独列出来确认",
   "公考职位表发布后，再按专业代码完整筛一遍",
 ];
@@ -142,6 +142,10 @@ function renderCards() {
 function renderMonitors() {
   const grid = get("#monitor-grid");
   if (!grid) return;
+  if (!state.data.monitors.length) {
+    grid.innerHTML = `<div class="empty-state"><strong>等待首次完整更新</strong><p>公告和职位表会在完成官网核验后显示。</p></div>`;
+    return;
+  }
   grid.innerHTML = state.data.monitors.map((monitor) => {
     const alternate = monitor.alternateOfficialUrl
       ? `<a href="${safeUrl(monitor.alternateOfficialUrl)}" target="_blank" rel="noreferrer">${escapeHTML(monitor.alternateOfficialLabel || "相关信息")} ↗</a>`
@@ -180,9 +184,11 @@ function updateSummary() {
   const jobs = state.data.jobs;
   const meta = state.data.meta;
   const syncDate = get("#sync-date");
-  if (syncDate) syncDate.innerHTML = `<i></i>最近更新：${formatDateTime(meta.lastVerifiedAt)}`;
+  if (syncDate) syncDate.innerHTML = meta.initializationStatus === "awaiting-first-sync"
+    ? `<i></i>等待首次完整更新`
+    : `<i></i>最近更新：${formatDateTime(meta.lastVerifiedAt)}`;
   if (get("#stat-jobs")) get("#stat-jobs").textContent = jobs.length;
-  if (get("#stat-beijing")) get("#stat-beijing").textContent = jobs.filter((job) => job.location.includes("北京")).length;
+  if (get("#stat-shenzhen")) get("#stat-shenzhen").textContent = jobs.filter((job) => job.location.includes("深圳")).length;
   if (get("#stat-tracks")) get("#stat-tracks").textContent = new Set(jobs.map((job) => job.track)).size;
   if (get("#hero-job-count")) get("#hero-job-count").textContent = jobs.length;
 }

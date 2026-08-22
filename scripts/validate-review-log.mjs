@@ -10,7 +10,7 @@ const everyRunOfficial = new Set(sourcePlan.coverage?.everyRunOfficial || []);
 const errors = [];
 const minuteTimestamp = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:00\+08:00$/;
 const decisions = new Set(["accepted", "rejected", "deferred"]);
-const runStatuses = new Set(["completed", "completed-partial", "failed"]);
+const runStatuses = new Set(["completed", "completed-partial", "failed", "not-started"]);
 const sourceCheckStatuses = new Set([
   "checked-deferred", "checked-full-pagination", "checked-native-filtered",
   "checked-no-active-campaign", "checked-no-new-position-table",
@@ -38,11 +38,18 @@ function officialDomain(urlValue, source) {
   } catch { return false; }
 }
 
+const awaitingFirstSync = log.meta?.initializationStatus === "awaiting-first-sync";
 if (log.meta?.schemaVersion !== 1) errors.push("review-log meta.schemaVersion 必须为 1");
-if (!minuteTimestamp.test(log.meta?.lastRunAt || "")) errors.push("review-log meta.lastRunAt 必须精确到北京时间分钟");
-if (log.meta?.lastRunAt !== opportunities.meta?.lastVerifiedAt) errors.push("最近核验时间与审核日志最后运行时间不一致");
-if (!Array.isArray(log.runs) || !log.runs.length) errors.push("review-log.runs 至少需要一轮记录");
-if (log.runs?.[0]?.checkedAt !== log.meta?.lastRunAt) errors.push("最新一轮日志必须与 meta.lastRunAt 一致并排在首位");
+if (awaitingFirstSync) {
+  if (log.meta?.lastRunAt !== null || opportunities.meta?.lastVerifiedAt !== null) errors.push("首次同步前不得伪造核验时间");
+  if (opportunities.meta?.initializationStatus !== "awaiting-first-sync") errors.push("两个数据文件必须一致标记首次同步状态");
+  if (!Array.isArray(log.runs) || log.runs.length) errors.push("首次同步前不应生成审核运行记录");
+} else {
+  if (!minuteTimestamp.test(log.meta?.lastRunAt || "")) errors.push("review-log meta.lastRunAt 必须精确到北京时间分钟");
+  if (log.meta?.lastRunAt !== opportunities.meta?.lastVerifiedAt) errors.push("最近核验时间与审核日志最后运行时间不一致");
+  if (!Array.isArray(log.runs) || !log.runs.length) errors.push("review-log.runs 至少需要一轮记录");
+  if (log.runs?.[0]?.checkedAt !== log.meta?.lastRunAt) errors.push("最新一轮日志必须与 meta.lastRunAt 一致并排在首位");
+}
 
 const runIds = new Set();
 const reviewIds = new Set();

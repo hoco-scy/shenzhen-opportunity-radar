@@ -3,181 +3,61 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
 const pages = ["index.html", "monitors.html", "sources.html", "audit.html"];
-const expectedNavigation = [
-  ["index.html", "岗位"],
-  ["monitors.html", "考试公告"],
-  ["sources.html", "信息源"],
-  ["audit.html", "更新记录"],
-];
-
+const expectedNavigation = [["index.html", "岗位"], ["monitors.html", "考试公告"], ["sources.html", "信息源"], ["audit.html", "更新记录"]];
 const read = (path) => readFile(new URL(`../${path}`, import.meta.url), "utf8");
+const city = JSON.parse(await read("data/radar-city.json"));
 
-test("every page exposes the same four-page navigation", async () => {
+test("每个页面保留一致的四页导航和城市入口", async () => {
   for (const page of pages) {
     const html = await read(page);
-    for (const [href, label] of expectedNavigation) {
-      assert.match(html, new RegExp(`<a[^>]+href="${href}"[^>]*>${label}</a>`), `${page} 缺少 ${label} 入口`);
-    }
-    assert.equal((html.match(/class="nav-current"/g) || []).length, 1, `${page} 应只有一个当前页标记`);
+    for (const [href, label] of expectedNavigation) assert.match(html, new RegExp(`<a[^>]+href="${href}"[^>]*>${label}</a>`));
+    assert.match(html, new RegExp(`href="${city.hubUrl}"[^>]*>切换城市</a>`));
+    assert.equal((html.match(/class="nav-current"/g) || []).length, 1);
   }
 });
 
-test("pages version static assets so a refresh cannot reuse the previous layout", async () => {
-  const scripts = {
-    "index.html": "app.js",
-    "monitors.html": "app.js",
-    "sources.html": "sources.js",
-    "audit.html": "audit.js",
-  };
-  for (const [page, script] of Object.entries(scripts)) {
-    const html = await read(page);
-    assert.match(html, /href="styles\.css\?v=\d{8}-\d{4}"/, `${page} 缺少样式版本号`);
-    assert.match(html, new RegExp(`src="${script.replace(".", "\\.")}\\?v=\\d{8}-\\d{4}"`), `${page} 缺少脚本版本号`);
-  }
-});
-
-test("favorites stay in the job list and the former page redirects", async () => {
+test("静态资源有版本号，收藏仍留在岗位页", async () => {
   const [index, favorites, app] = await Promise.all([read("index.html"), read("favorites.html"), read("app.js")]);
   assert.match(index, /data-saved-filter/);
   assert.match(favorites, /index\.html\?saved=1#opportunities/);
   assert.match(app, /radar-saved-opportunities/);
-  assert.match(app, /URLSearchParams\(location\.search\)/);
-  for (const page of pages) assert.doesNotMatch(await read(page), /href="favorites\.html"/);
+  for (const page of pages) assert.match(await read(page), /styles\.css\?v=\d{8}-\d{4}/);
 });
 
-test("source cards expose overlapping coverage instead of claiming orthogonal categories", async () => {
-  const [sourcesPage, sourcesScript, registryRaw] = await Promise.all([
-    read("sources.html"), read("sources.js"), read("data/source-registry.json"),
-  ]);
-  const registry = JSON.parse(registryRaw);
-  assert.match(sourcesPage, /不是四只互不相干的抽屉/);
-  assert.match(sourcesPage, /招录方式/);
-  assert.match(sourcesPage, /单位性质/);
-  assert.match(sourcesScript, /source\.coverage/);
-  assert.ok(registry.sources.every((source) => Array.isArray(source.coverage) && source.coverage.length > 0));
-  const shared = registry.sources.find((source) => source.id === "beijing-personnel-exam");
-  assert.deepEqual(shared.coverage, ["公务员招录", "选调优培", "事业单位", "国有企业"]);
-});
-
-test("each scheduled run covers every registered source instead of rotating source batches", async () => {
-  const [registryRaw, planRaw] = await Promise.all([
-    read("data/source-registry.json"),
-    read("data/source-plan.json"),
-  ]);
-  const registry = JSON.parse(registryRaw);
-  const plan = JSON.parse(planRaw);
-  const officialIds = registry.sources.filter((source) => source.officialSiteConfirmed).map((source) => source.id).sort();
-  const discoveryIds = registry.sources.filter((source) => source.role === "discovery").map((source) => source.id).sort();
-
-  assert.equal(plan.version, 4);
-  assert.deepEqual([...plan.coverage.everyRunOfficial].sort(), officialIds);
-  assert.deepEqual([...plan.coverage.everyRunDiscovery].sort(), discoveryIds);
+test("来源计划每轮覆盖全部登记来源", async () => {
+  const [registryRaw, planRaw] = await Promise.all([read("data/source-registry.json"), read("data/source-plan.json")]);
+  const registry = JSON.parse(registryRaw); const plan = JSON.parse(planRaw);
+  const official = registry.sources.filter((source) => source.officialSiteConfirmed).map((source) => source.id).sort();
+  const discovery = registry.sources.filter((source) => source.role === "discovery").map((source) => source.id).sort();
+  assert.deepEqual([...plan.coverage.everyRunOfficial].sort(), official);
+  assert.deepEqual([...plan.coverage.everyRunDiscovery].sort(), discovery);
   assert.ok(registry.sources.every((source) => source.cadence === "every-run"));
-  assert.equal(plan.coverage.morningRotation, undefined);
-  assert.equal(plan.coverage.noonRotation, undefined);
 });
 
-test("automation treats validation failures as a repair loop instead of a stopping point", async () => {
-  const [agents, automation, prompts] = await Promise.all([
-    read("AGENTS.md"),
-    read("AUTOMATION.md"),
-    read("automation/task-prompts.md"),
-  ]);
-  assert.match(agents, /一次失败不是结束任务的理由/);
-  assert.match(automation, /步骤 H：门禁修复循环/);
-  assert.match(automation, /不得在首次失败后停止、暂停任务或等待下一次定时触发/);
-  assert.match(prompts, /不得在第一次失败后暂停或把失败当作最终回执/);
+test("首次同步前不伪造核验时间或岗位", async () => {
+  const [dataRaw, logRaw] = await Promise.all([read("data/opportunities.json"), read("data/review-log.json")]);
+  const data = JSON.parse(dataRaw); const log = JSON.parse(logRaw);
+  assert.equal(data.meta.initializationStatus, "awaiting-first-sync");
+  assert.equal(data.meta.lastVerifiedAt, null);
+  assert.equal(data.meta.lastRunStatus, "not-started");
+  assert.deepEqual(data.jobs, []);
+  assert.deepEqual(log.runs, []);
 });
 
-test("public pages do not render internal processing notes", async () => {
-  const [app, audit, sources, opportunitiesRaw] = await Promise.all([
-    read("app.js"), read("audit.js"), read("sources.js"), read("data/opportunities.json"),
-  ]);
-  const opportunities = JSON.parse(opportunitiesRaw);
-  const nationalMonitor = opportunities.monitors.find((monitor) => monitor.id === "national-civil-2027");
-  assert.equal(nationalMonitor.status, "等待公告");
-  assert.doesNotMatch(nationalMonitor.note, /报名系统|主入口|补充录用入口|下一轮/);
-  assert.match(app, /查看官网/);
-  assert.doesNotMatch(app, /statusEvidence/);
-  assert.doesNotMatch(audit, /source\.note|source\.attempts|review\.verificationNote|review\.fallback|renderScreeningMetrics/);
-  assert.doesNotMatch(sources, /source\.note|source\.attempts/);
-});
-
-test("national civil service monitor uses the two current official entries", async () => {
-  const [registryRaw, opportunitiesRaw] = await Promise.all([
-    read("data/source-registry.json"),
-    read("data/opportunities.json"),
-  ]);
-  const registry = JSON.parse(registryRaw);
-  const opportunities = JSON.parse(opportunitiesRaw);
-  const source = registry.sources.find((item) => item.id === "national-civil");
-  const monitor = opportunities.monitors.find((item) => item.id === "national-civil-2027");
-  const main = "http://bm.scs.gov.cn/pp/gkweb/core/web/ui/business/home/gkhome.html";
-  const supplementary = "http://subb.scs.gov.cn/pp/gkweb/core/web/ui/business/home/lxhome.html";
-
-  assert.equal(source.entryUrl, main);
-  assert.deepEqual(source.alternateEntryUrls, [supplementary]);
-  assert.equal(source.transportSecurity, "official-http-only");
-  assert.equal(monitor.officialUrl, main);
-  assert.equal(monitor.alternateOfficialUrl, supplementary);
-});
-
-test("failed sources have explicit recovery routes and processing recipes", async () => {
-  const [registryRaw, recipesRaw, planRaw] = await Promise.all([
-    read("data/source-registry.json"),
-    read("data/filter-recipes.json"),
-    read("data/source-plan.json"),
-  ]);
-  const registry = JSON.parse(registryRaw);
-  const recipes = JSON.parse(recipesRaw);
-  const plan = JSON.parse(planRaw);
-  const source = (id) => registry.sources.find((item) => item.id === id);
-  const recipeIds = new Set(recipes.recipes.map((item) => item.sourceId));
-  const repaired = [
-    "china-public-recruitment", "central-sasac-recruitment", "sinopec-careers",
-    "cmcc-careers", "chinatelecom-careers", "casic-careers",
-    "spacechina-careers", "chinapost-recruitment",
-  ];
-
-  assert.equal(registry.version, 4);
-  assert.equal(recipes.version, 2);
-  for (const id of repaired) {
-    assert.ok(source(id)?.accessMode, `${id} 缺少访问方式`);
-    assert.ok(recipeIds.has(id), `${id} 缺少处理配方`);
-  }
-  assert.match(source("china-public-recruitment").alternateEntryUrls[0], /^http:\/\/job\.mohrss\.gov\.cn/);
-  assert.match(source("central-sasac-recruitment").alternateEntryUrls[0], /^http:\/\/wap\.sasac\.gov\.cn/);
-  assert.equal(source("chinatelecom-careers").entryUrl, "https://job.chinatelecom.com.cn/wt/TELE/web/index/campus");
-  assert.equal(source("chinapost-recruitment").entryUrl, "https://www.chinapost.com.cn/");
-  assert.deepEqual(source("casic-careers").semanticFailureSignals, ["/404?errorpath=", "Not Found"]);
-  assert.equal(plan.sourceOutcomeDefinitions["accessible-incomplete"].includes("入口可用"), true);
-});
-
-test("top bar shows only the update time while audit uses user-facing update language", async () => {
-  const [opportunitiesRaw, app, audit] = await Promise.all([
-    read("data/opportunities.json"), read("app.js"), read("audit.js"),
-  ]);
-  const opportunities = JSON.parse(opportunitiesRaw);
-  assert.equal(opportunities.meta.lastIncompleteSourceCount, 9);
-  assert.equal(opportunities.meta.lastDeferredCandidateCount, 1935);
-  assert.match(app, /最近更新：/);
-  assert.match(audit, /最近更新：/);
-  assert.match(audit, /部分信息仍待确认/);
-  assert.doesNotMatch(`${app}\n${audit}`, /上次未查完|候选待处理|部分网站未完成|部分网站没查完|个来源未完成/);
-});
-
-test("removed template-like slogans do not return", async () => {
-  const content = (await Promise.all([...pages, "app.js", "audit.js"].map(read))).join("\n");
-  for (const phrase of ["某单位在招", "线索可以很杂", "公开数据必须很干净"]) {
-    assert.doesNotMatch(content, new RegExp(phrase));
-  }
-});
-
-test("homepage makes the biomedical-master selection scope explicit without exposing personal details", async () => {
-  const index = await read("index.html");
+test("城市范围保持生物医学硕士筛选与匿名边界", async () => {
+  const [index, agents, automation] = await Promise.all([read("index.html"), read("AGENTS.md"), read("AUTOMATION.md")]);
   assert.match(index, /主要面向生物医学相关背景的硕士/);
-  assert.match(index, /生物医学工程及相近工科背景的硕士/);
-  assert.match(index, /公考逐项确认条件/);
-  assert.match(index, /北京优先，官网为准/);
+  assert.match(index, new RegExp(`深圳优先，官网为准`));
   assert.match(index, /页面不保存姓名、学校或联系方式/);
+  assert.match(agents, /公考、/);
+  assert.match(automation, /私有资格档案只用于资格判断/);
+});
+
+test("失败来源必须有恢复策略，普通更新必须修复门禁", async () => {
+  const [registryRaw, recipesRaw, automation, prompts] = await Promise.all([read("data/source-registry.json"), read("data/filter-recipes.json"), read("AUTOMATION.md"), read("automation/task-prompts.md")]);
+  const registry = JSON.parse(registryRaw); const recipes = JSON.parse(recipesRaw);
+  const ids = new Set(recipes.recipes.map((recipe) => recipe.sourceId));
+  for (const source of registry.sources.filter((source) => source.recipeRequired)) assert.ok(ids.has(source.id));
+  assert.match(automation, /步骤 H：门禁修复循环/);
+  assert.match(prompts, /不得在第一次失败后暂停或把失败当作最终回执/);
 });

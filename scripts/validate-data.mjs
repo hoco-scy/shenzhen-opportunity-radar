@@ -20,7 +20,7 @@ const publicExamChecks = [
   "avoidanceRules", "positionNotes"
 ];
 const minuteTimestamp = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:00\+08:00$/;
-const runStatuses = new Set(["completed", "completed-partial", "failed"]);
+const runStatuses = new Set(["completed", "completed-partial", "failed", "not-started"]);
 const lastSeenStatuses = new Set(["live", "upcoming", "temporarily-unavailable", "closed"]);
 const jobStatuses = new Set(["招聘中", "即将开放", "临时无法复查", "已关闭"]);
 
@@ -33,9 +33,15 @@ function officialDomain(urlValue, source) {
   } catch { return false; }
 }
 
+const awaitingFirstSync = data.meta?.initializationStatus === "awaiting-first-sync";
 if (data.meta?.schemaVersion !== 1) errors.push("meta.schemaVersion 必须为 1");
-if (!minuteTimestamp.test(data.meta?.lastVerifiedAt || "")) errors.push("meta.lastVerifiedAt 必须是精确到分钟的北京时间，例如 2026-08-22T08:03:00+08:00");
-if (!runStatuses.has(data.meta?.lastRunStatus)) errors.push("meta.lastRunStatus 必须是 completed、completed-partial 或 failed");
+if (awaitingFirstSync) {
+  if (data.meta?.lastVerifiedAt !== null) errors.push("首次同步前 lastVerifiedAt 必须为 null");
+  if (data.meta?.lastRunStatus !== "not-started") errors.push("首次同步前 lastRunStatus 必须为 not-started");
+} else {
+  if (!minuteTimestamp.test(data.meta?.lastVerifiedAt || "")) errors.push("meta.lastVerifiedAt 必须是精确到分钟的北京时间，例如 2026-08-22T08:03:00+08:00");
+  if (!runStatuses.has(data.meta?.lastRunStatus) || data.meta?.lastRunStatus === "not-started") errors.push("meta.lastRunStatus 必须是 completed、completed-partial 或 failed");
+}
 if (!Number.isInteger(data.meta?.lastIncompleteSourceCount) || data.meta.lastIncompleteSourceCount < 0) errors.push("meta.lastIncompleteSourceCount 必须是非负整数");
 if (!Number.isInteger(data.meta?.lastDeferredCandidateCount) || data.meta.lastDeferredCandidateCount < 0) errors.push("meta.lastDeferredCandidateCount 必须是非负整数");
 if (!Array.isArray(data.jobs) || !Array.isArray(data.monitors)) errors.push("jobs 和 monitors 必须是数组");
