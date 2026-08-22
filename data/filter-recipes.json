@@ -344,7 +344,7 @@
         "evidence": [
           {
             "method": "official-route-health-check",
-          "target": "http://wap.sasac.gov.cn/n2588045/n27271785/n27271792/c14159097/content.html",
+            "target": "http://wap.sasac.gov.cn/n2588045/n27271785/n27271792/c14159097/content.html",
             "outcome": "non-error official page",
             "checkedAt": "2026-08-22T18:11:00+08:00"
           }
@@ -1055,7 +1055,13 @@
         ],
         "modelBoundary": "模型只复核结构化预筛后的候选；纯计算机/AI/网络安全/软件岗位没有明确生物医学工程交集时写 core-profession-mismatch。",
         "completion": "已保存原生筛选组合、筛选后总量、分页范围和去重数量；每条拟发布岗位仍需回到官方详情核验。",
-        "fallback": "公开筛选或分页请求不稳定时，改用浏览器查看官方公告/详情；不得退回到未筛选岗位全集。"
+        "fallback": "公开筛选或分页请求不稳定时，改用浏览器查看官方公告/详情；不得退回到未筛选岗位全集。",
+        "implementation": {
+          "command": "node scripts/collect-chinatelecom.mjs --all-pages",
+          "smokeTest": "node scripts/collect-chinatelecom.mjs --max-pages 1",
+          "runtime": "Node.js 18+；仅使用内置 fetch、URL 和 fs，无需浏览器驱动、npm 安装、凭据或本地状态。",
+          "hardGuard": "脚本必须证明官方城市筛选后的总量小于未筛选总量，否则拒绝读取岗位分页。"
+        }
       },
       "availability": {
         "state": "available",

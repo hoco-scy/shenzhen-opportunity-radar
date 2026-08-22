@@ -84,6 +84,7 @@ for (const recipe of (recipes.recipes || [])) {
   if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:00[+-]\d{2}:\d{2}$/.test(availability.evidence?.[0]?.checkedAt || "")) errors.push(`来源可用性证据缺少分钟级时间：${recipe.sourceId}`);
   if (availability.state === "temporarily-unavailable" && recipe.status !== "temporarily-unavailable") errors.push(`不可用状态未同步到来源状态：${recipe.sourceId}`);
   if (availability.state === "semantic-404" && recipe.status !== "temporarily-unavailable") errors.push(`语义 404 必须进入暂不可用来源状态：${recipe.sourceId}`);
+  if (recipe.sourceId === "chinatelecom-careers" && (!recipe.collection?.implementation?.command?.includes("collect-chinatelecom.mjs") || !recipe.collection?.implementation?.hardGuard)) errors.push("中国电信脚本来源缺少可执行命令或未筛选列表保护");
 }
 for (const source of registry.sources) {
   if (!recipeIds.has(source.id)) errors.push(`所有登记来源都必须有采集配方：${source.id}`);
