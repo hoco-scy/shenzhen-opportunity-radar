@@ -210,7 +210,10 @@
         "boe.com",
         "campus.boe.com"
       ],
-      "entryUrl": "https://campus.boe.com/custom/xzzw?hideMenu=1",
+      "entryUrl": "https://campus.boe.com/jobs?hideMenu=1",
+      "alternateEntryUrls": [
+        "https://campus.boe.com/custom/xzzw?hideMenu=1"
+      ],
       "officialSiteConfirmed": true
     },
     {
@@ -325,12 +328,14 @@
         "国有企业"
       ],
       "domains": [
+        "cnpc.com.cn",
         "news.cnpc.com.cn",
         "zhaopin.cnpc.com.cn"
       ],
-      "entryUrl": "https://news.cnpc.com.cn/system/2026/04/22/030190563.shtml",
+      "entryUrl": "https://www.cnpc.com.cn/cnpc/index.shtml",
       "officialSiteConfirmed": true,
       "alternateEntryUrls": [
+        "https://news.cnpc.com.cn/system/2026/04/22/030190563.shtml",
         "https://zhaopin.cnpc.com.cn/"
       ],
       "accessMode": "browser-official-page",

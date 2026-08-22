@@ -34,14 +34,21 @@ test("来源计划每轮覆盖全部登记来源", async () => {
   assert.ok(registry.sources.every((source) => source.cadence === "every-run"));
 });
 
-test("首次同步前不伪造核验时间或岗位", async () => {
+test("首轮同步状态与数据保持一致", async () => {
   const [dataRaw, logRaw] = await Promise.all([read("data/opportunities.json"), read("data/review-log.json")]);
   const data = JSON.parse(dataRaw); const log = JSON.parse(logRaw);
-  assert.equal(data.meta.initializationStatus, "awaiting-first-sync");
-  assert.equal(data.meta.lastVerifiedAt, null);
-  assert.equal(data.meta.lastRunStatus, "not-started");
+  if (data.meta.initializationStatus === "awaiting-first-sync") {
+    assert.equal(data.meta.lastVerifiedAt, null);
+    assert.equal(data.meta.lastRunStatus, "not-started");
+    assert.deepEqual(log.runs, []);
+  } else {
+    assert.equal(data.meta.initializationStatus, "synchronized");
+    assert.match(data.meta.lastVerifiedAt, /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:00\+08:00$/);
+    assert.notEqual(data.meta.lastRunStatus, "not-started");
+    assert.ok(log.runs.length >= 1);
+    assert.equal(log.meta.lastRunAt, data.meta.lastVerifiedAt);
+  }
   assert.deepEqual(data.jobs, []);
-  assert.deepEqual(log.runs, []);
 });
 
 test("城市范围保持生物医学硕士筛选与匿名边界", async () => {

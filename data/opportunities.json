@@ -1,11 +1,11 @@
 {
   "meta": {
     "schemaVersion": 1,
-    "initializationStatus": "awaiting-first-sync",
-    "lastVerifiedAt": null,
-    "lastRunStatus": "not-started",
-    "lastIncompleteSourceCount": 0,
-    "lastDeferredCandidateCount": 0,
+    "initializationStatus": "synchronized",
+    "lastVerifiedAt": "2026-08-22T19:25:00+08:00",
+    "lastRunStatus": "completed-partial",
+    "lastIncompleteSourceCount": 23,
+    "lastDeferredCandidateCount": 22,
     "timezone": "Asia/Shanghai",
     "publicationRule": "仅发布能在官方公告、职位表或官方招聘系统中定位到的具体岗位；公考岗位还必须通过全部个人资格硬条件"
   },

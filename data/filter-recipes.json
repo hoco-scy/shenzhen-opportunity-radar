@@ -472,7 +472,7 @@
       "sourceId": "boe-campus",
       "status": "verified",
       "observedAt": "2026-08-22",
-      "officialEntryUrl": "https://campus.boe.com/custom/xzzw?hideMenu=1",
+      "officialEntryUrl": "https://campus.boe.com/jobs?hideMenu=1",
       "accessMode": "browser-official-page",
       "nativeFilters": [
         "招聘类型：应届生",
@@ -525,9 +525,9 @@
         "evidence": [
           {
             "method": "browser-ui-check",
-            "target": "https://campus.boe.com/custom/xzzw?hideMenu=1",
-            "outcome": "non-error official page",
-            "checkedAt": "2026-08-22T18:11:00+08:00"
+            "target": "https://campus.boe.com/jobs?hideMenu=1",
+            "outcome": "official campus homepage with 2027 early-batch recruitment notice",
+            "checkedAt": "2026-08-22T19:28:00+08:00"
           }
         ],
         "nextAction": "下轮仍需先做入口与语义健康检查，不能把本轮结果当作永久可用。"
@@ -831,12 +831,12 @@
       "sourceId": "cnpc-careers",
       "status": "route-verified",
       "observedAt": "2026-08-22",
-      "officialEntryUrl": "https://zhaopin.cnpc.com.cn/",
+      "officialEntryUrl": "https://www.cnpc.com.cn/cnpc/index.shtml",
       "accessMode": "browser-official-page",
       "nativeFilters": [],
       "queryPlan": {
         "everyRun": [
-          "在浏览器打开 中国石油 的官方入口，先查看招聘/公告栏目和仍未截止的项目。",
+          "在浏览器打开中国石油集团官网的“职业中心”，先查看招聘公告和仍未截止的项目；仅在官网入口恢复后再打开招聘平台。",
           "进入具体公告或岗位详情，确认单位、岗位名称/代码、地点、学历、专业、截止时间与投递路径。",
           "若公告附职位表，下载后用本地结构化解析器筛选；只有官网没有可靠列表筛选时才处理官方分页。",
           "不把单位级新闻或项目名称作为具体岗位发布。"
@@ -848,7 +848,7 @@
         "primary": "browser",
         "mode": "browser-official-notice-and-detail",
         "steps": [
-          "在浏览器先打开中国石油新闻中心的官方招聘公告，核验是否有新的、未过期项目或职位表入口；招聘门户恢复后再进入其公开职位列表。",
+          "在浏览器打开中国石油集团官网的“职业中心”，核验招聘公告、附件和投递入口；招聘平台恢复后再进入其公开职位列表。",
           "进入具体公告或岗位详情，确认单位、岗位名称/代码、地点、学历、专业、截止时间与投递路径。",
           "若公告附职位表，下载后用本地结构化解析器筛选；只有官网没有可靠列表筛选时才处理官方分页。",
           "不把单位级新闻或项目名称作为具体岗位发布。"
@@ -858,16 +858,16 @@
       },
       "availability": {
         "state": "available-via-official-fallback",
-        "summary": "官方招聘门户本轮返回 502；中国石油新闻中心的官方招聘公告可访问，并明确岗位查询须回到官方招聘平台。",
+        "summary": "中国石油集团官网及“职业中心”可在浏览器打开；招聘门户本轮仍返回 502，因此具体岗位只从官网公告与附件核验。",
         "evidence": [
           {
-            "method": "official-announcement-fallback",
-            "target": "https://news.cnpc.com.cn/system/2026/04/22/030190563.shtml",
-            "outcome": "official recruitment announcement page",
-            "checkedAt": "2026-08-22T18:59:00+08:00"
+            "method": "browser-ui-check",
+            "target": "https://www.cnpc.com.cn/cnpc/index.shtml",
+            "outcome": "集团官网已呈现职业中心导航",
+            "checkedAt": "2026-08-22T19:13:00+08:00"
           }
         ],
-        "nextAction": "先在官方公告页追踪新一轮招聘和职位表；门户恢复后再在浏览器核验具体岗位，绝不绕过证书或网关错误。"
+        "nextAction": "每轮从职业中心追踪新项目、职位表和投递入口；招聘门户恢复后再在浏览器核验具体岗位，绝不绕过证书或网关错误。"
       },
       "failureSignals": [
         "http-502",
