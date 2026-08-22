@@ -1,0 +1,91 @@
+#!/usr/bin/env node
+/**
+ * Stateless preflight for collectors that a fresh Codex cloud container can run.
+ * With --live it performs one filtered official China Telecom page request only.
+ */
+import { access, readFile } from "node:fs/promises";
+import { spawn } from "node:child_process";
+import { fileURLToPath, pathToFileURL } from "node:url";
+
+const root = new URL("../", import.meta.url);
+const MINIMUM_NODE_MAJOR = 18;
+
+function nodeMajor() {
+  return Number(process.versions.node.split(".")[0]);
+}
+
+function commandScript(command) {
+  return typeof command === "string" ? command.match(/^node\s+(scripts\/[A-Za-z0-9._-]+\.mjs)(?:\s|$)/)?.[1] : undefined;
+}
+
+export async function inspectCollectorRuntime() {
+  const recipes = JSON.parse(await readFile(new URL("data/filter-recipes.json", root), "utf8"));
+  const collectors = [];
+  for (const recipe of recipes.recipes.filter((item) => item.collection?.primary === "script")) {
+    const script = commandScript(recipe.collection.implementation?.command);
+    let scriptPresent = false;
+    if (script) {
+      try { await access(new URL(script, root)); scriptPresent = true; }
+      catch { /* reported below */ }
+    }
+    collectors.push({
+      sourceId: recipe.sourceId,
+      command: recipe.collection.implementation?.command,
+      smokeTest: recipe.collection.implementation?.smokeTest,
+      script,
+      scriptPresent,
+      hardGuard: recipe.collection.implementation?.hardGuard
+    });
+  }
+  const webApis = {
+    fetch: typeof fetch === "function",
+    url: typeof URL === "function",
+    abortSignalTimeout: typeof AbortSignal?.timeout === "function"
+  };
+  return {
+    node: process.version,
+    minimumNodeMajor: MINIMUM_NODE_MAJOR,
+    nodeVersionSupported: nodeMajor() >= MINIMUM_NODE_MAJOR,
+    usesNoExternalPackages: true,
+    requiresCredentials: false,
+    webApis,
+    collectors,
+    readyForOfflineContractTest: nodeMajor() >= MINIMUM_NODE_MAJOR && Object.values(webApis).every(Boolean) && collectors.length > 0 && collectors.every((item) => item.scriptPresent && item.hardGuard)
+  };
+}
+
+function run(command, args) {
+  return new Promise((resolve, reject) => {
+    const child = spawn(command, args, { cwd: fileURLToPath(root), stdio: ["ignore", "pipe", "pipe"] });
+    let stdout = "";
+    let stderr = "";
+    child.stdout.on("data", (chunk) => { stdout += chunk; });
+    child.stderr.on("data", (chunk) => { stderr += chunk; });
+    child.on("error", reject);
+    child.on("close", (code) => code === 0 ? resolve(stdout) : reject(new Error(stderr || `采集冒烟命令退出：${code}`)));
+  });
+}
+
+export async function runLiveSmoke() {
+  const stdout = await run(process.execPath, ["scripts/collect-chinatelecom.mjs", "--max-pages", "1", "--summary"]);
+  const result = JSON.parse(stdout);
+  if (result.collectionMethod !== "script" || result.filteredTotal >= result.unfilteredTotal || result.pagesVisited.join(",") !== "1") {
+    throw new Error("官网筛选冒烟检查未能证明结果缩小且只读取了首个筛选页。");
+  }
+  return result;
+}
+
+async function main() {
+  const runtime = await inspectCollectorRuntime();
+  const output = { runtime };
+  if (!runtime.readyForOfflineContractTest) throw new Error("当前容器不满足无状态采集器运行前提。");
+  if (process.argv.includes("--live")) output.liveSmoke = await runLiveSmoke();
+  console.log(JSON.stringify(output, null, 2));
+}
+
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  main().catch((error) => {
+    console.error(JSON.stringify({ status: "runtime-not-ready", error: error.message }, null, 2));
+    process.exitCode = 1;
+  });
+}

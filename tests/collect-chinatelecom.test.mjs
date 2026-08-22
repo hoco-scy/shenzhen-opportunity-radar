@@ -4,7 +4,8 @@ import {
   CollectionSafetyError,
   buildFilteredUrl,
   collectChinaTelecom,
-  parsePositions
+  parsePositions,
+  summarizeCollection
 } from "../scripts/collect-chinatelecom.mjs";
 
 const entryUrl = "https://job.chinatelecom.com.cn/wt/TELE/web/index/campus";
@@ -76,4 +77,18 @@ test("地点筛选未缩小结果时拒绝遍历全国岗位", async () => {
     }),
     CollectionSafetyError
   );
+});
+
+test("演示摘要不输出整个筛选结果，只保留可复核的计数和样例", async () => {
+  let requestCount = 0;
+  const result = await collectChinaTelecom({
+    entryUrl,
+    city: "北京",
+    maxPages: 1,
+    fetchImpl: async (url) => response(page({ total: requestCount++ === 0 ? 10 : 1, pages: 1 }), url)
+  });
+  const summary = summarizeCollection(result);
+  assert.equal(summary.deduplicatedPositionCount, 1);
+  assert.equal(summary.samplePositions.length, 1);
+  assert.equal(summary.deduplicatedPositions, undefined);
 });

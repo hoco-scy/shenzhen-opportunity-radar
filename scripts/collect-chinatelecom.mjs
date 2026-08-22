@@ -169,6 +169,24 @@ export async function collectChinaTelecom({ entryUrl, city, maxPages = 3, allPag
   };
 }
 
+export function summarizeCollection(result) {
+  return {
+    sourceId: result.sourceId,
+    collectionMethod: result.collectionMethod,
+    collectedAt: result.collectedAt,
+    runtime: result.runtime,
+    officialEntryUrl: result.officialEntryUrl,
+    nativeFilter: result.nativeFilter,
+    unfilteredTotal: result.unfilteredTotal,
+    filteredTotal: result.filteredTotal,
+    filteredPages: result.filteredPages,
+    pagesVisited: result.pagesVisited,
+    truncatedForDemo: result.truncatedForDemo,
+    deduplicatedPositionCount: result.deduplicatedPositions.length,
+    samplePositions: result.deduplicatedPositions.slice(0, 3).map(({ title, organization, location, officialUrl }) => ({ title, organization, location, officialUrl }))
+  };
+}
+
 function readArgument(name) {
   const index = process.argv.indexOf(name);
   return index >= 0 ? process.argv[index + 1] : undefined;
@@ -193,7 +211,7 @@ async function loadRuntimeConfig() {
 async function main() {
   const help = process.argv.includes("--help");
   if (help) {
-    console.log("用法：node scripts/collect-chinatelecom.mjs [--city 城市] [--max-pages N] [--all-pages]");
+    console.log("用法：node scripts/collect-chinatelecom.mjs [--city 城市] [--max-pages N] [--all-pages] [--summary]");
     return;
   }
   const config = await loadRuntimeConfig();
@@ -206,7 +224,7 @@ async function main() {
     maxPages,
     allPages: process.argv.includes("--all-pages")
   });
-  console.log(JSON.stringify(output, null, 2));
+  console.log(JSON.stringify(process.argv.includes("--summary") ? summarizeCollection(output) : output, null, 2));
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {

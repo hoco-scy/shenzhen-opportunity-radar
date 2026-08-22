@@ -2,6 +2,12 @@
 
 本文件定义一次**合格同步**必须完成的工作。它不定义云端任务在何时运行、采用什么模型或是否发送通知；这些属于调度配置，见 [`automation/task-prompts.md`](automation/task-prompts.md)。
 
+## 云端 Codex 运行前提
+
+脚本采集必须能在新建、无状态的云端容器中直接运行：不得依赖浏览器 Cookie、已安装的 npm 包、个人凭据或本地缓存。当前唯一启用的脚本采集器是中国电信，最低要求为 Node.js 18；建议在 Codex 云端环境中固定 Node.js 22，并在每次任务开始先运行 `node scripts/verify-collector-runtime.mjs` 与 `node --test tests/collect-chinatelecom.test.mjs tests/verify-collector-runtime.test.mjs`。有网络时可再运行 `node scripts/verify-collector-runtime.mjs --live` 做一页已筛选结果的端到端验证；完整采集使用 `node scripts/collect-chinatelecom.mjs --all-pages --summary`，只读取公开官方页面且不写入岗位数据。
+
+Codex 云端的代理阶段默认没有互联网访问。云端定时任务必须在环境设置中显式启用对官方招聘域名的受限或不受限 HTTP/HTTPS 网络访问；没有该权限时，只能运行离线单元测试，不能声称已完成官网采集。浏览器采集源仍必须使用云端浏览器打开已登记的官方入口，不能把搜索结果当作核验。
+
 每次调用都是一次独立的全量更新：不管由哪个定时任务或人工触发，均须覆盖所有登记来源、有效期内对象、待核验对象和既有岗位复查。疑难项的高推理升级由 `screening-policy.json` 的上限控制，不会改变本轮全量覆盖要求。
 
 ## 1. 边界与不可违反的规则

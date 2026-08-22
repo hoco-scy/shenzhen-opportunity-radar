@@ -1,4 +1,4 @@
-import { readFile } from "node:fs/promises";
+import { access, readFile } from "node:fs/promises";
 
 const root = new URL("../", import.meta.url);
 const policy = JSON.parse(await readFile(new URL("data/screening-policy.json", root), "utf8"));
@@ -77,6 +77,14 @@ for (const recipe of (recipes.recipes || [])) {
     if (!Array.isArray(collection.nativeFilters) || collection.nativeFilters.length < 3) errors.push(`脚本来源缺少原生筛选组合：${recipe.sourceId}`);
     if (typeof collection.pagination !== "string" || !collection.pagination) errors.push(`脚本来源缺少筛选后分页规则：${recipe.sourceId}`);
     if (!Array.isArray(collection.deduplicateBy) || !collection.deduplicateBy.length) errors.push(`脚本来源缺少去重规则：${recipe.sourceId}`);
+    const implementation = collection.implementation || {};
+    const commandMatch = typeof implementation.command === "string" && implementation.command.match(/^node\s+(scripts\/[A-Za-z0-9._-]+\.mjs)(?:\s|$)/);
+    if (!commandMatch || !implementation.smokeTest || !implementation.runtime || !implementation.hardGuard) {
+      errors.push(`脚本来源缺少可执行命令、冒烟测试、无状态运行说明或未筛选全集保护：${recipe.sourceId}`);
+    } else {
+      try { await access(new URL(commandMatch[1], root)); }
+      catch { errors.push(`脚本来源的采集程序不存在：${recipe.sourceId} → ${commandMatch[1]}`); }
+    }
   }
   const availability = recipe.availability || {};
   if (!availabilityStates.has(availability.state)) errors.push(`来源缺少有效的可用性结论：${recipe.sourceId}`);
@@ -84,7 +92,6 @@ for (const recipe of (recipes.recipes || [])) {
   if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:00[+-]\d{2}:\d{2}$/.test(availability.evidence?.[0]?.checkedAt || "")) errors.push(`来源可用性证据缺少分钟级时间：${recipe.sourceId}`);
   if (availability.state === "temporarily-unavailable" && recipe.status !== "temporarily-unavailable") errors.push(`不可用状态未同步到来源状态：${recipe.sourceId}`);
   if (availability.state === "semantic-404" && recipe.status !== "temporarily-unavailable") errors.push(`语义 404 必须进入暂不可用来源状态：${recipe.sourceId}`);
-  if (recipe.sourceId === "chinatelecom-careers" && (!recipe.collection?.implementation?.command?.includes("collect-chinatelecom.mjs") || !recipe.collection?.implementation?.hardGuard)) errors.push("中国电信脚本来源缺少可执行命令或未筛选列表保护");
 }
 for (const source of registry.sources) {
   if (!recipeIds.has(source.id)) errors.push(`所有登记来源都必须有采集配方：${source.id}`);

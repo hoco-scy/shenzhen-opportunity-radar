@@ -30,6 +30,8 @@ jobs:
         run: node scripts/validate-source-plan.mjs
       - name: Validate layered large-dataset screening policy
         run: node scripts/validate-screening-policy.mjs
+      - name: Test executable public collectors in a clean Node runtime
+        run: node --test tests/collect-chinatelecom.test.mjs tests/verify-collector-runtime.test.mjs
       - name: Check anonymous public content
         run: node scripts/check-privacy.mjs
       - name: Check page navigation, favorites, sources, and copy
