@@ -35,7 +35,7 @@
 - critical 与 active 来源首次失败后最多共尝试 3 次，间隔按计划退避；失败前还要尝试同一机构的官方备用入口、公告栏目或可下载附件。
 - 重试后仍失败时，不得把“未能访问”写成“没有公告”。该轮标记 `completed-partial`，记录尝试次数、最后检查时间和失败说明；其他可完成来源继续处理。
 - 不能只根据 HTTP 状态码判断入口成功。最终地址落到 `/404`、`error`，或页面标题/正文明确显示不存在、下线、错误页时，记录 `semantic-404`。入口能打开但筛选结果、分页、附件或职位详情没有处理完时，记录 `accessible-incomplete`，不得写成 `temporarily-unavailable`。
-- 必须按 `source-registry.json` 登记顺序尝试官方备用入口；仅 HTTP 入口只能用于已明确登记并标注核验日期的官方域名。动态招聘站必须执行 `filter-recipes.json` 中的访问方式、筛选组合和完成条件。
+- 必须按 `source-registry.json` 登记顺序尝试官方备用入口；仅 HTTP 入口只能用于已明确登记并标注核验日期的官方域名。每个来源必须执行 `filter-recipes.json` 的 `collection.primary`：`browser` 走官方公告、详情和附件；`script` 先跑官网公开原生筛选、筛选后分页和去重，再抽取候选详情。脚本不得绕过登录、验证码、WAF 或访问控制；失败时走配方的浏览器回退，不能遍历未筛选的大型岗位全集。
 - `officialSystemsChecked` 必须等于 `sourceChecks` 数量，成功与失败统计必须闭合；不得只记录部分来源却声称全面运行。
 - 现有正文岗位每 24 小时内至少复查一次，写入逐岗 `lastSeenAt`、`lastSeenStatus` 与 `statusEvidence`。全轮时间更新不等于逐岗复查。
 

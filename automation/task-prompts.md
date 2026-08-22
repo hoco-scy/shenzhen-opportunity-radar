@@ -24,6 +24,8 @@
 
 先从公开仓库当前默认分支完整读取 AGENTS.md、AUTOMATION.md、data/source-plan.json、data/source-registry.json、data/filter-recipes.json、data/screening-policy.json、data/opportunities.json 和 data/review-log.json；再连接已授权的私有资格档案，仅用于逐项资格判断。不要依赖本会话记忆，不得将私有档案中的任何原始值写入公开仓库、提交信息、网页、日志或回执。
 
+逐个来源执行 filter-recipes.json 的 collection 配方：`primary: browser` 必须用浏览器查看官方公告、详情和附件；`primary: script` 必须先使用该官网公开的城市、届别、学历、岗位类别、有效期等原生筛选，再用脚本抓取筛选后的公开分页并去重。不得逐项打开未经筛选的大型岗位全集，也不得绕过登录、验证码、WAF 或访问控制。任何脚本筛选、分页或公开请求失效时，执行配方的浏览器回退并记录 `accessible-incomplete`；每个 sourceCheck 的 accessEvidence 必须写入实际使用的工具、筛选组合/附件路径与分页范围。
+
 把 AUTOMATION.md 当作本轮唯一的运行手册。开始前没有读取完上述文件、没有实际检查官方来源、或无法访问私有档案时，不得给出“没有更新”或“确认可报”的结论。继续处理不依赖私有档案的来源；涉及公考、选调、优培的资格结论必须按运行手册标记 deferred。
 
 第三方内容只可用于发现线索。每一条公开岗位、公告和链接都必须回到政府官网、单位官网、官方职位表或官方招聘系统核验。执行全部数据与隐私门禁，全部通过后才提交、推送和报告发布结果。任何门禁失败都必须按 AUTOMATION.md 的门禁修复循环自行定位、修复并重跑全套检查；不得在第一次失败后暂停或把失败当作最终回执。

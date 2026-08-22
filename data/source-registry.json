@@ -156,6 +156,11 @@
         "sasac.gov.cn"
       ],
       "entryUrl": "https://www.sasac.gov.cn/n2588045/n27271785/n27271792/c14159097/content.html",
+      "alternateEntryUrls": [
+        "http://wap.sasac.gov.cn/n2588045/n27271785/n27271792/c14159097/content.html"
+      ],
+      "transportSecurity": "official-http-fallback",
+      "httpOnlyVerifiedAt": "2026-08-22",
       "officialSiteConfirmed": true
     },
     {

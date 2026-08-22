@@ -28,6 +28,12 @@ if (policy.sourceCapabilityPolicy?.keywordFiltersOnlyWhenSafeFiltersStillExceed 
 if (!policy.sourceCapabilityPolicy?.semanticHealthChecks?.length) errors.push("必须登记页面语义健康检查");
 if (policy.sourceCapabilityPolicy?.accessibleButIncompleteOutcome !== "accessible-incomplete") errors.push("能打开但未处理完必须记为 accessible-incomplete");
 
+const relevanceGate = policy.profileRelevanceGate || {};
+if (relevanceGate.discoveryTermsAreNotPublicationEvidence !== true) errors.push("发现词不得直接作为发布匹配依据");
+if (relevanceGate.candidateFocus !== "biomedical-engineering-and-adjacent-engineering") errors.push("岗位匹配必须面向生物医学工程及交叉工程背景");
+if (relevanceGate.pureComputingOutcome !== "core-profession-mismatch") errors.push("纯计算机岗位必须进入 core-profession-mismatch");
+if (!Array.isArray(relevanceGate.explicitBiomedicalBridges) || relevanceGate.explicitBiomedicalBridges.length < 4) errors.push("岗位匹配缺少明确的生物医学工程交叉依据");
+
 const model = policy.modelPolicy || {};
 if (model.routineModel !== "GPT-5.6 Terra") errors.push("常规任务模型必须是 GPT-5.6 Terra");
 if (!Number.isInteger(model.batchSizeTarget) || model.batchSizeTarget < 20 || model.batchSizeTarget > 60) errors.push("模型批量复核目标必须在 20 至 60 个岗位之间");
@@ -40,11 +46,17 @@ for (const key of ["portalResultsReported", "nativeFilterQueries", "nativeFilter
   if (!requiredMetrics.has(key)) errors.push(`缺少运行指标：${key}`);
 }
 
-if (recipes.version !== 2 || !Array.isArray(recipes.recipes)) errors.push("filter-recipes.json 格式无效");
+if (recipes.version !== 3 || !Array.isArray(recipes.recipes)) errors.push("filter-recipes.json 必须为版本 3，且含有 recipes 数组");
+if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:00[+-]\d{2}:\d{2}$/.test(recipes.verifiedAt || "")) errors.push("filter-recipes.json 缺少带时区的分钟级 verifiedAt");
 const recipeIds = new Set();
 const recipeStatuses = new Set([
   "verified", "verified-no-native-filter", "route-verified", "browser-required",
   "announcement-discovery", "temporarily-unavailable", "pending-observation"
+]);
+const collectionMethods = new Set(["browser", "script"]);
+const availabilityStates = new Set([
+  "available", "available-via-official-fallback", "browser-recovery-required",
+  "temporarily-unavailable", "semantic-404"
 ]);
 for (const recipe of (recipes.recipes || [])) {
   if (!recipe.sourceId || recipeIds.has(recipe.sourceId)) errors.push(`筛选配方 sourceId 缺失或重复：${recipe.sourceId || "unknown"}`);
@@ -56,9 +68,29 @@ for (const recipe of (recipes.recipes || [])) {
   if (recipe.status === "temporarily-unavailable" && !recipe.failureSignals?.length) errors.push(`暂不可用来源缺少语义失败信号：${recipe.sourceId}`);
   if (recipe.status !== "pending-observation" && !/^\d{4}-\d{2}-\d{2}$/.test(recipe.observedAt || "")) errors.push(`筛选配方缺少核验日期：${recipe.sourceId}`);
   if (!recipe.accessMode) errors.push(`筛选配方缺少访问方式：${recipe.sourceId}`);
+  const collection = recipe.collection || {};
+  if (!collectionMethods.has(collection.primary)) errors.push(`来源必须明确 browser 或 script 采集方式：${recipe.sourceId}`);
+  if (typeof collection.mode !== "string" || !collection.mode) errors.push(`来源缺少具体采集模式：${recipe.sourceId}`);
+  if (!Array.isArray(collection.steps) || collection.steps.length < 3) errors.push(`来源缺少可执行的采集步骤：${recipe.sourceId}`);
+  if (typeof collection.completion !== "string" || !collection.completion) errors.push(`来源缺少完成判定：${recipe.sourceId}`);
+  if (collection.primary === "script") {
+    if (!Array.isArray(collection.nativeFilters) || collection.nativeFilters.length < 3) errors.push(`脚本来源缺少原生筛选组合：${recipe.sourceId}`);
+    if (typeof collection.pagination !== "string" || !collection.pagination) errors.push(`脚本来源缺少筛选后分页规则：${recipe.sourceId}`);
+    if (!Array.isArray(collection.deduplicateBy) || !collection.deduplicateBy.length) errors.push(`脚本来源缺少去重规则：${recipe.sourceId}`);
+  }
+  const availability = recipe.availability || {};
+  if (!availabilityStates.has(availability.state)) errors.push(`来源缺少有效的可用性结论：${recipe.sourceId}`);
+  if (!Array.isArray(availability.evidence) || !availability.evidence.length) errors.push(`来源缺少本轮可用性证据：${recipe.sourceId}`);
+  if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:00[+-]\d{2}:\d{2}$/.test(availability.evidence?.[0]?.checkedAt || "")) errors.push(`来源可用性证据缺少分钟级时间：${recipe.sourceId}`);
+  if (availability.state === "temporarily-unavailable" && recipe.status !== "temporarily-unavailable") errors.push(`不可用状态未同步到来源状态：${recipe.sourceId}`);
+  if (availability.state === "semantic-404" && recipe.status !== "temporarily-unavailable") errors.push(`语义 404 必须进入暂不可用来源状态：${recipe.sourceId}`);
 }
-for (const source of registry.sources.filter((item) => item.recipeRequired)) {
-  if (!recipeIds.has(source.id)) errors.push(`需要筛选配方但尚未登记：${source.id}`);
+for (const source of registry.sources) {
+  if (!recipeIds.has(source.id)) errors.push(`所有登记来源都必须有采集配方：${source.id}`);
+}
+for (const id of ["national-civil", "central-enterprise-roster", "china-public-recruitment", "central-sasac-recruitment", "picc-campus", "sinopec-careers"]) {
+  const recipe = recipes.recipes.find((item) => item.sourceId === id);
+  if (!recipe?.availabilityRule) errors.push(`${id} 缺少入口可用性判定规则`);
 }
 
 if (errors.length) {

@@ -22,6 +22,29 @@
     "semanticHealthChecks": ["最终地址没有落到 404 或 error 路由", "页面标题和正文不是不存在、下线或错误页", "动态列表已加载出可计数的结果或明确的空状态"],
     "accessibleButIncompleteOutcome": "accessible-incomplete"
   },
+  "profileRelevanceGate": {
+    "discoveryTermsAreNotPublicationEvidence": true,
+    "candidateFocus": "biomedical-engineering-and-adjacent-engineering",
+    "explicitBiomedicalBridges": [
+      "医疗器械",
+      "医疗人工智能",
+      "医学影像",
+      "生物信号",
+      "临床数据",
+      "医学数据",
+      "健康科技",
+      "生物工程"
+    ],
+    "pureComputingOutcome": "core-profession-mismatch",
+    "prohibitedPublicationWithoutBridge": [
+      "人工智能工程师",
+      "网络安全",
+      "信息安全",
+      "软件开发",
+      "纯 IT 岗",
+      "算法工程师"
+    ]
+  },
   "geographyCadence": {
     "shenzhen": "every-run",
     "otherRegions": "every-run",
