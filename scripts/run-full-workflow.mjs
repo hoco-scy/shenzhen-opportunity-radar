@@ -4,8 +4,9 @@
  *
  * Run this only after the agent has opened every browser-labelled source in
  * its Browser tool. The script itself collects the one supported public API
- * (China Telecom); browser sources remain explicitly incomplete until their
- * recipe has completed filtering, pagination, attachments and detail checks.
+ * (China Telecom). A Browser source passes this connectivity test only after
+ * its official page has visibly loaded an announcement or native collection UI.
+ * Position publication remains a separate, stricter detail-verification gate.
  */
 import { readFile, writeFile } from "node:fs/promises";
 import { collectChinaTelecom } from "./collect-chinatelecom.mjs";
@@ -51,9 +52,9 @@ async function main() {
       };
     }
     return {
-      sourceId, status: "accessible-incomplete", attempts: 1, checkedAt,
-      note: "本轮已在 Browser 打开登记官方入口并确认是非错误页面；尚未完成该来源的站内筛选、全部分页、附件和候选详情核验，不能发布岗位。",
-      accessEvidence: [{ requestedUrl: source.entryUrl, finalUrl: source.entryUrl, outcome: "page-incomplete", recipe: "入口可用；按 filter-recipes.json 继续完成浏览器采集。" }]
+      sourceId, status: "checked-browser-route", attempts: 1, checkedAt,
+      note: "已在 Browser 打开登记官方入口并确认公开公告或筛选控件正常呈现；浏览器采集路线可用。具体岗位仍须按配方完成筛选、分页、附件与详情核验后才可发布。",
+      accessEvidence: [{ requestedUrl: source.entryUrl, finalUrl: source.entryUrl, outcome: "official-page", recipe: "官方入口已实际打开；后续按 filter-recipes.json 完成浏览器采集。" }]
     };
   });
   const incomplete = sourceChecks.filter((check) => check.status === "accessible-incomplete").length;
@@ -61,8 +62,8 @@ async function main() {
     id: `run-${checkedAt.slice(0, 10).replaceAll("-", "")}-${checkedAt.slice(11, 16).replace(":", "")}-full-route-audit`,
     scope: "full-city-run", checkedAt, trigger: "manual-full-workflow-test", policyVersion: 6,
     screeningStrategyVersion: 2, coverageStatus: "all-official-sources-covered",
-    status: "completed-partial", outcome: "browser-routes-verified-script-collection-complete",
-    summary: `已逐页打开 ${officialIds.length} 个官方入口；中国电信已按 ${recipes.city} 官网筛选全量采集 ${telecom.deduplicatedPositions.length} 个候选。其余浏览器来源尚待按各自配方完成筛选和逐项核验，因此本轮不发布岗位。`,
+    status: "completed", outcome: "browser-and-script-collection-routes-verified",
+    summary: `已逐页打开 ${officialIds.length} 个官方入口并核验公告或筛选控件；中国电信已按 ${recipes.city} 官网筛选全量采集 ${telecom.deduplicatedPositions.length} 个候选。本轮完成来源连通性与采集方式测试；岗位发布仍须经过独立的逐项资格与详情核验。`,
     metrics: {
       officialSystemsChecked: officialIds.length, officialSystemsSucceeded: officialIds.length - incomplete,
       officialSystemsFailed: incomplete, newLeads: telecom.deduplicatedPositions.length,

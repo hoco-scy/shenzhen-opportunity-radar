@@ -13,6 +13,7 @@
   "sourceOutcomeDefinitions": {
     "checked-native-filtered": "入口可用，已按登记配方完成站内筛选和候选处理",
     "checked-no-active-campaign": "入口可用，已确认当前没有仍在有效期内的目标招聘活动",
+    "checked-browser-route": "已在 Browser 打开登记的官方入口并呈现公开公告或筛选控件；浏览器采集路线已核验，具体岗位发布仍须逐项核验",
     "accessible-incomplete": "入口可用，但筛选结果、分页、附件或职位详情没有处理完",
     "temporarily-unavailable": "主入口和登记的官方备用入口均无法建立有效访问",
     "semantic-404": "网络请求可能返回 200，但最终地址或页面正文明确是不存在、下线或错误页面"

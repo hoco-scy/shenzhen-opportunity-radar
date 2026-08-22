@@ -40,7 +40,7 @@ const retry = plan.retryPolicy || {};
 if (retry.criticalMaxAttempts < 3 || retry.activeMaxAttempts < 3) errors.push("critical 与 active 来源必须至少尝试 3 次");
 if (retry.failureOutcome !== "completed-partial") errors.push("来源失败的运行结果必须是 completed-partial");
 if (retry.semanticHealthCheckRequired !== true) errors.push("来源访问必须检查最终地址和页面语义，不能只看 HTTP 状态码");
-for (const status of ["checked-native-filtered", "checked-no-active-campaign", "accessible-incomplete", "temporarily-unavailable", "semantic-404"]) {
+for (const status of ["checked-native-filtered", "checked-no-active-campaign", "checked-browser-route", "accessible-incomplete", "temporarily-unavailable", "semantic-404"]) {
   if (!plan.sourceOutcomeDefinitions?.[status]) errors.push(`缺少来源结果定义：${status}`);
 }
 if (!Array.isArray(plan.fallbackOrder) || plan.fallbackOrder.length < 4) errors.push("官方入口 fallback 顺序不完整");

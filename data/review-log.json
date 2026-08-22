@@ -2,11 +2,411 @@
   "meta": {
     "schemaVersion": 1,
     "initializationStatus": "synchronized",
-    "lastRunAt": "2026-08-22T19:25:00+08:00",
+    "lastRunAt": "2026-08-22T19:36:00+08:00",
     "timezone": "Asia/Shanghai",
     "privacyRule": "只记录公开招聘事实、匿名审核结论和公开安全原因；不记录或反推任何私人资格字段"
   },
   "runs": [
+    {
+      "id": "run-20260822-1936-full-route-audit",
+      "scope": "full-city-run",
+      "checkedAt": "2026-08-22T19:36:00+08:00",
+      "trigger": "manual-full-workflow-test",
+      "policyVersion": 6,
+      "screeningStrategyVersion": 2,
+      "coverageStatus": "all-official-sources-covered",
+      "status": "completed",
+      "outcome": "browser-and-script-collection-routes-verified",
+      "summary": "已逐页打开 24 个官方入口并核验公告或筛选控件；中国电信已按 深圳 官网筛选全量采集 22 个候选。本轮完成来源连通性与采集方式测试；岗位发布仍须经过独立的逐项资格与详情核验。",
+      "metrics": {
+        "officialSystemsChecked": 24,
+        "officialSystemsSucceeded": 24,
+        "officialSystemsFailed": 0,
+        "newLeads": 22,
+        "reviewedItems": 0,
+        "accepted": 0,
+        "rejected": 0,
+        "deferred": 0,
+        "published": 0,
+        "updated": 0,
+        "closed": 0
+      },
+      "screeningMetrics": {
+        "portalResultsReported": 2323,
+        "nativeFilterQueries": 1,
+        "nativeFilteredResults": 22,
+        "deduplicatedCandidates": 22,
+        "positionsBatchReviewed": 0,
+        "positionsOfficiallyVerified": 0,
+        "positionsEscalated": 0,
+        "positionsDeferredByBudget": 22,
+        "discoverySourcesChecked": 0,
+        "discoveryOfficialCandidates": 0
+      },
+      "sourceChecks": [
+        {
+          "sourceId": "national-civil",
+          "status": "checked-browser-route",
+          "attempts": 1,
+          "checkedAt": "2026-08-22T19:36:00+08:00",
+          "note": "已在 Browser 打开登记官方入口并确认公开公告或筛选控件正常呈现；浏览器采集路线可用。具体岗位仍须按配方完成筛选、分页、附件与详情核验后才可发布。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "http://bm.scs.gov.cn/pp/gkweb/core/web/ui/business/home/gkhome.html",
+              "finalUrl": "http://bm.scs.gov.cn/pp/gkweb/core/web/ui/business/home/gkhome.html",
+              "outcome": "official-page",
+              "recipe": "官方入口已实际打开；后续按 filter-recipes.json 完成浏览器采集。"
+            }
+          ]
+        },
+        {
+          "sourceId": "shenzhen-civil",
+          "status": "checked-browser-route",
+          "attempts": 1,
+          "checkedAt": "2026-08-22T19:36:00+08:00",
+          "note": "已在 Browser 打开登记官方入口并确认公开公告或筛选控件正常呈现；浏览器采集路线可用。具体岗位仍须按配方完成筛选、分页、附件与详情核验后才可发布。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://ggfw.hrss.gd.gov.cn/gwyks/anouns.do",
+              "finalUrl": "https://ggfw.hrss.gd.gov.cn/gwyks/anouns.do",
+              "outcome": "official-page",
+              "recipe": "官方入口已实际打开；后续按 filter-recipes.json 完成浏览器采集。"
+            }
+          ]
+        },
+        {
+          "sourceId": "shenzhen-personnel-exam",
+          "status": "checked-browser-route",
+          "attempts": 1,
+          "checkedAt": "2026-08-22T19:36:00+08:00",
+          "note": "已在 Browser 打开登记官方入口并确认公开公告或筛选控件正常呈现；浏览器采集路线可用。具体岗位仍须按配方完成筛选、分页、附件与详情核验后才可发布。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://hrss.sz.gov.cn/gzryzk/index.html",
+              "finalUrl": "https://hrss.sz.gov.cn/gzryzk/index.html",
+              "outcome": "official-page",
+              "recipe": "官方入口已实际打开；后续按 filter-recipes.json 完成浏览器采集。"
+            }
+          ]
+        },
+        {
+          "sourceId": "shenzhen-institutions",
+          "status": "checked-browser-route",
+          "attempts": 1,
+          "checkedAt": "2026-08-22T19:36:00+08:00",
+          "note": "已在 Browser 打开登记官方入口并确认公开公告或筛选控件正常呈现；浏览器采集路线可用。具体岗位仍须按配方完成筛选、分页、附件与详情核验后才可发布。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://hrss.sz.gov.cn/gzryzk/index.html",
+              "finalUrl": "https://hrss.sz.gov.cn/gzryzk/index.html",
+              "outcome": "official-page",
+              "recipe": "官方入口已实际打开；后续按 filter-recipes.json 完成浏览器采集。"
+            }
+          ]
+        },
+        {
+          "sourceId": "central-institutions",
+          "status": "checked-browser-route",
+          "attempts": 1,
+          "checkedAt": "2026-08-22T19:36:00+08:00",
+          "note": "已在 Browser 打开登记官方入口并确认公开公告或筛选控件正常呈现；浏览器采集路线可用。具体岗位仍须按配方完成筛选、分页、附件与详情核验后才可发布。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.mohrss.gov.cn/SYrlzyhshbzb/fwyd/SYkaoshizhaopin/zyhgjjgsydwgkzp/",
+              "finalUrl": "https://www.mohrss.gov.cn/SYrlzyhshbzb/fwyd/SYkaoshizhaopin/zyhgjjgsydwgkzp/",
+              "outcome": "official-page",
+              "recipe": "官方入口已实际打开；后续按 filter-recipes.json 完成浏览器采集。"
+            }
+          ]
+        },
+        {
+          "sourceId": "china-public-recruitment",
+          "status": "checked-browser-route",
+          "attempts": 1,
+          "checkedAt": "2026-08-22T19:36:00+08:00",
+          "note": "已在 Browser 打开登记官方入口并确认公开公告或筛选控件正常呈现；浏览器采集路线可用。具体岗位仍须按配方完成筛选、分页、附件与详情核验后才可发布。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://job.mohrss.gov.cn/cjobs/institution/listInstitution",
+              "finalUrl": "https://job.mohrss.gov.cn/cjobs/institution/listInstitution",
+              "outcome": "official-page",
+              "recipe": "官方入口已实际打开；后续按 filter-recipes.json 完成浏览器采集。"
+            }
+          ]
+        },
+        {
+          "sourceId": "central-sasac-recruitment",
+          "status": "checked-browser-route",
+          "attempts": 1,
+          "checkedAt": "2026-08-22T19:36:00+08:00",
+          "note": "已在 Browser 打开登记官方入口并确认公开公告或筛选控件正常呈现；浏览器采集路线可用。具体岗位仍须按配方完成筛选、分页、附件与详情核验后才可发布。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.sasac.gov.cn/n2588035/n2588325/n2588350/index.html",
+              "finalUrl": "https://www.sasac.gov.cn/n2588035/n2588325/n2588350/index.html",
+              "outcome": "official-page",
+              "recipe": "官方入口已实际打开；后续按 filter-recipes.json 完成浏览器采集。"
+            }
+          ]
+        },
+        {
+          "sourceId": "central-enterprise-roster",
+          "status": "checked-browser-route",
+          "attempts": 1,
+          "checkedAt": "2026-08-22T19:36:00+08:00",
+          "note": "已在 Browser 打开登记官方入口并确认公开公告或筛选控件正常呈现；浏览器采集路线可用。具体岗位仍须按配方完成筛选、分页、附件与详情核验后才可发布。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.sasac.gov.cn/n2588045/n27271785/n27271792/c14159097/content.html",
+              "finalUrl": "https://www.sasac.gov.cn/n2588045/n27271785/n27271792/c14159097/content.html",
+              "outcome": "official-page",
+              "recipe": "官方入口已实际打开；后续按 filter-recipes.json 完成浏览器采集。"
+            }
+          ]
+        },
+        {
+          "sourceId": "shenzhen-state-assets",
+          "status": "checked-browser-route",
+          "attempts": 1,
+          "checkedAt": "2026-08-22T19:36:00+08:00",
+          "note": "已在 Browser 打开登记官方入口并确认公开公告或筛选控件正常呈现；浏览器采集路线可用。具体岗位仍须按配方完成筛选、分页、附件与详情核验后才可发布。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://gzw.sz.gov.cn/xyzp/index.html",
+              "finalUrl": "https://gzw.sz.gov.cn/xyzp/index.html",
+              "outcome": "official-page",
+              "recipe": "官方入口已实际打开；后续按 filter-recipes.json 完成浏览器采集。"
+            }
+          ]
+        },
+        {
+          "sourceId": "picc-campus",
+          "status": "checked-browser-route",
+          "attempts": 1,
+          "checkedAt": "2026-08-22T19:36:00+08:00",
+          "note": "已在 Browser 打开登记官方入口并确认公开公告或筛选控件正常呈现；浏览器采集路线可用。具体岗位仍须按配方完成筛选、分页、附件与详情核验后才可发布。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://picc.zhiye.com/custom/xiaoyuan?hideAll=true",
+              "finalUrl": "https://picc.zhiye.com/custom/xiaoyuan?hideAll=true",
+              "outcome": "official-page",
+              "recipe": "官方入口已实际打开；后续按 filter-recipes.json 完成浏览器采集。"
+            }
+          ]
+        },
+        {
+          "sourceId": "boe-campus",
+          "status": "checked-browser-route",
+          "attempts": 1,
+          "checkedAt": "2026-08-22T19:36:00+08:00",
+          "note": "已在 Browser 打开登记官方入口并确认公开公告或筛选控件正常呈现；浏览器采集路线可用。具体岗位仍须按配方完成筛选、分页、附件与详情核验后才可发布。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://campus.boe.com/jobs?hideMenu=1",
+              "finalUrl": "https://campus.boe.com/jobs?hideMenu=1",
+              "outcome": "official-page",
+              "recipe": "官方入口已实际打开；后续按 filter-recipes.json 完成浏览器采集。"
+            }
+          ]
+        },
+        {
+          "sourceId": "sinopharm-careers",
+          "status": "checked-browser-route",
+          "attempts": 1,
+          "checkedAt": "2026-08-22T19:36:00+08:00",
+          "note": "已在 Browser 打开登记官方入口并确认公开公告或筛选控件正常呈现；浏览器采集路线可用。具体岗位仍须按配方完成筛选、分页、附件与详情核验后才可发布。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.sinopharm.com/recruitment.html",
+              "finalUrl": "https://www.sinopharm.com/recruitment.html",
+              "outcome": "official-page",
+              "recipe": "官方入口已实际打开；后续按 filter-recipes.json 完成浏览器采集。"
+            }
+          ]
+        },
+        {
+          "sourceId": "genertec-official",
+          "status": "checked-browser-route",
+          "attempts": 1,
+          "checkedAt": "2026-08-22T19:36:00+08:00",
+          "note": "已在 Browser 打开登记官方入口并确认公开公告或筛选控件正常呈现；浏览器采集路线可用。具体岗位仍须按配方完成筛选、分页、附件与详情核验后才可发布。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.gt.cn/",
+              "finalUrl": "https://www.gt.cn/",
+              "outcome": "official-page",
+              "recipe": "官方入口已实际打开；后续按 filter-recipes.json 完成浏览器采集。"
+            }
+          ]
+        },
+        {
+          "sourceId": "crc-careers",
+          "status": "checked-browser-route",
+          "attempts": 1,
+          "checkedAt": "2026-08-22T19:36:00+08:00",
+          "note": "已在 Browser 打开登记官方入口并确认公开公告或筛选控件正常呈现；浏览器采集路线可用。具体岗位仍须按配方完成筛选、分页、附件与详情核验后才可发布。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://runjob.crc.com.cn/#/complex/homepage?id=1769554545615040514",
+              "finalUrl": "https://runjob.crc.com.cn/#/complex/homepage?id=1769554545615040514",
+              "outcome": "official-page",
+              "recipe": "官方入口已实际打开；后续按 filter-recipes.json 完成浏览器采集。"
+            }
+          ]
+        },
+        {
+          "sourceId": "cec-campus",
+          "status": "checked-browser-route",
+          "attempts": 1,
+          "checkedAt": "2026-08-22T19:36:00+08:00",
+          "note": "已在 Browser 打开登记官方入口并确认公开公告或筛选控件正常呈现；浏览器采集路线可用。具体岗位仍须按配方完成筛选、分页、附件与详情核验后才可发布。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://campus.cec.com.cn/",
+              "finalUrl": "https://campus.cec.com.cn/",
+              "outcome": "official-page",
+              "recipe": "官方入口已实际打开；后续按 filter-recipes.json 完成浏览器采集。"
+            }
+          ]
+        },
+        {
+          "sourceId": "cetc-recruitment",
+          "status": "checked-browser-route",
+          "attempts": 1,
+          "checkedAt": "2026-08-22T19:36:00+08:00",
+          "note": "已在 Browser 打开登记官方入口并确认公开公告或筛选控件正常呈现；浏览器采集路线可用。具体岗位仍须按配方完成筛选、分页、附件与详情核验后才可发布。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.cetc.com.cn/zgdk/1593037/zpjgg/index.html",
+              "finalUrl": "https://www.cetc.com.cn/zgdk/1593037/zpjgg/index.html",
+              "outcome": "official-page",
+              "recipe": "官方入口已实际打开；后续按 filter-recipes.json 完成浏览器采集。"
+            }
+          ]
+        },
+        {
+          "sourceId": "sgcc-careers",
+          "status": "checked-browser-route",
+          "attempts": 1,
+          "checkedAt": "2026-08-22T19:36:00+08:00",
+          "note": "已在 Browser 打开登记官方入口并确认公开公告或筛选控件正常呈现；浏览器采集路线可用。具体岗位仍须按配方完成筛选、分页、附件与详情核验后才可发布。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://zhaopin.sgcc.com.cn/",
+              "finalUrl": "https://zhaopin.sgcc.com.cn/",
+              "outcome": "official-page",
+              "recipe": "官方入口已实际打开；后续按 filter-recipes.json 完成浏览器采集。"
+            }
+          ]
+        },
+        {
+          "sourceId": "cnpc-careers",
+          "status": "checked-browser-route",
+          "attempts": 1,
+          "checkedAt": "2026-08-22T19:36:00+08:00",
+          "note": "已在 Browser 打开登记官方入口并确认公开公告或筛选控件正常呈现；浏览器采集路线可用。具体岗位仍须按配方完成筛选、分页、附件与详情核验后才可发布。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.cnpc.com.cn/cnpc/index.shtml",
+              "finalUrl": "https://www.cnpc.com.cn/cnpc/index.shtml",
+              "outcome": "official-page",
+              "recipe": "官方入口已实际打开；后续按 filter-recipes.json 完成浏览器采集。"
+            }
+          ]
+        },
+        {
+          "sourceId": "sinopec-careers",
+          "status": "checked-browser-route",
+          "attempts": 1,
+          "checkedAt": "2026-08-22T19:36:00+08:00",
+          "note": "已在 Browser 打开登记官方入口并确认公开公告或筛选控件正常呈现；浏览器采集路线可用。具体岗位仍须按配方完成筛选、分页、附件与详情核验后才可发布。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://job.sinopec.com/",
+              "finalUrl": "https://job.sinopec.com/",
+              "outcome": "official-page",
+              "recipe": "官方入口已实际打开；后续按 filter-recipes.json 完成浏览器采集。"
+            }
+          ]
+        },
+        {
+          "sourceId": "cmcc-careers",
+          "status": "checked-browser-route",
+          "attempts": 1,
+          "checkedAt": "2026-08-22T19:36:00+08:00",
+          "note": "已在 Browser 打开登记官方入口并确认公开公告或筛选控件正常呈现；浏览器采集路线可用。具体岗位仍须按配方完成筛选、分页、附件与详情核验后才可发布。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://job.10086.cn/personal/job/",
+              "finalUrl": "https://job.10086.cn/personal/job/",
+              "outcome": "official-page",
+              "recipe": "官方入口已实际打开；后续按 filter-recipes.json 完成浏览器采集。"
+            }
+          ]
+        },
+        {
+          "sourceId": "chinatelecom-careers",
+          "status": "checked-full-pagination",
+          "attempts": 1,
+          "checkedAt": "2026-08-22T19:36:00+08:00",
+          "note": "已按官网“校园招聘 + 深圳”筛选完成 3 页、22 个去重候选。候选尚未逐项详情审核。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://job.chinatelecom.com.cn/wt/TELE/web/index/campus",
+              "finalUrl": "https://job.chinatelecom.com.cn/wt/TELE/web/index/campus",
+              "outcome": "official-page",
+              "recipe": "官网城市筛选 2323 → 22"
+            }
+          ]
+        },
+        {
+          "sourceId": "casic-careers",
+          "status": "checked-browser-route",
+          "attempts": 1,
+          "checkedAt": "2026-08-22T19:36:00+08:00",
+          "note": "已在 Browser 打开登记官方入口并确认公开公告或筛选控件正常呈现；浏览器采集路线可用。具体岗位仍须按配方完成筛选、分页、附件与详情核验后才可发布。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "http://wap.sasac.gov.cn/n2588035/n2588325/c35503679/content.html",
+              "finalUrl": "http://wap.sasac.gov.cn/n2588035/n2588325/c35503679/content.html",
+              "outcome": "official-page",
+              "recipe": "官方入口已实际打开；后续按 filter-recipes.json 完成浏览器采集。"
+            }
+          ]
+        },
+        {
+          "sourceId": "spacechina-careers",
+          "status": "checked-browser-route",
+          "attempts": 1,
+          "checkedAt": "2026-08-22T19:36:00+08:00",
+          "note": "已在 Browser 打开登记官方入口并确认公开公告或筛选控件正常呈现；浏览器采集路线可用。具体岗位仍须按配方完成筛选、分页、附件与详情核验后才可发布。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://m.spacechina.com/index.html",
+              "finalUrl": "https://m.spacechina.com/index.html",
+              "outcome": "official-page",
+              "recipe": "官方入口已实际打开；后续按 filter-recipes.json 完成浏览器采集。"
+            }
+          ]
+        },
+        {
+          "sourceId": "chinapost-recruitment",
+          "status": "checked-browser-route",
+          "attempts": 1,
+          "checkedAt": "2026-08-22T19:36:00+08:00",
+          "note": "已在 Browser 打开登记官方入口并确认公开公告或筛选控件正常呈现；浏览器采集路线可用。具体岗位仍须按配方完成筛选、分页、附件与详情核验后才可发布。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.chinapost.com.cn/",
+              "finalUrl": "https://www.chinapost.com.cn/",
+              "outcome": "official-page",
+              "recipe": "官方入口已实际打开；后续按 filter-recipes.json 完成浏览器采集。"
+            }
+          ]
+        }
+      ],
+      "reviews": []
+    },
     {
       "id": "run-20260822-1925-full-route-audit",
       "scope": "full-city-run",

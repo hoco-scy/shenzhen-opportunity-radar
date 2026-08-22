@@ -12,7 +12,7 @@ const minuteTimestamp = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:00\+08:00$/;
 const decisions = new Set(["accepted", "rejected", "deferred"]);
 const runStatuses = new Set(["completed", "completed-partial", "failed", "not-started"]);
 const sourceCheckStatuses = new Set([
-  "checked-deferred", "checked-full-pagination", "checked-native-filtered",
+  "checked-deferred", "checked-full-pagination", "checked-native-filtered", "checked-browser-route",
   "checked-no-active-campaign", "checked-no-new-position-table",
   "checked-no-publishable-change", "checked-roster-current",
   "accessible-incomplete", "temporarily-unavailable", "semantic-404", "failed"
