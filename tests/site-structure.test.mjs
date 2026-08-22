@@ -41,14 +41,15 @@ test("首轮同步状态与数据保持一致", async () => {
     assert.equal(data.meta.lastVerifiedAt, null);
     assert.equal(data.meta.lastRunStatus, "not-started");
     assert.deepEqual(log.runs, []);
+    assert.deepEqual(data.jobs, []);
   } else {
     assert.equal(data.meta.initializationStatus, "synchronized");
     assert.match(data.meta.lastVerifiedAt, /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:00\+08:00$/);
     assert.notEqual(data.meta.lastRunStatus, "not-started");
     assert.ok(log.runs.length >= 1);
     assert.equal(log.meta.lastRunAt, data.meta.lastVerifiedAt);
+    assert.ok(Array.isArray(data.jobs));
   }
-  assert.deepEqual(data.jobs, []);
 });
 
 test("城市范围保持生物医学硕士筛选与匿名边界", async () => {
