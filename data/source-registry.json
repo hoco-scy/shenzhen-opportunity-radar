@@ -85,6 +85,10 @@
       "lastAccessAuditAt": "2026-08-23",
       "officialSiteConfirmed": true,
       "collectionEntryUrl": "https://career.buaa.edu.cn/frontpage/buaa/html/newsList.html?id=5453aeeb99e74d78aea0b45fd456ae68",
+      "collectionOrganization": "北航就业信息网（公务员／选调生）",
+      "collectionType": "高校官方就业信息网",
+      "collectionCoverage": ["选调优培", "应届生", "深圳"],
+      "collectionDomains": ["career.buaa.edu.cn"],
       "collectionAccessMode": "script-official-university-announcement-api",
       "collectionNote": "页面继续展示并链接深圳市委组织部原生入口；后台从选调高校公开栏目筛选广东省应届选调公告，职位表再按深圳市处理。"
     },
