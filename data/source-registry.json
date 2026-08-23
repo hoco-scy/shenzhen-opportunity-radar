@@ -216,7 +216,6 @@
       "role": "authoritative",
       "tier": "active",
       "cadence": "every-run",
-      "monitoringEnabled": false,
       "coverage": [
         "国有企业"
       ],
@@ -224,6 +223,8 @@
         "picc.zhiye.com"
       ],
       "entryUrl": "https://picc.zhiye.com/custom/xiaoyuan?hideAll=true",
+      "collectionAccessMode": "filterable-paginated-list",
+      "collectionNote": "重点补充：仅处理健康保险、医疗健康、医学数据、风险管理等与生物医学工程交叉的已筛选岗位。",
       "officialSiteConfirmed": true
     },
     {
@@ -291,7 +292,6 @@
       "role": "authoritative",
       "tier": "priority",
       "cadence": "every-run",
-      "monitoringEnabled": false,
       "coverage": [
         "国有企业"
       ],
@@ -301,6 +301,8 @@
         "crc.wintalent.cn"
       ],
       "entryUrl": "https://runjob.crc.com.cn/#/complex/homepage?id=1769554545615040514",
+      "collectionAccessMode": "browser-spa",
+      "collectionNote": "重点补充：优先回溯华润医药、医疗健康及医疗器械相关板块的官方岗位。",
       "officialSiteConfirmed": true,
       "alternateEntryUrls": [
         "https://careers.crc.com.cn/index.html"
@@ -458,7 +460,6 @@
       "role": "authoritative",
       "tier": "priority",
       "cadence": "every-run",
-      "monitoringEnabled": false,
       "coverage": [
         "国有企业"
       ],
@@ -467,6 +468,8 @@
         "sasac.gov.cn"
       ],
       "entryUrl": "http://wap.sasac.gov.cn/n2588035/n2588325/c35503679/content.html",
+      "collectionAccessMode": "browser-antibot",
+      "collectionNote": "重点补充：仅跟进医疗装备、生命健康、仪器电子与明确生物医学工程交叉的院所岗位。",
       "accessMode": "semantic-health-check-required",
       "semanticFailureSignals": [
         "/404?errorpath=",
@@ -489,7 +492,6 @@
       "role": "authoritative",
       "tier": "priority",
       "cadence": "every-run",
-      "monitoringEnabled": false,
       "coverage": [
         "国有企业"
       ],
@@ -501,6 +503,8 @@
       "alternateEntryUrls": [
         "http://www.spacetalent.com.cn/"
       ],
+      "collectionAccessMode": "browser-antibot",
+      "collectionNote": "重点补充：仅跟进医疗装备、生命健康、仪器电子与明确生物医学工程交叉的院所岗位。",
       "transportSecurity": "official-http-fallback",
       "httpOnlyVerifiedAt": "2026-08-22",
       "accessMode": "browser-antibot",
