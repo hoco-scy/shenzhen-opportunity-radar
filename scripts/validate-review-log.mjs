@@ -93,6 +93,24 @@ for (const [runIndex, run] of (log.runs || []).entries()) {
       const failed = ["failed", "temporarily-unavailable", "semantic-404"].includes(check.status);
       if (failed && ["critical", "active"].includes(source?.tier) && check.attempts < 3) errors.push(`${checkLabel} 关键来源失败前必须至少尝试 3 次`);
     }
+    if (Number(run.policyVersion || 0) >= 7) {
+      const collectionMetrics = check.collectionMetrics;
+      const metricLabel = `${checkLabel}.collectionMetrics`;
+      if (!collectionMetrics || !["completed", "not-completed", "unavailable"].includes(collectionMetrics.state)) {
+        errors.push(`${metricLabel}.state 必须明确说明本轮采集是否完成`);
+      } else {
+        if (!("collected" in collectionMetrics) || !("afterFilter" in collectionMetrics) || !collectionMetrics.filterDescription) {
+          errors.push(`${metricLabel} 必须记录采集数、筛选后数量和筛选说明`);
+        }
+        if (collectionMetrics.state === "completed") {
+          if (!Number.isInteger(collectionMetrics.collected) || collectionMetrics.collected < 0) errors.push(`${metricLabel}.collected 必须是非负整数`);
+          if (!Number.isInteger(collectionMetrics.afterFilter) || collectionMetrics.afterFilter < 0) errors.push(`${metricLabel}.afterFilter 必须是非负整数`);
+          if (Number.isInteger(collectionMetrics.collected) && Number.isInteger(collectionMetrics.afterFilter) && collectionMetrics.afterFilter > collectionMetrics.collected) errors.push(`${metricLabel} 筛选后数量不能大于采集数量`);
+        } else if (collectionMetrics.collected !== null || collectionMetrics.afterFilter !== null) {
+          errors.push(`${metricLabel} 未完成或不可用时必须用 null，不能伪装为 0 条`);
+        }
+      }
+    }
   }
   const isTargetedRemediation = run.scope === "targeted-remediation";
   if (Number(run.policyVersion || 0) >= 5 && !isTargetedRemediation && run.coverageStatus === "aggregate-first-collection-and-source-health") {

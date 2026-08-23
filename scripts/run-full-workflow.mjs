@@ -43,20 +43,85 @@ async function probeOfficialEntry(source, checkedAt) {
       accessEvidence.push({ requestedUrl, outcome: "network-error", recipe: `公开入口本轮无法连接：${error?.name || "fetch-error"}。` });
     }
   }
-  if (usable) return { sourceId: source.id, status: "accessible-incomplete", attempts: accessEvidence.length, checkedAt, note: "入口可访问，但本轮尚未在该来源完成原生筛选、分页、附件与逐岗核验；不据此发布岗位。", accessEvidence };
-  if (semantic404) return { sourceId: source.id, status: "semantic-404", attempts: accessEvidence.length, checkedAt, note: "已按登记入口与备用入口重试，未取得可用页面；不据此判断无岗位。", accessEvidence };
-  return { sourceId: source.id, status: "temporarily-unavailable", attempts: accessEvidence.length, checkedAt, note: "已按登记入口与备用入口重试，公开页面本轮仍不可用；不据此判断无岗位。", accessEvidence };
+  if (usable) return {
+    sourceId: source.id, status: "accessible-incomplete", attempts: accessEvidence.length, checkedAt,
+    note: "入口可访问，但本轮尚未在该来源完成原生筛选、分页、附件与逐岗核验；不据此发布岗位。",
+    collectionMetrics: {
+      state: "not-completed", collected: null, afterFilter: null,
+      filterDescription: "本轮只确认官方入口可访问；本站筛选、分页、附件和逐岗核验没有完整跑通，不能把结果理解为 0 条。"
+    },
+    accessEvidence
+  };
+  if (semantic404) return {
+    sourceId: source.id, status: "semantic-404", attempts: accessEvidence.length, checkedAt,
+    note: "已按登记入口与备用入口重试，未取得可用页面；不据此判断无岗位。",
+    collectionMetrics: {
+      state: "unavailable", collected: null, afterFilter: null,
+      filterDescription: "本轮没有取得可用的官方采集页面，未生成可比较的候选数量。"
+    },
+    accessEvidence
+  };
+  return {
+    sourceId: source.id, status: "temporarily-unavailable", attempts: accessEvidence.length, checkedAt,
+    note: "已按登记入口与备用入口重试，公开页面本轮仍不可用；不据此判断无岗位。",
+    collectionMetrics: {
+      state: "unavailable", collected: null, afterFilter: null,
+      filterDescription: "本轮无法连接官方采集页面，未生成可比较的候选数量。"
+    },
+    accessEvidence
+  };
 }
 
 function discoverySourceCheck(source, result, checkedAt) {
+  if (result.collectionError) {
+    return {
+      sourceId: source.id, status: "temporarily-unavailable", attempts: 1, checkedAt,
+      note: "该聚合平台的公开采集接口本轮没有完成；其他来源仍继续更新，不据此判断无岗位。",
+      collectionMetrics: {
+        state: "unavailable", collected: null, afterFilter: null,
+        filterDescription: "本轮无法完成该平台的公开筛选接口调用，未生成可比较的候选数量。"
+      },
+      accessEvidence: [{ requestedUrl: source.collectionEntryUrl || source.entryUrl, outcome: "network-error", recipe: result.collectionError }]
+    };
+  }
   const candidates = result.detailOutcomes?.candidate || 0;
   const excluded = Math.max(0, result.deduplicatedCandidates - candidates);
   const paginationNote = result.truncated ? "筛选结果超过本轮安全分页上限，未把未读取部分当作无岗位。" : "已读取本轮全部已筛选分页。";
   return {
     sourceId: source.id, status: "checked-native-filtered", attempts: 1, checkedAt,
     note: `已完成 ${result.nativeFilterQueries} 组本站筛选并读取 ${result.deduplicatedCandidates} 条去重候选。${candidates} 条通过应届硕士与专业相关性的初筛，进入官方回溯；${excluded} 条未进入回溯。${paginationNote}`,
+    collectionMetrics: {
+      state: "completed", collected: result.deduplicatedCandidates, afterFilter: candidates,
+      filterDescription: "已使用本站城市、单位性质/关键词、应届硕士和生物医学相关性等条件完成预筛。"
+    },
     accessEvidence: [{ requestedUrl: source.entryUrl, finalUrl: result.pagesVisited[0], outcome: "official-page", recipe: result.collectionRoute }]
   };
+}
+
+function unavailableDiscoveryResult(sourceId, error) {
+  return {
+    sourceId, collectionError: error?.message || "公开采集接口未返回可用结果。", leads: [], pagesVisited: [],
+    portalResultsReported: 0, nativeFilterQueries: 0, nativeFilteredResults: 0, deduplicatedCandidates: 0,
+    detailsChecked: 0, detailOutcomes: {}, truncated: false
+  };
+}
+
+function normalizeCollectionMetrics(log, sources) {
+  for (const run of log.runs || []) {
+    if (Number(run.policyVersion || 0) < 7) continue;
+    for (const check of run.sourceChecks || []) {
+      const metrics = check.collectionMetrics;
+      if (metrics && metrics.state !== "completed") {
+        metrics.collected = null;
+        metrics.afterFilter = null;
+      }
+      const source = sources.get(check.sourceId);
+      const route = source?.collectionEntryUrl;
+      if (route && ["temporarily-unavailable", "semantic-404"].includes(check.status) && (check.accessEvidence || []).every((item) => item.outcome === "network-error")) {
+        check.accessEvidence = (check.accessEvidence || []).map((item) => ({ ...item, requestedUrl: route }));
+      }
+    }
+  }
 }
 
 function incompleteCount(checks) { return checks.filter((check) => ["accessible-incomplete", "temporarily-unavailable", "semantic-404", "failed"].includes(check.status)).length; }
@@ -112,8 +177,8 @@ async function main() {
   const sources = new Map(registry.sources.map((source) => [source.id, source]));
   const [publicExamRun, buaa, iguopin] = await Promise.all([
     buildPublicExamRun({ registry, recipes, checkedAt }),
-    collectBuaaDiscovery({ city: recipes.city }),
-    collectIGuopinDiscovery({ city: recipes.city })
+    collectBuaaDiscovery({ city: recipes.city }).catch((error) => unavailableDiscoveryResult("buaa-career-discovery", error)),
+    collectIGuopinDiscovery({ city: recipes.city }).catch((error) => unavailableDiscoveryResult("iguopin-discovery", error))
   ]);
   const publicExamChecks = new Map(publicExamRun.sourceChecks.map((check) => [check.sourceId, check]));
   const scheduledIds = [...new Set([...(sourcePlan.coverage.everyRunOfficial || []), ...(sourcePlan.coverage.everyRunDiscovery || [])])];
@@ -133,12 +198,12 @@ async function main() {
   ].sort((left, right) => right.priority - left.priority || left.title.localeCompare(right.title, "zh-CN"));
   const run = {
     id: `run-${checkedAt.slice(0, 10).replaceAll("-", "")}-${checkedAt.slice(11, 16).replace(":", "")}-aggregate-first-full-sync`,
-    scope: "full-city-run", checkedAt, trigger: "scheduled-or-manual-full-update", scheduledSourceIds: scheduledIds, policyVersion: 6,
+    scope: "full-city-run", checkedAt, trigger: "scheduled-or-manual-full-update", scheduledSourceIds: scheduledIds, policyVersion: 7,
     screeningStrategyVersion: 2, candidateProcessingVersion: 4,
     coverageStatus: "aggregate-first-collection-and-source-health",
     status: incomplete ? "completed-partial" : "completed",
     outcome: "aggregate-platform-discovery-plus-official-verification",
-    summary: `本轮已实际执行国考、本地公考、选调优培以及北航就业信息网、国聘的城市筛选。北航有 ${buaa.leads.length} 条、国聘有 ${iguopin.leads.length} 条通过初筛的线索，已进入“待用户确认”清单；未取得单位或政府官方原文的线索不会混入已核验岗位。国家大学生就业服务平台和重点官网尚未完成本站筛选的来源仍明确记为未完成。`,
+    summary: `本轮已执行国考、本地公考、选调优培与聚合平台的公开采集。北航就业信息网${buaa.collectionError ? "本轮未完成公开筛选" : `有 ${buaa.leads.length} 条通过初筛的线索`}，国聘${iguopin.collectionError ? "本轮未完成公开筛选" : `有 ${iguopin.leads.length} 条通过初筛的线索`}；未取得单位或政府官方原文的线索不会混入已核验岗位。国家大学生就业服务平台和重点官网尚未完成本站筛选的来源仍明确记为未完成。`,
     metrics: {
       officialSystemsChecked: sourceChecks.length, officialSystemsSucceeded: sourceChecks.length - incomplete, officialSystemsFailed: incomplete,
       newLeads: (publicExamRun.metrics?.newLeads || 0) + buaa.leads.length + iguopin.leads.length,
@@ -158,6 +223,7 @@ async function main() {
     sourceChecks, reviews: publicExamRun.reviews
   };
   if (!args.has("--write")) { console.log(JSON.stringify({ dryRun: true, city: recipes.city, run }, null, 2)); return; }
+  normalizeCollectionMetrics(log, sources);
   log.meta.initializationStatus = "synchronized";
   log.meta.lastRunAt = checkedAt;
   log.runs = log.runs.filter((previous) => !previous.id?.endsWith("-full-route-audit") && previous.outcome !== "all-official-sources-checked" && previous.id !== run.id);

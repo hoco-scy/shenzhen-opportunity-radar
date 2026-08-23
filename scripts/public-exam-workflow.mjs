@@ -117,6 +117,14 @@ export async function collectPublicExamWorkflowSources({ registry, recipes, fetc
             : status === "checked-deferred"
               ? `已采集 ${currentCandidates.length} 条仍需处理的官方公告；尚未使用私有资格档案完成逐项硬条件判断，因此未发布具体岗位。`
               : "官方入口可访问，但公告详情、附件或职位表解析未完成；不据此判断无岗位。",
+          collectionMetrics: {
+            state: status === "accessible-incomplete" ? "not-completed" : "completed",
+            collected: status === "accessible-incomplete" ? null : result.noticeCount,
+            afterFilter: status === "accessible-incomplete" ? null : currentCandidates.length,
+            filterDescription: status === "accessible-incomplete"
+              ? "公告入口可访问，但详情、附件或职位表未完整解析，不能把结果理解为 0 条。"
+              : "官方公告与附件 → 仍在有效期内、可继续资格判断的公告",
+          },
           accessEvidence: accessEvidence(source, result)
         }
       });
@@ -131,7 +139,13 @@ export async function collectPublicExamWorkflowSources({ registry, recipes, fetc
           status: "temporarily-unavailable",
           attempts: Math.max(3, source.alternateEntryUrls?.length + 1 || 1),
           note: "登记的官方采集路径本轮未能完成；不据此判断无公告。",
-          accessEvidence: [source.entryUrl, ...(source.alternateEntryUrls || [])].map((requestedUrl) => ({
+          collectionMetrics: {
+            state: "unavailable",
+            collected: null,
+            afterFilter: null,
+            filterDescription: "官方采集路径本轮不可用，未生成可比较的候选数量。",
+          },
+          accessEvidence: [source.collectionEntryUrl || source.entryUrl, ...(source.alternateEntryUrls || [])].map((requestedUrl) => ({
             requestedUrl,
             outcome: "network-error",
             recipe: error.message
