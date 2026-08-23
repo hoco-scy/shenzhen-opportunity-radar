@@ -47,10 +47,12 @@ test("国聘采集器使用公开城市关键词分页，并拦截纯算法和�
       assert.deepEqual(payload.search.district, ["000000.110000"]);
       const job = payload.search.keyword === "医疗器械" ? {
         job_id: "iguopin-1", status: 1, job_name: "医疗器械研发工程师", company_name: "示例医疗器械公司",
+        company_info: { nature_cn: "国企" },
         nature_cn: "校招", education_cn: "硕士", experience_cn: "无经验", major_cn: ["生物医学工程"],
         contents: "面向应届毕业生开展医疗器械研发", apply_instruction: "投递入口：https://jobs.example.org/apply?id=1", start_time: "2099-01-01", end_time: "2099-12-31", district_list: [{ area_cn: "北京" }]
       } : payload.search.keyword === "医疗" ? {
         job_id: "iguopin-cs", status: 1, job_name: "AI算法工程师", company_name: "示例科技公司",
+        company_info: { nature_cn: "国企" },
         nature_cn: "校招", education_cn: "硕士", experience_cn: "无经验", major_cn: ["生物医学工程"],
         contents: "面向应届毕业生从事通用大模型训练", start_time: "2099-01-01", end_time: "2099-12-31", district_list: [{ area_cn: "北京" }]
       } : null;
@@ -61,6 +63,7 @@ test("国聘采集器使用公开城市关键词分页，并拦截纯算法和�
   assert.equal(result.deduplicatedCandidates, 2);
   assert.equal(result.leads.length, 1);
   assert.equal(result.leads[0].id, "iguopin-1");
+  assert.equal(result.leads[0].employerNature, "国企");
   assert.equal(result.leads[0].employerApplyUrl, "https://jobs.example.org/apply?id=1");
   assert.equal(result.detailOutcomes["core-profession-mismatch"], 1);
   assert.equal(new Set(requestedKeywords).size, 6);
@@ -73,6 +76,7 @@ test("国聘采集器不把宽口径工科和泛医疗文案当作生物医学�
       const keyword = JSON.parse(init.body).search.keyword;
       const job = keyword === "医疗" ? {
         job_id: "iguopin-broad", status: 1, job_name: "国际市场助理", company_name: "示例公司",
+        company_info: { nature_cn: "国企" },
         nature_cn: "校招", education_cn: "本科", experience_cn: "无经验", major_cn: ["工学全类"],
         contents: "面向医疗行业客户开展市场支持", start_time: "2099-01-01", end_time: "2099-12-31", district_list: [{ area_cn: "北京" }]
       } : null;
@@ -81,4 +85,21 @@ test("国聘采集器不把宽口径工科和泛医疗文案当作生物医学�
   });
   assert.equal(result.leads.length, 0);
   assert.equal(result.detailOutcomes["broad-major-without-direct-biomedical-role"], 1);
+});
+
+test("国聘采集器排除民企，即使岗位专业与工作内容相关", async () => {
+  const result = await collectIGuopinDiscovery({
+    city: "北京",
+    fetchImpl: async (url, init = {}) => {
+      const keyword = JSON.parse(init.body).search.keyword;
+      const job = keyword === "医疗器械" ? {
+        job_id: "iguopin-private", status: 1, job_name: "医疗器械研发工程师", company_name: "示例民企",
+        company_info: { nature_cn: "民营企业" }, nature_cn: "校招", education_cn: "硕士", experience_cn: "无经验", major_cn: ["生物医学工程"],
+        contents: "医疗器械研发", start_time: "2099-01-01", end_time: "2099-12-31", district_list: [{ area_cn: "北京" }]
+      } : null;
+      return response({ code: 200, data: { total: job ? 1 : 0, list: job ? [job] : [] } }, String(url));
+    }
+  });
+  assert.equal(result.leads.length, 0);
+  assert.equal(result.detailOutcomes["employer-nature-mismatch"], 1);
 });

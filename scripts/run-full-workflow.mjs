@@ -73,6 +73,7 @@ function candidateFromDiscoveryLead(lead, sourceId, checkedAt) {
     id: `candidate-${sourceId}-${lead.id}`,
     track: "待确认线索",
     organization: lead.organization,
+    employerNature: lead.employerNature || "平台未注明",
     title: lead.title,
     exactTitle: lead.title,
     location: lead.location,
@@ -99,7 +100,7 @@ function candidateFromDiscoveryLead(lead, sourceId, checkedAt) {
       automaticResult: hasDirectLink ? "已保留平台提供的直达链接，不把它自动视为官方核验。" : "平台未返回可验证的单位直达链接，脚本不会猜测或搜索拼接官网。"
     },
     collectionEvidence: lead.evidence,
-    tags: ["国聘/北航筛选", "应届生", "生物医学相关", hasDirectLink ? "平台提供投递链接" : "需手动确认"]
+    tags: ["国聘/北航筛选", lead.employerNature || "平台未注明单位性质", "应届生", "生物医学相关", hasDirectLink ? "平台提供投递链接" : "需手动确认"]
   };
 }
 

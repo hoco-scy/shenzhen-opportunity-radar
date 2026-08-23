@@ -29,6 +29,7 @@ const REQUIRED_EXPERIENCE = /(?:[1-9]\d*\s*年|[一二三四五六七八九十]�
 const ELIGIBLE_MAJOR_EVIDENCE = /(生物医学工程|医学工程|生物工程|生物技术|医疗器械|医学影像|临床工程|仪器科学|仪器类|工学全类|工学门类|理工类|理工科|所有工学)/i;
 const DIRECT_MAJOR_EVIDENCE = /(生物医学工程|医学工程|生物工程|生物技术|医疗器械|医学影像|临床工程|临床医学|基础医学|医学全类|医药卫生|药学)/i;
 const BROAD_ENGINEERING_EVIDENCE = /(工学全类|工学门类|理工类|理工科|所有工学)/i;
+const TARGET_EMPLOYER_NATURE = /(国企|国有企业|中央企业|事业单位)/;
 
 export class IGuopinDiscoveryError extends Error {
   constructor(message) { super(message); this.name = "IGuopinDiscoveryError"; }
@@ -71,10 +72,16 @@ function jobBody(job) {
   ].filter(Boolean).join(" ");
 }
 
+function employerNature(job) {
+  return text(job.company_info?.nature_cn || job.company_nature_cn || job.company_type_cn).trim();
+}
+
 function classify(job) {
   if (!job?.job_id || job.status !== 1) return { outcome: "not-active" };
   const deadline = String(job.end_time || "").slice(0, 10);
   if (deadline && deadline < today()) return { outcome: "expired" };
+  const nature = employerNature(job);
+  if (!TARGET_EMPLOYER_NATURE.test(nature)) return { outcome: "employer-nature-mismatch" };
   const recruitmentType = job.nature_cn || job.recruitment_type_cn || "";
   const qualifications = [job.education_cn, job.experience_cn, text(job.major_cn)].filter(Boolean).join(" ");
   const roleText = [job.job_name, job.category_cn, job.department_cn, job.company_info?.industry_cn, job.contents].filter(Boolean).join(" ").replace(/医疗保险|补充医疗|社会保险|五险一金/g, " ");
@@ -92,6 +99,7 @@ function classify(job) {
       id: String(job.job_id),
       title: job.job_name || "官方未注明",
       organization: job.company_name || job.company_info?.name || "官方未注明",
+      employerNature: nature,
       location: locations,
       education: job.education_cn || "官方未注明",
       majors: text(job.major_cn) || "官方未注明",

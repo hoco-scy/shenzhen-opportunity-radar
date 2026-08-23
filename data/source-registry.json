@@ -586,7 +586,7 @@
       ],
       "entryUrl": "https://www.iguopin.com/",
       "collectionAccessMode": "script-iguopin-public-filtered-discovery",
-      "collectionNote": "主采集入口：脚本按城市和生物医学相关关键词读取国聘公开筛选结果，再在岗位正文中预筛；没有官方原文的结果会保留为待用户确认线索，不会混入已核验岗位。",
+      "collectionNote": "主采集入口：脚本按城市和生物医学相关关键词读取国聘公开筛选结果，并只保留明确标注为国企、国有企业、中央企业或事业单位的记录；没有官方原文的结果会保留为待用户确认线索，不会混入已核验岗位。",
       "officialSiteConfirmed": false
     }
   ]
