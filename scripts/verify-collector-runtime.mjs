@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Stateless preflight for collectors that a fresh Codex cloud container can run.
- * With --live it performs the no-login, filtered 北航就业信息网 discovery check.
+ * With --live it performs the no-login, filtered 北航就业信息网 and 国聘 discovery checks.
  */
 import { access, readFile } from "node:fs/promises";
 import { spawn } from "node:child_process";
@@ -79,12 +79,18 @@ function run(command, args) {
 }
 
 export async function runLiveSmoke() {
-  const stdout = await run(process.execPath, ["scripts/collect-buaa-discovery.mjs", "--city", "深圳"]);
-  const result = JSON.parse(stdout);
-  if (result.collectionMethod !== "script" || result.nativeFilterQueries < 1 || !Array.isArray(result.pagesVisited) || !result.pagesVisited.length) {
-    throw new Error("北航公开筛选冒烟检查未能证明脚本实际使用原生筛选请求。");
+  const [buaaOut, iguopinOut] = await Promise.all([
+    run(process.execPath, ["scripts/collect-buaa-discovery.mjs", "--city", "深圳"]),
+    run(process.execPath, ["scripts/collect-iguopin-discovery.mjs", "--city", "深圳"])
+  ]);
+  const buaa = JSON.parse(buaaOut);
+  const iguopin = JSON.parse(iguopinOut);
+  for (const result of [buaa, iguopin]) {
+    if (result.collectionMethod !== "script" || result.nativeFilterQueries < 1 || !Array.isArray(result.pagesVisited) || !result.pagesVisited.length) {
+      throw new Error(`${result.sourceId || "公开"}筛选冒烟检查未能证明脚本实际使用原生筛选请求。`);
+    }
   }
-  return result;
+  return { buaa, iguopin };
 }
 
 async function main() {

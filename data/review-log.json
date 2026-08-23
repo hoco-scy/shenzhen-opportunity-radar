@@ -2,11 +2,789 @@
   "meta": {
     "schemaVersion": 1,
     "initializationStatus": "synchronized",
-    "lastRunAt": "2026-08-23T23:43:00+08:00",
+    "lastRunAt": "2026-08-24T00:27:00+08:00",
     "timezone": "Asia/Shanghai",
     "privacyRule": "只记录公开招聘事实、匿名审核结论和公开安全原因；不记录或反推任何私人资格字段"
   },
   "runs": [
+    {
+      "id": "run-20260824-0027-aggregate-first-full-sync",
+      "scope": "full-city-run",
+      "checkedAt": "2026-08-24T00:27:00+08:00",
+      "trigger": "scheduled-or-manual-full-update",
+      "scheduledSourceIds": [
+        "national-civil",
+        "shenzhen-civil",
+        "shenzhen-personnel-exam",
+        "shenzhen-selection-program",
+        "shenzhen-institutions",
+        "central-institutions",
+        "china-public-recruitment",
+        "central-sasac-recruitment",
+        "central-enterprise-roster",
+        "shenzhen-state-assets",
+        "picc-campus",
+        "boe-campus",
+        "sinopharm-careers",
+        "genertec-official",
+        "crc-careers",
+        "casic-careers",
+        "spacechina-careers",
+        "buaa-career-discovery",
+        "national-college-employment",
+        "iguopin-discovery"
+      ],
+      "policyVersion": 6,
+      "screeningStrategyVersion": 2,
+      "candidateProcessingVersion": 4,
+      "coverageStatus": "aggregate-first-collection-and-source-health",
+      "status": "completed-partial",
+      "outcome": "aggregate-platform-discovery-plus-official-verification",
+      "summary": "本轮已实际执行国考、本地公考、选调优培以及北航就业信息网、国聘的城市筛选。北航有 0 条、国聘有 0 条通过初筛的线索，均待回溯单位或政府官方页面；国家大学生就业服务平台和重点官网尚未完成本站筛选的来源仍明确记为未完成，不据此发布岗位。",
+      "metrics": {
+        "officialSystemsChecked": 20,
+        "officialSystemsSucceeded": 5,
+        "officialSystemsFailed": 15,
+        "newLeads": 79,
+        "reviewedItems": 0,
+        "accepted": 0,
+        "rejected": 0,
+        "deferred": 0,
+        "published": 0,
+        "updated": 0,
+        "closed": 0
+      },
+      "screeningMetrics": {
+        "portalResultsReported": 353,
+        "nativeFilterQueries": 12,
+        "nativeFilteredResults": 353,
+        "deduplicatedCandidates": 181,
+        "positionsBatchReviewed": 181,
+        "positionsOfficiallyVerified": 0,
+        "positionsEscalated": 0,
+        "positionsDeferredByBudget": 0,
+        "discoverySourcesChecked": 2,
+        "discoveryOfficialCandidates": 0
+      },
+      "sourceChecks": [
+        {
+          "sourceId": "national-civil",
+          "status": "checked-no-active-campaign",
+          "attempts": 2,
+          "note": "官方公告、详情和可见附件已完成脚本检查；本轮未发现报名截止日未过且可进入资格判断的公务员/选调公告；另有 4 条缺少可解析报名期限的历史/归档公告，未作为在招处理。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "http://bm.scs.gov.cn/pp/gkweb/core/web/ui/business/home/gkhome.html",
+              "finalUrl": "http://bm.scs.gov.cn/pp/gkweb/core/web/ui/business/home/gkhome.html",
+              "outcome": "official-page",
+              "recipe": "官方 SPA 配置 → 官方 JSON 专题 → 公告详情/附件"
+            }
+          ],
+          "checkedAt": "2026-08-24T00:27:00+08:00"
+        },
+        {
+          "sourceId": "shenzhen-civil",
+          "status": "checked-no-active-campaign",
+          "attempts": 2,
+          "note": "官方公告、详情和可见附件已完成脚本检查；本轮未发现报名截止日未过且可进入资格判断的公务员/选调公告。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.gdzz.gov.cn/gwygz/lypytzgg/index.html",
+              "finalUrl": "https://www.gdzz.gov.cn/gwygz/lypytzgg/index.html",
+              "outcome": "official-page",
+              "recipe": "广东组织工作网公告列表 → 公告详情 → 官方附件/压缩包"
+            }
+          ],
+          "checkedAt": "2026-08-24T00:27:00+08:00"
+        },
+        {
+          "sourceId": "shenzhen-personnel-exam",
+          "status": "temporarily-unavailable",
+          "attempts": 3,
+          "checkedAt": "2026-08-24T00:27:00+08:00",
+          "note": "已按登记入口与备用入口重试，公开页面本轮仍不可用；不据此判断无岗位。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://hrss.sz.gov.cn/gzryzk/index.html",
+              "outcome": "network-error",
+              "recipe": "公开入口本轮无法连接：TypeError。"
+            },
+            {
+              "requestedUrl": "https://hrss.sz.gov.cn/gzryzk/index.html",
+              "outcome": "network-error",
+              "recipe": "公开入口本轮无法连接：TypeError。"
+            },
+            {
+              "requestedUrl": "https://hrss.sz.gov.cn/gzryzk/index.html",
+              "outcome": "network-error",
+              "recipe": "公开入口本轮无法连接：TypeError。"
+            }
+          ]
+        },
+        {
+          "sourceId": "shenzhen-selection-program",
+          "status": "checked-no-active-campaign",
+          "attempts": 1,
+          "note": "官方公告、详情和可见附件已完成脚本检查；本轮未发现报名截止日未过且可进入资格判断的公务员/选调公告。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://career.buaa.edu.cn/frontpage/buaa/html/newsList.html?id=5453aeeb99e74d78aea0b45fd456ae68",
+              "finalUrl": "https://career.buaa.edu.cn/frontpage/buaa/js/init.js",
+              "outcome": "official-page",
+              "recipe": "北航就业网选调生公开栏目 API → 城市应届选调公告详情/附件"
+            }
+          ],
+          "checkedAt": "2026-08-24T00:27:00+08:00"
+        },
+        {
+          "sourceId": "shenzhen-institutions",
+          "status": "temporarily-unavailable",
+          "attempts": 3,
+          "checkedAt": "2026-08-24T00:27:00+08:00",
+          "note": "已按登记入口与备用入口重试，公开页面本轮仍不可用；不据此判断无岗位。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://hrss.sz.gov.cn/gzryzk/index.html",
+              "outcome": "network-error",
+              "recipe": "公开入口本轮无法连接：TypeError。"
+            },
+            {
+              "requestedUrl": "https://hrss.sz.gov.cn/gzryzk/index.html",
+              "outcome": "network-error",
+              "recipe": "公开入口本轮无法连接：TypeError。"
+            },
+            {
+              "requestedUrl": "https://hrss.sz.gov.cn/gzryzk/index.html",
+              "outcome": "network-error",
+              "recipe": "公开入口本轮无法连接：TypeError。"
+            }
+          ]
+        },
+        {
+          "sourceId": "central-institutions",
+          "status": "accessible-incomplete",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T00:27:00+08:00",
+          "note": "入口可访问，但本轮尚未在该来源完成原生筛选、分页、附件与逐岗核验；不据此发布岗位。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.mohrss.gov.cn/SYrlzyhshbzb/fwyd/SYkaoshizhaopin/zyhgjjgsydwgkzp/",
+              "finalUrl": "https://www.mohrss.gov.cn/SYrlzyhshbzb/fwyd/SYkaoshizhaopin/zyhgjjgsydwgkzp/",
+              "outcome": "page-incomplete",
+              "recipe": "公开入口可打开；尚未完成本站筛选、分页、附件和逐岗核验。"
+            }
+          ]
+        },
+        {
+          "sourceId": "china-public-recruitment",
+          "status": "accessible-incomplete",
+          "attempts": 2,
+          "checkedAt": "2026-08-24T00:27:00+08:00",
+          "note": "入口可访问，但本轮尚未在该来源完成原生筛选、分页、附件与逐岗核验；不据此发布岗位。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://job.mohrss.gov.cn/cjobs/institution/listInstitution",
+              "outcome": "network-error",
+              "recipe": "公开入口本轮无法连接：TypeError。"
+            },
+            {
+              "requestedUrl": "http://job.mohrss.gov.cn/cjobs/institution/listInstitution",
+              "finalUrl": "http://job.mohrss.gov.cn/cjobs/institution/listInstitution",
+              "outcome": "page-incomplete",
+              "recipe": "公开入口可打开；尚未完成本站筛选、分页、附件和逐岗核验。"
+            }
+          ]
+        },
+        {
+          "sourceId": "central-sasac-recruitment",
+          "status": "accessible-incomplete",
+          "attempts": 2,
+          "checkedAt": "2026-08-24T00:27:00+08:00",
+          "note": "入口可访问，但本轮尚未在该来源完成原生筛选、分页、附件与逐岗核验；不据此发布岗位。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.sasac.gov.cn/n2588035/n2588325/n2588350/index.html",
+              "outcome": "network-error",
+              "recipe": "公开入口本轮无法连接：TypeError。"
+            },
+            {
+              "requestedUrl": "http://wap.sasac.gov.cn/n2588035/n2588325/n2588350/index.html",
+              "finalUrl": "http://wap.sasac.gov.cn/n2588035/n2588325/n2588350/index.html",
+              "outcome": "page-incomplete",
+              "recipe": "公开入口可打开；尚未完成本站筛选、分页、附件和逐岗核验。"
+            }
+          ]
+        },
+        {
+          "sourceId": "central-enterprise-roster",
+          "status": "accessible-incomplete",
+          "attempts": 2,
+          "checkedAt": "2026-08-24T00:27:00+08:00",
+          "note": "入口可访问，但本轮尚未在该来源完成原生筛选、分页、附件与逐岗核验；不据此发布岗位。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.sasac.gov.cn/n2588045/n27271785/n27271792/c14159097/content.html",
+              "outcome": "network-error",
+              "recipe": "公开入口本轮无法连接：TypeError。"
+            },
+            {
+              "requestedUrl": "http://wap.sasac.gov.cn/n2588045/n27271785/n27271792/c14159097/content.html",
+              "finalUrl": "http://wap.sasac.gov.cn/n2588045/n27271785/n27271792/c14159097/content.html",
+              "outcome": "page-incomplete",
+              "recipe": "公开入口可打开；尚未完成本站筛选、分页、附件和逐岗核验。"
+            }
+          ]
+        },
+        {
+          "sourceId": "shenzhen-state-assets",
+          "status": "accessible-incomplete",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T00:27:00+08:00",
+          "note": "入口可访问，但本轮尚未在该来源完成原生筛选、分页、附件与逐岗核验；不据此发布岗位。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://gzw.sz.gov.cn/xyzp/index.html",
+              "finalUrl": "https://gzw.sz.gov.cn/xyzp/index.html",
+              "outcome": "page-incomplete",
+              "recipe": "公开入口可打开；尚未完成本站筛选、分页、附件和逐岗核验。"
+            }
+          ]
+        },
+        {
+          "sourceId": "picc-campus",
+          "status": "accessible-incomplete",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T00:27:00+08:00",
+          "note": "入口可访问，但本轮尚未在该来源完成原生筛选、分页、附件与逐岗核验；不据此发布岗位。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://picc.zhiye.com/custom/xiaoyuan?hideAll=true",
+              "finalUrl": "https://picc.zhiye.com/custom/xiaoyuan?hideAll=true",
+              "outcome": "page-incomplete",
+              "recipe": "公开入口可打开；尚未完成本站筛选、分页、附件和逐岗核验。"
+            }
+          ]
+        },
+        {
+          "sourceId": "boe-campus",
+          "status": "accessible-incomplete",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T00:27:00+08:00",
+          "note": "入口可访问，但本轮尚未在该来源完成原生筛选、分页、附件与逐岗核验；不据此发布岗位。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://campus.boe.com/jobs?hideMenu=1",
+              "finalUrl": "https://campus.boe.com/jobs?hideMenu=1",
+              "outcome": "page-incomplete",
+              "recipe": "公开入口可打开；尚未完成本站筛选、分页、附件和逐岗核验。"
+            }
+          ]
+        },
+        {
+          "sourceId": "sinopharm-careers",
+          "status": "accessible-incomplete",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T00:27:00+08:00",
+          "note": "入口可访问，但本轮尚未在该来源完成原生筛选、分页、附件与逐岗核验；不据此发布岗位。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.sinopharm.com/recruitment.html",
+              "finalUrl": "https://www.sinopharm.com/recruitment.html",
+              "outcome": "page-incomplete",
+              "recipe": "公开入口可打开；尚未完成本站筛选、分页、附件和逐岗核验。"
+            }
+          ]
+        },
+        {
+          "sourceId": "genertec-official",
+          "status": "accessible-incomplete",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T00:27:00+08:00",
+          "note": "入口可访问，但本轮尚未在该来源完成原生筛选、分页、附件与逐岗核验；不据此发布岗位。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.gt.cn/",
+              "finalUrl": "https://www.gt.cn/",
+              "outcome": "page-incomplete",
+              "recipe": "公开入口可打开；尚未完成本站筛选、分页、附件和逐岗核验。"
+            }
+          ]
+        },
+        {
+          "sourceId": "crc-careers",
+          "status": "temporarily-unavailable",
+          "attempts": 2,
+          "checkedAt": "2026-08-24T00:27:00+08:00",
+          "note": "已按登记入口与备用入口重试，公开页面本轮仍不可用；不据此判断无岗位。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://runjob.crc.com.cn/#/complex/homepage?id=1769554545615040514",
+              "outcome": "network-error",
+              "recipe": "公开入口本轮无法连接：TypeError。"
+            },
+            {
+              "requestedUrl": "https://careers.crc.com.cn/index.html",
+              "outcome": "network-error",
+              "recipe": "公开入口本轮无法连接：TypeError。"
+            }
+          ]
+        },
+        {
+          "sourceId": "casic-careers",
+          "status": "accessible-incomplete",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T00:27:00+08:00",
+          "note": "入口可访问，但本轮尚未在该来源完成原生筛选、分页、附件与逐岗核验；不据此发布岗位。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "http://wap.sasac.gov.cn/n2588035/n2588325/c35503679/content.html",
+              "finalUrl": "http://wap.sasac.gov.cn/n2588035/n2588325/c35503679/content.html",
+              "outcome": "page-incomplete",
+              "recipe": "公开入口可打开；尚未完成本站筛选、分页、附件和逐岗核验。"
+            }
+          ]
+        },
+        {
+          "sourceId": "spacechina-careers",
+          "status": "accessible-incomplete",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T00:27:00+08:00",
+          "note": "入口可访问，但本轮尚未在该来源完成原生筛选、分页、附件与逐岗核验；不据此发布岗位。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://m.spacechina.com/index.html",
+              "finalUrl": "https://m.spacechina.com/index.html",
+              "outcome": "page-incomplete",
+              "recipe": "公开入口可打开；尚未完成本站筛选、分页、附件和逐岗核验。"
+            }
+          ]
+        },
+        {
+          "sourceId": "buaa-career-discovery",
+          "status": "checked-native-filtered",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T00:27:00+08:00",
+          "note": "已完成 3 组本站筛选并读取 3 条去重候选。0 条通过应届硕士与专业相关性的初筛，进入官方回溯；3 条未进入回溯。已读取本轮全部已筛选分页。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://career.buaa.edu.cn/frontpage/buaa/html/recruitmentinfoList.html?type=1",
+              "finalUrl": "https://career.buaa.edu.cn/frontpage/buaa/js/init.js",
+              "outcome": "official-page",
+              "recipe": "北航就业信息网公开城市＋单位性质筛选 → 已筛选分页 → 公开岗位详情与生物医学工程语义预筛"
+            }
+          ]
+        },
+        {
+          "sourceId": "national-college-employment",
+          "status": "accessible-incomplete",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T00:27:00+08:00",
+          "note": "入口可访问，但本轮尚未在该来源完成原生筛选、分页、附件与逐岗核验；不据此发布岗位。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.ncss.cn/",
+              "finalUrl": "https://www.ncss.cn/",
+              "outcome": "page-incomplete",
+              "recipe": "公开入口可打开；尚未完成本站筛选、分页、附件和逐岗核验。"
+            }
+          ]
+        },
+        {
+          "sourceId": "iguopin-discovery",
+          "status": "checked-native-filtered",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T00:27:00+08:00",
+          "note": "已完成 6 组本站筛选并读取 178 条去重候选。0 条通过应届硕士与专业相关性的初筛，进入官方回溯；178 条未进入回溯。已读取本轮全部已筛选分页。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.iguopin.com/",
+              "finalUrl": "https://www.iguopin.com/job/list?keyword=%E7%94%9F%E7%89%A9%E5%8C%BB%E5%AD%A6%E5%B7%A5%E7%A8%8B#district=000000.440000.440300&page=1",
+              "outcome": "official-page",
+              "recipe": "国聘公开城市＋生物医学相关关键词筛选 → 已筛选分页 → 岗位正文语义预筛"
+            }
+          ]
+        }
+      ],
+      "reviews": []
+    },
+    {
+      "id": "run-20260824-0025-aggregate-first-full-sync",
+      "scope": "full-city-run",
+      "checkedAt": "2026-08-24T00:25:00+08:00",
+      "trigger": "scheduled-or-manual-full-update",
+      "policyVersion": 6,
+      "screeningStrategyVersion": 2,
+      "candidateProcessingVersion": 4,
+      "coverageStatus": "aggregate-first-collection-and-source-health",
+      "status": "completed-partial",
+      "outcome": "aggregate-platform-discovery-plus-official-verification",
+      "summary": "本轮已实际执行国考、本地公考、选调优培以及北航就业信息网、国聘的城市筛选。北航有 0 条、国聘有 0 条通过初筛的线索，均待回溯单位或政府官方页面；国家大学生就业服务平台和重点官网尚未完成本站筛选的来源仍明确记为未完成，不据此发布岗位。",
+      "metrics": {
+        "officialSystemsChecked": 20,
+        "officialSystemsSucceeded": 5,
+        "officialSystemsFailed": 15,
+        "newLeads": 79,
+        "reviewedItems": 0,
+        "accepted": 0,
+        "rejected": 0,
+        "deferred": 0,
+        "published": 0,
+        "updated": 0,
+        "closed": 0
+      },
+      "screeningMetrics": {
+        "portalResultsReported": 353,
+        "nativeFilterQueries": 12,
+        "nativeFilteredResults": 353,
+        "deduplicatedCandidates": 182,
+        "positionsBatchReviewed": 182,
+        "positionsOfficiallyVerified": 0,
+        "positionsEscalated": 0,
+        "positionsDeferredByBudget": 0,
+        "discoverySourcesChecked": 2,
+        "discoveryOfficialCandidates": 0
+      },
+      "sourceChecks": [
+        {
+          "sourceId": "national-civil",
+          "status": "checked-no-active-campaign",
+          "attempts": 2,
+          "note": "官方公告、详情和可见附件已完成脚本检查；本轮未发现报名截止日未过且可进入资格判断的公务员/选调公告；另有 4 条缺少可解析报名期限的历史/归档公告，未作为在招处理。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "http://bm.scs.gov.cn/pp/gkweb/core/web/ui/business/home/gkhome.html",
+              "finalUrl": "http://bm.scs.gov.cn/pp/gkweb/core/web/ui/business/home/gkhome.html",
+              "outcome": "official-page",
+              "recipe": "官方 SPA 配置 → 官方 JSON 专题 → 公告详情/附件"
+            }
+          ],
+          "checkedAt": "2026-08-24T00:25:00+08:00"
+        },
+        {
+          "sourceId": "shenzhen-civil",
+          "status": "checked-no-active-campaign",
+          "attempts": 2,
+          "note": "官方公告、详情和可见附件已完成脚本检查；本轮未发现报名截止日未过且可进入资格判断的公务员/选调公告。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.gdzz.gov.cn/gwygz/lypytzgg/index.html",
+              "finalUrl": "https://www.gdzz.gov.cn/gwygz/lypytzgg/index.html",
+              "outcome": "official-page",
+              "recipe": "广东组织工作网公告列表 → 公告详情 → 官方附件/压缩包"
+            }
+          ],
+          "checkedAt": "2026-08-24T00:25:00+08:00"
+        },
+        {
+          "sourceId": "shenzhen-personnel-exam",
+          "status": "temporarily-unavailable",
+          "attempts": 3,
+          "checkedAt": "2026-08-24T00:25:00+08:00",
+          "note": "已按登记入口与备用入口重试，公开页面本轮仍不可用；不据此判断无岗位。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://hrss.sz.gov.cn/gzryzk/index.html",
+              "outcome": "network-error",
+              "recipe": "公开入口本轮无法连接：TypeError。"
+            },
+            {
+              "requestedUrl": "https://hrss.sz.gov.cn/gzryzk/index.html",
+              "outcome": "network-error",
+              "recipe": "公开入口本轮无法连接：TypeError。"
+            },
+            {
+              "requestedUrl": "https://hrss.sz.gov.cn/gzryzk/index.html",
+              "outcome": "network-error",
+              "recipe": "公开入口本轮无法连接：TypeError。"
+            }
+          ]
+        },
+        {
+          "sourceId": "shenzhen-selection-program",
+          "status": "checked-no-active-campaign",
+          "attempts": 1,
+          "note": "官方公告、详情和可见附件已完成脚本检查；本轮未发现报名截止日未过且可进入资格判断的公务员/选调公告。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://career.buaa.edu.cn/frontpage/buaa/html/newsList.html?id=5453aeeb99e74d78aea0b45fd456ae68",
+              "finalUrl": "https://career.buaa.edu.cn/frontpage/buaa/js/init.js",
+              "outcome": "official-page",
+              "recipe": "北航就业网选调生公开栏目 API → 城市应届选调公告详情/附件"
+            }
+          ],
+          "checkedAt": "2026-08-24T00:25:00+08:00"
+        },
+        {
+          "sourceId": "shenzhen-institutions",
+          "status": "temporarily-unavailable",
+          "attempts": 3,
+          "checkedAt": "2026-08-24T00:25:00+08:00",
+          "note": "已按登记入口与备用入口重试，公开页面本轮仍不可用；不据此判断无岗位。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://hrss.sz.gov.cn/gzryzk/index.html",
+              "outcome": "network-error",
+              "recipe": "公开入口本轮无法连接：TypeError。"
+            },
+            {
+              "requestedUrl": "https://hrss.sz.gov.cn/gzryzk/index.html",
+              "outcome": "network-error",
+              "recipe": "公开入口本轮无法连接：TypeError。"
+            },
+            {
+              "requestedUrl": "https://hrss.sz.gov.cn/gzryzk/index.html",
+              "outcome": "network-error",
+              "recipe": "公开入口本轮无法连接：TypeError。"
+            }
+          ]
+        },
+        {
+          "sourceId": "central-institutions",
+          "status": "accessible-incomplete",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T00:25:00+08:00",
+          "note": "入口可访问，但本轮尚未在该来源完成原生筛选、分页、附件与逐岗核验；不据此发布岗位。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.mohrss.gov.cn/SYrlzyhshbzb/fwyd/SYkaoshizhaopin/zyhgjjgsydwgkzp/",
+              "finalUrl": "https://www.mohrss.gov.cn/SYrlzyhshbzb/fwyd/SYkaoshizhaopin/zyhgjjgsydwgkzp/",
+              "outcome": "page-incomplete",
+              "recipe": "公开入口可打开；尚未完成本站筛选、分页、附件和逐岗核验。"
+            }
+          ]
+        },
+        {
+          "sourceId": "china-public-recruitment",
+          "status": "accessible-incomplete",
+          "attempts": 2,
+          "checkedAt": "2026-08-24T00:25:00+08:00",
+          "note": "入口可访问，但本轮尚未在该来源完成原生筛选、分页、附件与逐岗核验；不据此发布岗位。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://job.mohrss.gov.cn/cjobs/institution/listInstitution",
+              "outcome": "network-error",
+              "recipe": "公开入口本轮无法连接：TypeError。"
+            },
+            {
+              "requestedUrl": "http://job.mohrss.gov.cn/cjobs/institution/listInstitution",
+              "finalUrl": "http://job.mohrss.gov.cn/cjobs/institution/listInstitution",
+              "outcome": "page-incomplete",
+              "recipe": "公开入口可打开；尚未完成本站筛选、分页、附件和逐岗核验。"
+            }
+          ]
+        },
+        {
+          "sourceId": "central-sasac-recruitment",
+          "status": "accessible-incomplete",
+          "attempts": 2,
+          "checkedAt": "2026-08-24T00:25:00+08:00",
+          "note": "入口可访问，但本轮尚未在该来源完成原生筛选、分页、附件与逐岗核验；不据此发布岗位。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.sasac.gov.cn/n2588035/n2588325/n2588350/index.html",
+              "outcome": "network-error",
+              "recipe": "公开入口本轮无法连接：TypeError。"
+            },
+            {
+              "requestedUrl": "http://wap.sasac.gov.cn/n2588035/n2588325/n2588350/index.html",
+              "finalUrl": "http://wap.sasac.gov.cn/n2588035/n2588325/n2588350/index.html",
+              "outcome": "page-incomplete",
+              "recipe": "公开入口可打开；尚未完成本站筛选、分页、附件和逐岗核验。"
+            }
+          ]
+        },
+        {
+          "sourceId": "central-enterprise-roster",
+          "status": "accessible-incomplete",
+          "attempts": 2,
+          "checkedAt": "2026-08-24T00:25:00+08:00",
+          "note": "入口可访问，但本轮尚未在该来源完成原生筛选、分页、附件与逐岗核验；不据此发布岗位。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.sasac.gov.cn/n2588045/n27271785/n27271792/c14159097/content.html",
+              "outcome": "network-error",
+              "recipe": "公开入口本轮无法连接：TypeError。"
+            },
+            {
+              "requestedUrl": "http://wap.sasac.gov.cn/n2588045/n27271785/n27271792/c14159097/content.html",
+              "finalUrl": "http://wap.sasac.gov.cn/n2588045/n27271785/n27271792/c14159097/content.html",
+              "outcome": "page-incomplete",
+              "recipe": "公开入口可打开；尚未完成本站筛选、分页、附件和逐岗核验。"
+            }
+          ]
+        },
+        {
+          "sourceId": "shenzhen-state-assets",
+          "status": "accessible-incomplete",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T00:25:00+08:00",
+          "note": "入口可访问，但本轮尚未在该来源完成原生筛选、分页、附件与逐岗核验；不据此发布岗位。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://gzw.sz.gov.cn/xyzp/index.html",
+              "finalUrl": "https://gzw.sz.gov.cn/xyzp/index.html",
+              "outcome": "page-incomplete",
+              "recipe": "公开入口可打开；尚未完成本站筛选、分页、附件和逐岗核验。"
+            }
+          ]
+        },
+        {
+          "sourceId": "picc-campus",
+          "status": "accessible-incomplete",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T00:25:00+08:00",
+          "note": "入口可访问，但本轮尚未在该来源完成原生筛选、分页、附件与逐岗核验；不据此发布岗位。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://picc.zhiye.com/custom/xiaoyuan?hideAll=true",
+              "finalUrl": "https://picc.zhiye.com/custom/xiaoyuan?hideAll=true",
+              "outcome": "page-incomplete",
+              "recipe": "公开入口可打开；尚未完成本站筛选、分页、附件和逐岗核验。"
+            }
+          ]
+        },
+        {
+          "sourceId": "boe-campus",
+          "status": "accessible-incomplete",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T00:25:00+08:00",
+          "note": "入口可访问，但本轮尚未在该来源完成原生筛选、分页、附件与逐岗核验；不据此发布岗位。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://campus.boe.com/jobs?hideMenu=1",
+              "finalUrl": "https://campus.boe.com/jobs?hideMenu=1",
+              "outcome": "page-incomplete",
+              "recipe": "公开入口可打开；尚未完成本站筛选、分页、附件和逐岗核验。"
+            }
+          ]
+        },
+        {
+          "sourceId": "sinopharm-careers",
+          "status": "accessible-incomplete",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T00:25:00+08:00",
+          "note": "入口可访问，但本轮尚未在该来源完成原生筛选、分页、附件与逐岗核验；不据此发布岗位。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.sinopharm.com/recruitment.html",
+              "finalUrl": "https://www.sinopharm.com/recruitment.html",
+              "outcome": "page-incomplete",
+              "recipe": "公开入口可打开；尚未完成本站筛选、分页、附件和逐岗核验。"
+            }
+          ]
+        },
+        {
+          "sourceId": "genertec-official",
+          "status": "accessible-incomplete",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T00:25:00+08:00",
+          "note": "入口可访问，但本轮尚未在该来源完成原生筛选、分页、附件与逐岗核验；不据此发布岗位。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.gt.cn/",
+              "finalUrl": "https://www.gt.cn/",
+              "outcome": "page-incomplete",
+              "recipe": "公开入口可打开；尚未完成本站筛选、分页、附件和逐岗核验。"
+            }
+          ]
+        },
+        {
+          "sourceId": "crc-careers",
+          "status": "temporarily-unavailable",
+          "attempts": 2,
+          "checkedAt": "2026-08-24T00:25:00+08:00",
+          "note": "已按登记入口与备用入口重试，公开页面本轮仍不可用；不据此判断无岗位。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://runjob.crc.com.cn/#/complex/homepage?id=1769554545615040514",
+              "outcome": "network-error",
+              "recipe": "公开入口本轮无法连接：TypeError。"
+            },
+            {
+              "requestedUrl": "https://careers.crc.com.cn/index.html",
+              "outcome": "network-error",
+              "recipe": "公开入口本轮无法连接：TypeError。"
+            }
+          ]
+        },
+        {
+          "sourceId": "casic-careers",
+          "status": "accessible-incomplete",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T00:25:00+08:00",
+          "note": "入口可访问，但本轮尚未在该来源完成原生筛选、分页、附件与逐岗核验；不据此发布岗位。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "http://wap.sasac.gov.cn/n2588035/n2588325/c35503679/content.html",
+              "finalUrl": "http://wap.sasac.gov.cn/n2588035/n2588325/c35503679/content.html",
+              "outcome": "page-incomplete",
+              "recipe": "公开入口可打开；尚未完成本站筛选、分页、附件和逐岗核验。"
+            }
+          ]
+        },
+        {
+          "sourceId": "spacechina-careers",
+          "status": "accessible-incomplete",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T00:25:00+08:00",
+          "note": "入口可访问，但本轮尚未在该来源完成原生筛选、分页、附件与逐岗核验；不据此发布岗位。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://m.spacechina.com/index.html",
+              "finalUrl": "https://m.spacechina.com/index.html",
+              "outcome": "page-incomplete",
+              "recipe": "公开入口可打开；尚未完成本站筛选、分页、附件和逐岗核验。"
+            }
+          ]
+        },
+        {
+          "sourceId": "buaa-career-discovery",
+          "status": "checked-native-filtered",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T00:25:00+08:00",
+          "note": "已完成 3 组本站筛选并读取 3 条去重候选。0 条通过应届硕士与专业相关性的初筛，进入官方回溯；3 条未进入回溯。已读取本轮全部已筛选分页。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://career.buaa.edu.cn/frontpage/buaa/html/recruitmentinfoList.html?type=1",
+              "finalUrl": "https://career.buaa.edu.cn/frontpage/buaa/js/init.js",
+              "outcome": "official-page",
+              "recipe": "北航就业信息网公开城市＋单位性质筛选 → 已筛选分页 → 公开岗位详情与生物医学工程语义预筛"
+            }
+          ]
+        },
+        {
+          "sourceId": "national-college-employment",
+          "status": "accessible-incomplete",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T00:25:00+08:00",
+          "note": "入口可访问，但本轮尚未在该来源完成原生筛选、分页、附件与逐岗核验；不据此发布岗位。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.ncss.cn/",
+              "finalUrl": "https://www.ncss.cn/",
+              "outcome": "page-incomplete",
+              "recipe": "公开入口可打开；尚未完成本站筛选、分页、附件和逐岗核验。"
+            }
+          ]
+        },
+        {
+          "sourceId": "iguopin-discovery",
+          "status": "checked-native-filtered",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T00:25:00+08:00",
+          "note": "已完成 6 组本站筛选并读取 179 条去重候选。0 条通过应届硕士与专业相关性的初筛，进入官方回溯；179 条未进入回溯。已读取本轮全部已筛选分页。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.iguopin.com/",
+              "finalUrl": "https://www.iguopin.com/job/list?keyword=%E7%94%9F%E7%89%A9%E5%8C%BB%E5%AD%A6%E5%B7%A5%E7%A8%8B#district=000000.440000.440300&page=1",
+              "outcome": "official-page",
+              "recipe": "国聘公开城市＋生物医学相关关键词筛选 → 已筛选分页 → 岗位正文语义预筛"
+            }
+          ]
+        }
+      ],
+      "reviews": []
+    },
     {
       "id": "run-20260823-2343-aggregate-first-full-sync",
       "scope": "full-city-run",

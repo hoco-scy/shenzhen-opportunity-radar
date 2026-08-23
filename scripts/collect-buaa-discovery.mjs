@@ -3,7 +3,7 @@
  * Read the public, no-login recruitment search exposed by 北航就业信息网.
  *
  * This collector is deliberately a discovery collector: it uses the site's
- * own city, unit-nature and keyword filters, reads only the resulting pages,
+ * own city and unit-nature filters, reads only the resulting pages,
  * and returns leads for an employer/government-source verification step. It
  * never writes opportunities and never treats a university repost as final
  * publication evidence.
@@ -15,10 +15,12 @@ const CONFIG_URL = `${ORIGIN}/frontpage/buaa/js/init.js`;
 const LIST_URL = `${ORIGIN}/f/recruitmentinfo/ajax_frontRecruitinfo`;
 const DETAIL_URL = `${ORIGIN}/f/recruitmentinfo/ajax_show`;
 const CITY_CODES = { "北京": "110000", "上海": "310000", "广州": "440100", "深圳": "440300" };
-const KEYWORDS = ["医疗器械", "生物医学", "医学影像", "生物工程", "医疗"];
 const UNIT_NATURES = ["31", "23", "20"]; // 国企、医疗卫生单位、科研设计单位
 const BIOMEDICAL_CONTEXT = /(生物医学|医疗器械|医学影像|临床工程|体外诊断|IVD|生物信号|医疗|健康|生物工程|生命科学)/i;
 const ENGINEERING_QUALIFICATION = /(生物医学工程|医疗器械|医学影像|生物工程|临床工程|仪器|电子|自动化|工学|理工)/i;
+const DIRECT_BIOMEDICAL_BRIDGE = /(生物医学工程|医疗器械|医学影像|临床工程|体外诊断|IVD|生物信号|放疗|核医学|康复工程)/i;
+const PURE_COMPUTING = /(网络安全|前端|后端|软件开发|软件工程|算法工程师|人工智能工程师|AI工程师|大模型|云计算)/i;
+const ELIGIBLE_MAJOR_EVIDENCE = /(生物医学工程|医学工程|生物工程|生物技术|医疗器械|医学影像|临床工程|仪器科学|仪器类|工学全类|工学门类|理工类|理工科|所有工学)/i;
 
 export class BuaaDiscoveryError extends Error {
   constructor(message) { super(message); this.name = "BuaaDiscoveryError"; }
@@ -66,18 +68,21 @@ async function formJson(url, fields, token, fetchImpl) {
   return { data, finalUrl: response.url || url };
 }
 
-function leadFromDetail(detail, listItem, city) {
+function classifyDetail(detail, listItem, city) {
   const info = detail?.object?.recruitmentinfo;
-  if (!info?.id || info.isFrontShow === "0") return undefined;
+  if (!info?.id || info.isFrontShow === "0") return { outcome: "not-public" };
   const positions = Array.isArray(info.recruitmentPositionList) ? info.recruitmentPositionList : [];
   const location = positions.map((item) => item.cityName).filter(Boolean).join("；") || info.corporationinfo?.areaName || info.corporationArea || "官方未注明";
   const qualifications = [info.majorName, info.education, ...positions.map((item) => item.majorName), ...positions.map((item) => item.studentType)].filter(Boolean).join("；");
-  const body = [info.title, info.corporationName, qualifications, info.content, ...positions.map((item) => item.positionDescription)].filter(Boolean).join(" ");
-  if (!BIOMEDICAL_CONTEXT.test(body) || !ENGINEERING_QUALIFICATION.test(body)) return undefined;
+  const roleText = [info.title, info.corporationName, ...positions.map((item) => item.positionName), ...positions.map((item) => item.positionDescription)].filter(Boolean).join(" ");
   const end = String(info.endTime || "").slice(0, 10);
-  if (end && end < minuteNow()) return undefined;
+  if (end && end < minuteNow()) return { outcome: "expired" };
+  if (/博士后/.test(roleText) || (/博士/.test(qualifications) && !/(本科|硕士)/.test(qualifications))) return { outcome: "academic-degree-mismatch" };
+  if (PURE_COMPUTING.test(roleText) && !DIRECT_BIOMEDICAL_BRIDGE.test(roleText)) return { outcome: "core-profession-mismatch" };
+  if (!ELIGIBLE_MAJOR_EVIDENCE.test(qualifications)) return { outcome: "no-eligible-major-evidence" };
+  if (!DIRECT_BIOMEDICAL_BRIDGE.test(roleText) && !BIOMEDICAL_CONTEXT.test(roleText)) return { outcome: "no-biomedical-context" };
   const employerUrl = String(info.onlineApplicationUrl || "").trim();
-  return {
+  return { outcome: "candidate", lead: {
     id: info.id,
     title: info.title || listItem.title || "官方未注明",
     organization: info.corporationName || info.corporationinfo?.name || "官方未注明",
@@ -88,8 +93,8 @@ function leadFromDetail(detail, listItem, city) {
     deadline: end || "官方未注明",
     officialUrl: officialUrl(`/frontpage/buaa/html/recruitmentinfoForm.html?positionDetailId=${encodeURIComponent(info.id)}`),
     employerApplyUrl: /^https?:\/\//i.test(employerUrl) ? employerUrl : null,
-    evidence: "北航就业信息网的城市、单位性质和关键词筛选结果；仍须回溯单位或政府官方页面后才可公开发布。"
-  };
+    evidence: "北航就业信息网的城市、单位性质筛选结果；仍须回溯单位或政府官方页面后才可公开发布。"
+  }};
 }
 
 export async function collectBuaaDiscovery({ city, fetchImpl = fetch, maxPagesPerQuery = 12 } = {}) {
@@ -101,9 +106,9 @@ export async function collectBuaaDiscovery({ city, fetchImpl = fetch, maxPagesPe
   let nativeFilteredResults = 0;
   let nativeFilterQueries = 0;
   let truncated = false;
-  for (const corporationNature of UNIT_NATURES) for (const title of KEYWORDS) {
+  for (const corporationNature of UNIT_NATURES) {
     nativeFilterQueries += 1;
-    const first = await formJson(LIST_URL, { pageNo: "1", pageSize: "100", positionType: "1", city: code, title, corporationNature, "corporationinfo.industry": "" }, token, fetchImpl);
+    const first = await formJson(LIST_URL, { pageNo: "1", pageSize: "100", positionType: "1", city: code, corporationNature, "corporationinfo.industry": "" }, token, fetchImpl);
     const page = first.data.object || {};
     const totalPages = Number(page.totalPage || 1);
     if (!Number.isInteger(totalPages) || totalPages < 1) throw new BuaaDiscoveryError("北航筛选结果未返回有效分页信息。");
@@ -113,25 +118,27 @@ export async function collectBuaaDiscovery({ city, fetchImpl = fetch, maxPagesPe
     if (pageLimit < totalPages) truncated = true;
     const collect = (result) => (result.data.object?.list || []).forEach((item) => item?.id && raw.set(item.id, item));
     collect(first);
-    pagesVisited.push(`${first.finalUrl}#${new URLSearchParams({ city: code, corporationNature, title }).toString()}&page=1`);
+    pagesVisited.push(`${first.finalUrl}#${new URLSearchParams({ city: code, corporationNature }).toString()}&page=1`);
     for (let pageNo = 2; pageNo <= pageLimit; pageNo += 1) {
-      const following = await formJson(LIST_URL, { pageNo: String(pageNo), pageSize: "100", positionType: "1", city: code, title, corporationNature, "corporationinfo.industry": "" }, token, fetchImpl);
+      const following = await formJson(LIST_URL, { pageNo: String(pageNo), pageSize: "100", positionType: "1", city: code, corporationNature, "corporationinfo.industry": "" }, token, fetchImpl);
       collect(following);
-      pagesVisited.push(`${following.finalUrl}#${new URLSearchParams({ city: code, corporationNature, title }).toString()}&page=${pageNo}`);
+      pagesVisited.push(`${following.finalUrl}#${new URLSearchParams({ city: code, corporationNature }).toString()}&page=${pageNo}`);
     }
   }
   const leads = [];
+  const detailOutcomes = {};
   let detailsChecked = 0;
   for (const item of raw.values()) {
     const result = await formJson(DETAIL_URL, { recruitmentId: item.id }, token, fetchImpl);
     detailsChecked += 1;
-    const lead = leadFromDetail(result.data, item, city);
-    if (lead) leads.push(lead);
+    const classified = classifyDetail(result.data, item, city);
+    detailOutcomes[classified.outcome] = (detailOutcomes[classified.outcome] || 0) + 1;
+    if (classified.lead) leads.push(classified.lead);
   }
   return {
-    sourceId: "buaa-career-discovery", city, collectionMethod: "script", collectionRoute: "北航就业信息网公开城市＋单位性质＋关键词筛选 → 已筛选分页 → 公开岗位详情",
+    sourceId: "buaa-career-discovery", city, collectionMethod: "script", collectionRoute: "北航就业信息网公开城市＋单位性质筛选 → 已筛选分页 → 公开岗位详情与生物医学工程语义预筛",
     portalResultsReported, nativeFilterQueries, nativeFilteredResults, deduplicatedCandidates: raw.size,
-    detailsChecked, leads, truncated, pagesVisited
+    detailsChecked, detailOutcomes, leads, truncated, pagesVisited
   };
 }
 

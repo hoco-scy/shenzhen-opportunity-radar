@@ -6,7 +6,7 @@
     "node": ">=18"
   },
   "scripts": {
-    "test:collectors": "node --test tests/collect-chinatelecom.test.mjs tests/collect-public-exams.test.mjs tests/public-exam-workflow.test.mjs tests/verify-collector-runtime.test.mjs",
+    "test:collectors": "node --test tests/collect-chinatelecom.test.mjs tests/collect-public-exams.test.mjs tests/public-exam-workflow.test.mjs tests/discovery-collectors.test.mjs tests/verify-collector-runtime.test.mjs",
     "collect:public-exams": "node scripts/collect-public-exams.mjs",
     "sync:public-exams": "node scripts/run-public-exam-sync.mjs --write"
   },

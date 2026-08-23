@@ -548,7 +548,7 @@
       "entryUrl": "https://career.buaa.edu.cn/frontpage/buaa/html/recruitmentinfoList.html?type=1",
       "accessMode": "public-filterable-list",
       "collectionAccessMode": "script-buaa-public-filtered-discovery",
-      "collectionNote": "主采集入口：脚本按城市、单位性质和生物医学相关词筛选；仅产出待回溯的线索。",
+      "collectionNote": "主采集入口：脚本按城市和单位性质筛选，再在岗位详情中进行生物医学工程相关性预筛；仅产出待回溯的线索。",
       "officialSiteConfirmed": false
     },
     {
@@ -585,8 +585,8 @@
         "iguopin.com"
       ],
       "entryUrl": "https://www.iguopin.com/",
-      "collectionAccessMode": "browser-platform-native-filter",
-      "collectionNote": "主采集入口：在国聘页面使用地点、应届、国企和专业场景筛选；只以可回溯官方原文的结果进入后续核验。",
+      "collectionAccessMode": "script-iguopin-public-filtered-discovery",
+      "collectionNote": "主采集入口：脚本按城市和生物医学相关关键词读取国聘公开筛选结果，再在岗位正文中预筛；只以可回溯单位或政府官方原文的结果进入后续核验。",
       "officialSiteConfirmed": false
     }
   ]

@@ -96,15 +96,11 @@ for (const [runIndex, run] of (log.runs || []).entries()) {
   }
   const isTargetedRemediation = run.scope === "targeted-remediation";
   if (Number(run.policyVersion || 0) >= 5 && !isTargetedRemediation && run.coverageStatus === "aggregate-first-collection-and-source-health") {
-    const officialSourcesAtRun = [...everyRunOfficial].filter((sourceId) => {
-      const registeredAt = sources.get(sourceId)?.registeredAt;
-      return !registeredAt || registeredAt <= run.checkedAt;
-    });
-    for (const sourceId of officialSourcesAtRun) {
-      if (!checkedSourceIds.has(sourceId)) errors.push(`${label}.sourceChecks 缺少每轮全量官方来源：${sourceId}`);
+    const expectedSourceIds = Array.isArray(run.scheduledSourceIds) ? new Set(run.scheduledSourceIds) : runIndex === 0 ? new Set([...everyRunOfficial, ...everyRunDiscovery]) : undefined;
+    if (expectedSourceIds) {
+      for (const sourceId of expectedSourceIds) if (!checkedSourceIds.has(sourceId)) errors.push(`${label}.sourceChecks 缺少该轮已登记来源：${sourceId}`);
+      if (checkedSourceIds.size !== expectedSourceIds.size) errors.push(`${label}.sourceChecks 必须恰好覆盖该轮登记的官方与发现来源`);
     }
-    for (const sourceId of everyRunDiscovery) if (!checkedSourceIds.has(sourceId)) errors.push(`${label}.sourceChecks 缺少每轮发现来源：${sourceId}`);
-    if (checkedSourceIds.size !== officialSourcesAtRun.length + everyRunDiscovery.size) errors.push(`${label}.sourceChecks 必须恰好覆盖该运行时的启用官方来源与发现来源`);
   }
   if (Number(run.policyVersion || 0) >= 4) {
     const incompleteSources = (run.sourceChecks || []).filter((check) => incompleteSourceStatuses.has(check.status)).length;

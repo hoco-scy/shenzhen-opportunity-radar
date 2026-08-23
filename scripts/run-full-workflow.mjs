@@ -7,6 +7,7 @@
 import { readFile, writeFile } from "node:fs/promises";
 import { buildPublicExamRun } from "./run-public-exam-sync.mjs";
 import { collectBuaaDiscovery } from "./collect-buaa-discovery.mjs";
+import { collectIGuopinDiscovery } from "./collect-iguopin-discovery.mjs";
 
 const root = new URL("../", import.meta.url);
 const args = new Set(process.argv.slice(2));
@@ -47,10 +48,13 @@ async function probeOfficialEntry(source, checkedAt) {
   return { sourceId: source.id, status: "temporarily-unavailable", attempts: accessEvidence.length, checkedAt, note: "已按登记入口与备用入口重试，公开页面本轮仍不可用；不据此判断无岗位。", accessEvidence };
 }
 
-function buaaSourceCheck(source, result, checkedAt) {
+function discoverySourceCheck(source, result, checkedAt) {
+  const candidates = result.detailOutcomes?.candidate || 0;
+  const excluded = Math.max(0, result.deduplicatedCandidates - candidates);
+  const paginationNote = result.truncated ? "筛选结果超过本轮安全分页上限，未把未读取部分当作无岗位。" : "已读取本轮全部已筛选分页。";
   return {
     sourceId: source.id, status: "checked-native-filtered", attempts: 1, checkedAt,
-    note: `已按北航就业信息网“${result.city}＋单位性质＋生物医学相关词”执行 ${result.nativeFilterQueries} 组原生筛选，读取 ${result.deduplicatedCandidates} 条去重候选详情；其中 ${result.leads.length} 条待回溯单位或政府官方页面，北航转载本身不作为发布证据。`,
+    note: `已完成 ${result.nativeFilterQueries} 组本站筛选并读取 ${result.deduplicatedCandidates} 条去重候选。${candidates} 条通过应届硕士与专业相关性的初筛，进入官方回溯；${excluded} 条未进入回溯。${paginationNote}`,
     accessEvidence: [{ requestedUrl: source.entryUrl, finalUrl: result.pagesVisited[0], outcome: "official-page", recipe: result.collectionRoute }]
   };
 }
@@ -63,41 +67,46 @@ async function main() {
   ]);
   const checkedAt = shanghaiMinute();
   const sources = new Map(registry.sources.map((source) => [source.id, source]));
-  const [publicExamRun, buaa] = await Promise.all([buildPublicExamRun({ registry, recipes, checkedAt }), collectBuaaDiscovery({ city: recipes.city })]);
+  const [publicExamRun, buaa, iguopin] = await Promise.all([
+    buildPublicExamRun({ registry, recipes, checkedAt }),
+    collectBuaaDiscovery({ city: recipes.city }),
+    collectIGuopinDiscovery({ city: recipes.city })
+  ]);
   const publicExamChecks = new Map(publicExamRun.sourceChecks.map((check) => [check.sourceId, check]));
   const scheduledIds = [...new Set([...(sourcePlan.coverage.everyRunOfficial || []), ...(sourcePlan.coverage.everyRunDiscovery || [])])];
   const sourceChecks = await Promise.all(scheduledIds.map(async (sourceId) => {
     const source = sources.get(sourceId);
     if (!source) throw new Error(`source-plan 引用了不存在的来源：${sourceId}`);
     if (publicExamChecks.has(sourceId)) return publicExamChecks.get(sourceId);
-    if (sourceId === "buaa-career-discovery") return buaaSourceCheck(source, buaa, checkedAt);
+    if (sourceId === "buaa-career-discovery") return discoverySourceCheck(source, buaa, checkedAt);
+    if (sourceId === "iguopin-discovery") return discoverySourceCheck(source, iguopin, checkedAt);
     return probeOfficialEntry(source, checkedAt);
   }));
   const incomplete = incompleteCount(sourceChecks);
   const publicMetrics = publicExamRun.screeningMetrics || {};
   const run = {
     id: `run-${checkedAt.slice(0, 10).replaceAll("-", "")}-${checkedAt.slice(11, 16).replace(":", "")}-aggregate-first-full-sync`,
-    scope: "full-city-run", checkedAt, trigger: "scheduled-or-manual-full-update", policyVersion: 6,
+    scope: "full-city-run", checkedAt, trigger: "scheduled-or-manual-full-update", scheduledSourceIds: scheduledIds, policyVersion: 6,
     screeningStrategyVersion: 2, candidateProcessingVersion: 4,
     coverageStatus: "aggregate-first-collection-and-source-health",
     status: incomplete ? "completed-partial" : "completed",
     outcome: "aggregate-platform-discovery-plus-official-verification",
-    summary: `本轮已实际执行国考、本地公考、选调优培及北航就业信息网的城市原生筛选。北航发现 ${buaa.leads.length} 条需回溯单位或政府官方页面的线索；国聘和国家大学生就业服务平台等浏览器路线、以及重点官网未完成原生筛选的来源均明确记为未完成，不据此发布岗位。`,
+    summary: `本轮已实际执行国考、本地公考、选调优培以及北航就业信息网、国聘的城市筛选。北航有 ${buaa.leads.length} 条、国聘有 ${iguopin.leads.length} 条通过初筛的线索，均待回溯单位或政府官方页面；国家大学生就业服务平台和重点官网尚未完成本站筛选的来源仍明确记为未完成，不据此发布岗位。`,
     metrics: {
       officialSystemsChecked: sourceChecks.length, officialSystemsSucceeded: sourceChecks.length - incomplete, officialSystemsFailed: incomplete,
-      newLeads: (publicExamRun.metrics?.newLeads || 0) + buaa.leads.length,
+      newLeads: (publicExamRun.metrics?.newLeads || 0) + buaa.leads.length + iguopin.leads.length,
       reviewedItems: publicExamRun.reviews.length, accepted: 0, rejected: 0, deferred: publicExamRun.reviews.length,
       published: 0, updated: 0, closed: 0
     },
     screeningMetrics: {
-      portalResultsReported: (publicMetrics.portalResultsReported || 0) + buaa.portalResultsReported,
-      nativeFilterQueries: (publicMetrics.nativeFilterQueries || 0) + buaa.nativeFilterQueries,
-      nativeFilteredResults: (publicMetrics.nativeFilteredResults || 0) + buaa.nativeFilteredResults,
-      deduplicatedCandidates: (publicMetrics.deduplicatedCandidates || 0) + buaa.deduplicatedCandidates,
-      positionsBatchReviewed: (publicMetrics.positionsBatchReviewed || 0) + buaa.detailsChecked,
+      portalResultsReported: (publicMetrics.portalResultsReported || 0) + buaa.portalResultsReported + iguopin.portalResultsReported,
+      nativeFilterQueries: (publicMetrics.nativeFilterQueries || 0) + buaa.nativeFilterQueries + iguopin.nativeFilterQueries,
+      nativeFilteredResults: (publicMetrics.nativeFilteredResults || 0) + buaa.nativeFilteredResults + iguopin.nativeFilteredResults,
+      deduplicatedCandidates: (publicMetrics.deduplicatedCandidates || 0) + buaa.deduplicatedCandidates + iguopin.deduplicatedCandidates,
+      positionsBatchReviewed: (publicMetrics.positionsBatchReviewed || 0) + buaa.detailsChecked + iguopin.detailsChecked,
       positionsOfficiallyVerified: publicMetrics.positionsOfficiallyVerified || 0,
       positionsEscalated: 0, positionsDeferredByBudget: publicMetrics.positionsDeferredByBudget || 0,
-      discoverySourcesChecked: 1, discoveryOfficialCandidates: buaa.leads.length
+      discoverySourcesChecked: 2, discoveryOfficialCandidates: buaa.leads.length + iguopin.leads.length
     },
     sourceChecks, reviews: publicExamRun.reviews
   };
@@ -115,7 +124,7 @@ async function main() {
     writeFile(new URL("data/review-log.json", root), `${JSON.stringify(log, null, 2)}\n`),
     writeFile(new URL("data/opportunities.json", root), `${JSON.stringify(opportunities, null, 2)}\n`)
   ]);
-  console.log(JSON.stringify({ written: true, city: recipes.city, checkedAt, buaaLeads: buaa.leads.length, incomplete }, null, 2));
+  console.log(JSON.stringify({ written: true, city: recipes.city, checkedAt, buaaLeads: buaa.leads.length, iguopinLeads: iguopin.leads.length, incomplete }, null, 2));
 }
 
 main().catch((error) => { console.error(error.message); process.exitCode = 1; });
