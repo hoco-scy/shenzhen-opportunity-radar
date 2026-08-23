@@ -3,15 +3,16 @@
  * Records a real, conservative full-run result.
  *
  * Run this only after the agent has opened every browser-labelled source in
- * its Browser tool. The script itself collects the one supported public API
- * (China Telecom). A Browser source passes this connectivity test only after
- * its official page has visibly loaded an announcement or native collection UI.
+ * its Browser tool. The script executes the public-exam collectors and the
+ * China Telecom structured collector. Other sources are never represented as
+ * collected merely because their front page answers a health probe.
  * Position publication remains a separate, stricter detail-verification gate.
  */
 import { readFile, writeFile } from "node:fs/promises";
 import { createHash } from "node:crypto";
 import { collectChinaTelecom } from "./collect-chinatelecom.mjs";
 import { fetchChinaTelecomDetails, publishableJob, reviewRecord } from "./review-chinatelecom-candidates.mjs";
+import { buildPublicExamRun } from "./run-public-exam-sync.mjs";
 
 const root = new URL("../", import.meta.url);
 const args = new Set(process.argv.slice(2));
@@ -19,8 +20,8 @@ const targetedRemediation = args.has("--targeted-remediation");
 const fullUpdate = args.has("--full-update");
 const reviewQueueOutputIndex = process.argv.indexOf("--review-queue-file");
 const reviewQueueOutput = reviewQueueOutputIndex >= 0 ? process.argv[reviewQueueOutputIndex + 1] : undefined;
-if (!targetedRemediation && !fullUpdate && !args.has("--browser-checked") && !args.has("--review-queue")) {
-  throw new Error("先在 Browser 中逐页打开所有 browser 来源，再带 --browser-checked 记录本轮；不得用此脚本代替浏览器核验。");
+if (!targetedRemediation && !fullUpdate && !args.has("--review-queue")) {
+  throw new Error("请使用 --full-update 执行已实现的采集器；未实现原生采集的来源会明确记录为未完成，不能由入口探测冒充浏览器核验。");
 }
 
 function shanghaiMinute() {
@@ -68,6 +69,8 @@ async function main() {
   ]);
   const checkedAt = shanghaiMinute();
   const sources = new Map(registry.sources.map((source) => [source.id, source]));
+  const publicExamRun = fullUpdate ? await buildPublicExamRun({ registry, recipes, checkedAt }) : null;
+  const publicExamChecks = new Map((publicExamRun?.sourceChecks || []).map((check) => [check.sourceId, check]));
   const telecom = await collectChinaTelecom({
     entryUrl: sources.get("chinatelecom-careers").entryUrl,
     city: recipes.city,
@@ -81,7 +84,7 @@ async function main() {
   for (const item of candidateReviews.filter((candidate) => candidate.result.decision === "accepted")) { const job = publishableJob(item.detail, { checkedAt, city: recipes.city, source: telecomSource, decision: item.result }); if (existingJobs.has(job.id)) updated += 1; else published += 1; existingJobs.set(job.id, job); }
   opportunities.jobs = [...existingJobs.values()].sort((left, right) => right.priority - left.priority || left.title.localeCompare(right.title, "zh-CN"));
   const officialIds = targetedRemediation ? [telecomSource.id] : sourcePlan.coverage.everyRunOfficial;
-  const sourceChecks = fullUpdate ? await Promise.all(officialIds.map(async (sourceId) => { const source = sources.get(sourceId); if (sourceId !== "chinatelecom-careers") return probeOfficialEntry(source, checkedAt); return { sourceId, status: "checked-full-pagination", attempts: 1, checkedAt, note: `已按官网“校园招聘 + ${recipes.city}”筛选完成 ${telecom.filteredPages} 页、${telecom.deduplicatedPositions.length} 个去重候选，并逐项读取官网详情完成匿名审核。`, accessEvidence: [{ requestedUrl: source.entryUrl, finalUrl: source.entryUrl, outcome: "official-page", recipe: `官网城市筛选 ${telecom.unfilteredTotal} → ${telecom.filteredTotal}` }] }; })) : officialIds.map((sourceId) => {
+  const sourceChecks = fullUpdate ? await Promise.all(officialIds.map(async (sourceId) => { const source = sources.get(sourceId); if (publicExamChecks.has(sourceId)) return publicExamChecks.get(sourceId); if (sourceId !== "chinatelecom-careers") return probeOfficialEntry(source, checkedAt); return { sourceId, status: "checked-full-pagination", attempts: 1, checkedAt, note: `已按官网“校园招聘 + ${recipes.city}”筛选完成 ${telecom.filteredPages} 页、${telecom.deduplicatedPositions.length} 个去重候选，并逐项读取官网详情完成匿名审核。`, accessEvidence: [{ requestedUrl: source.entryUrl, finalUrl: source.entryUrl, outcome: "official-page", recipe: `官网城市筛选 ${telecom.unfilteredTotal} → ${telecom.filteredTotal}` }] }; })) : officialIds.map((sourceId) => {
     const source = sources.get(sourceId);
     if (sourceId === "chinatelecom-careers") {
       return {
@@ -102,15 +105,15 @@ async function main() {
     scope: targetedRemediation ? "targeted-remediation" : "full-city-run", checkedAt,
     trigger: targetedRemediation ? "manual-semantic-remediation" : fullUpdate ? "manual-full-update" : "manual-full-workflow-test", policyVersion: 6,
     screeningStrategyVersion: 2, candidateProcessingVersion: 2,
-    coverageStatus: targetedRemediation ? "targeted-chinatelecom-remediation" : "all-official-sources-covered",
-    status: fullUpdate && incomplete ? "completed-partial" : "completed", outcome: targetedRemediation ? "official-candidates-reviewed-and-published" : fullUpdate ? "all-official-sources-checked" : "browser-and-script-collection-routes-verified",
+    coverageStatus: targetedRemediation ? "targeted-chinatelecom-remediation" : fullUpdate ? "implemented-collectors-plus-source-health" : "route-audit",
+    status: fullUpdate && incomplete ? "completed-partial" : "completed", outcome: targetedRemediation ? "official-candidates-reviewed-and-published" : fullUpdate ? "implemented-collectors-and-source-health-audited" : "browser-and-script-collection-routes-verified",
     summary: targetedRemediation
       ? `中国电信已按官网“校园招聘 + ${recipes.city}”筛选 ${telecom.deduplicatedPositions.length} 个候选并逐项读取官网详情；经语义复核，收录 ${published} 个新岗位、更新 ${updated} 个岗位，其余均保留匿名审核结论。`
-      : fullUpdate ? `已检查 ${officialIds.length} 个官方来源；中国电信按 ${recipes.city} 官网筛选 ${telecom.deduplicatedPositions.length} 个候选并逐项读取职位详情。其余入口已记录本轮可访问性，未完成原生筛选或附件核验的来源均保留为后续处理，不据此发布岗位。` : `已核验 ${officialIds.length} 个官方入口；中国电信按 ${recipes.city} 官网筛选 ${telecom.deduplicatedPositions.length} 个候选并逐项读取职位详情，再按批次完成语义判断；收录 ${published} 个新岗位、更新 ${updated} 个岗位，其余已写入匿名审核记录。`,
+      : fullUpdate ? `本轮实际执行国考、本地公考、选调优培脚本与中国电信官网筛选；其余 ${incomplete} 个来源仅完成入口可访问性探测，未完成原生筛选、分页、附件或详情核验，已明确标为未完成且不据此发布岗位。` : `已核验 ${officialIds.length} 个官方入口；中国电信按 ${recipes.city} 官网筛选 ${telecom.deduplicatedPositions.length} 个候选并逐项读取职位详情，再按批次完成语义判断；收录 ${published} 个新岗位、更新 ${updated} 个岗位，其余已写入匿名审核记录。`,
     metrics: {
       officialSystemsChecked: officialIds.length, officialSystemsSucceeded: officialIds.length - incomplete,
-      officialSystemsFailed: incomplete, newLeads: telecom.deduplicatedPositions.length,
-      reviewedItems: candidateReviews.length, accepted: decisions.accepted, rejected: decisions.rejected, deferred: decisions.deferred, published, updated, closed: 0
+      officialSystemsFailed: incomplete, newLeads: telecom.deduplicatedPositions.length + (publicExamRun?.metrics.newLeads || 0),
+      reviewedItems: candidateReviews.length + (publicExamRun?.reviews.length || 0), accepted: decisions.accepted, rejected: decisions.rejected, deferred: decisions.deferred + (publicExamRun?.metrics.deferred || 0), published, updated, closed: 0
     },
     screeningMetrics: {
       portalResultsReported: telecom.unfilteredTotal, nativeFilterQueries: 1,
@@ -118,7 +121,7 @@ async function main() {
       positionsBatchReviewed: candidateReviews.length, positionsOfficiallyVerified: telecomDetails.filter((detail) => !detail.detailError).length, positionsEscalated: 0,
       positionsDeferredByBudget: decisions.deferred, discoverySourcesChecked: 0, discoveryOfficialCandidates: 0
     },
-    sourceChecks, reviews: candidateReviews.map((item) => item.review)
+    sourceChecks, reviews: [...(publicExamRun?.reviews || []), ...candidateReviews.map((item) => item.review)]
   };
   if (!args.has("--write")) {
     console.log(JSON.stringify({ dryRun: true, checkedAt, city: recipes.city, run }, null, 2));
@@ -132,6 +135,7 @@ async function main() {
     previousRun.id?.endsWith("-full-route-audit") &&
     previousRun.checkedAt >= "2026-08-22T19:00:00+08:00"
   ));
+  log.runs = log.runs.filter((previousRun) => previousRun.outcome !== "all-official-sources-checked");
   log.meta.initializationStatus = "synchronized";
   log.meta.lastRunAt = checkedAt;
   const seenRunIds = new Set();
