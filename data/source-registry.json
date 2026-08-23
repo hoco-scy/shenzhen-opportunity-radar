@@ -216,6 +216,7 @@
       "role": "authoritative",
       "tier": "active",
       "cadence": "every-run",
+      "monitoringEnabled": false,
       "coverage": [
         "国有企业"
       ],
@@ -284,6 +285,7 @@
       "role": "authoritative",
       "tier": "priority",
       "cadence": "every-run",
+      "monitoringEnabled": false,
       "coverage": [
         "国有企业"
       ],
@@ -305,6 +307,7 @@
       "role": "authoritative",
       "tier": "priority",
       "cadence": "every-run",
+      "monitoringEnabled": false,
       "coverage": [
         "国有企业"
       ],
@@ -321,6 +324,7 @@
       "role": "authoritative",
       "tier": "priority",
       "cadence": "every-run",
+      "monitoringEnabled": false,
       "coverage": [
         "国有企业"
       ],
@@ -337,6 +341,7 @@
       "role": "authoritative",
       "tier": "priority",
       "cadence": "every-run",
+      "monitoringEnabled": false,
       "coverage": [
         "国有企业"
       ],
@@ -353,6 +358,7 @@
       "role": "authoritative",
       "tier": "priority",
       "cadence": "every-run",
+      "monitoringEnabled": false,
       "coverage": [
         "国有企业"
       ],
@@ -377,6 +383,7 @@
       "role": "authoritative",
       "tier": "priority",
       "cadence": "every-run",
+      "monitoringEnabled": false,
       "coverage": [
         "国有企业"
       ],
@@ -399,6 +406,7 @@
       "role": "authoritative",
       "tier": "priority",
       "cadence": "every-run",
+      "monitoringEnabled": false,
       "coverage": [
         "国有企业"
       ],
@@ -421,6 +429,7 @@
       "role": "authoritative",
       "tier": "priority",
       "cadence": "every-run",
+      "monitoringEnabled": false,
       "coverage": [
         "国有企业"
       ],
@@ -443,6 +452,7 @@
       "role": "authoritative",
       "tier": "priority",
       "cadence": "every-run",
+      "monitoringEnabled": false,
       "coverage": [
         "国有企业"
       ],
@@ -473,6 +483,7 @@
       "role": "authoritative",
       "tier": "priority",
       "cadence": "every-run",
+      "monitoringEnabled": false,
       "coverage": [
         "国有企业"
       ],
@@ -498,6 +509,7 @@
       "role": "authoritative",
       "tier": "priority",
       "cadence": "every-run",
+      "monitoringEnabled": false,
       "coverage": [
         "国有企业"
       ],
@@ -513,6 +525,21 @@
       "recipeRequired": true,
       "lastAccessAuditAt": "2026-08-22",
       "officialSiteConfirmed": true
+    },
+    {
+      "id": "buaa-career-discovery",
+      "organization": "北航就业信息网",
+      "type": "高校就业信息网",
+      "role": "discovery",
+      "tier": "priority",
+      "cadence": "every-run",
+      "coverage": ["事业单位", "国有企业", "发现线索"],
+      "domains": ["career.buaa.edu.cn"],
+      "entryUrl": "https://career.buaa.edu.cn/frontpage/buaa/html/recruitmentinfoList.html?type=1",
+      "accessMode": "public-filterable-list",
+      "collectionAccessMode": "script-buaa-public-filtered-discovery",
+      "collectionNote": "主采集入口：脚本按城市、单位性质和生物医学相关词筛选；仅产出待回溯的线索。",
+      "officialSiteConfirmed": false
     },
     {
       "id": "national-college-employment",
@@ -548,6 +575,8 @@
         "iguopin.com"
       ],
       "entryUrl": "https://www.iguopin.com/",
+      "collectionAccessMode": "browser-platform-native-filter",
+      "collectionNote": "主采集入口：在国聘页面使用地点、应届、国企和专业场景筛选；只以可回溯官方原文的结果进入后续核验。",
       "officialSiteConfirmed": false
     }
   ]

@@ -8,7 +8,8 @@ test("all script-labelled sources have a stateless runnable collector contract",
   assert.equal(runtime.usesNoExternalPackages, false);
   assert.equal(runtime.packagesDeclared, true);
   assert.deepEqual(runtime.requiredPackages, ["adm-zip", "xlsx"]);
-  assert.ok(runtime.collectors.some((item) => item.sourceId === "chinatelecom-careers"));
+  assert.ok(runtime.collectors.some((item) => item.sourceId === "buaa-career-discovery"));
+  assert.ok(!runtime.collectors.some((item) => item.sourceId === "chinatelecom-careers"));
   assert.ok(runtime.collectors.every((item) => item.scriptPresent));
   assert.ok(runtime.collectors.every((item) => item.hardGuard));
 });

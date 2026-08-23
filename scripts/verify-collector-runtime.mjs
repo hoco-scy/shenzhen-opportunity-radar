@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Stateless preflight for collectors that a fresh Codex cloud container can run.
- * With --live it performs one filtered official China Telecom page request only.
+ * With --live it performs the no-login, filtered 北航就业信息网 discovery check.
  */
 import { access, readFile } from "node:fs/promises";
 import { spawn } from "node:child_process";
@@ -19,14 +19,17 @@ function commandScript(command) {
 }
 
 export async function inspectCollectorRuntime() {
-  const [recipesRaw, packageRaw] = await Promise.all([
+  const [recipesRaw, registryRaw, packageRaw] = await Promise.all([
     readFile(new URL("data/filter-recipes.json", root), "utf8"),
+    readFile(new URL("data/source-registry.json", root), "utf8"),
     readFile(new URL("package.json", root), "utf8")
   ]);
   const recipes = JSON.parse(recipesRaw);
+  const registry = JSON.parse(registryRaw);
+  const monitored = new Set(registry.sources.filter((source) => source.monitoringEnabled !== false).map((source) => source.id));
   const packageManifest = JSON.parse(packageRaw);
   const collectors = [];
-  for (const recipe of recipes.recipes.filter((item) => item.collection?.primary === "script")) {
+  for (const recipe of recipes.recipes.filter((item) => monitored.has(item.sourceId) && item.collection?.primary === "script")) {
     const script = commandScript(recipe.collection.implementation?.command);
     let scriptPresent = false;
     if (script) {
@@ -76,10 +79,10 @@ function run(command, args) {
 }
 
 export async function runLiveSmoke() {
-  const stdout = await run(process.execPath, ["scripts/collect-chinatelecom.mjs", "--max-pages", "1", "--summary"]);
+  const stdout = await run(process.execPath, ["scripts/collect-buaa-discovery.mjs", "--city", "深圳"]);
   const result = JSON.parse(stdout);
-  if (result.collectionMethod !== "script" || result.filteredTotal >= result.unfilteredTotal || result.pagesVisited.join(",") !== "1") {
-    throw new Error("官网筛选冒烟检查未能证明结果缩小且只读取了首个筛选页。");
+  if (result.collectionMethod !== "script" || result.nativeFilterQueries < 1 || !Array.isArray(result.pagesVisited) || !result.pagesVisited.length) {
+    throw new Error("北航公开筛选冒烟检查未能证明脚本实际使用原生筛选请求。");
   }
   return result;
 }

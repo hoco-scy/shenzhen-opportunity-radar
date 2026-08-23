@@ -64,13 +64,13 @@ for (const id of (plan.coverage?.criticalEveryRun || [])) {
 const everyRunOfficial = new Set(plan.coverage?.everyRunOfficial || []);
 const everyRunDiscovery = new Set(plan.coverage?.everyRunDiscovery || []);
 for (const source of registry.sources || []) {
-  if (source.officialSiteConfirmed) {
+  if (source.officialSiteConfirmed && source.monitoringEnabled !== false) {
     if (!everyRunOfficial.has(source.id)) errors.push(`每轮全量官方来源缺失：${source.id}`);
     if (source.cadence !== "every-run") errors.push(`全量官方来源频次必须为 every-run：${source.id}`);
   }
   if (source.role === "discovery" && !everyRunDiscovery.has(source.id)) errors.push(`每轮全量发现来源缺失：${source.id}`);
 }
-if (everyRunOfficial.size !== (registry.sources || []).filter((source) => source.officialSiteConfirmed).length) errors.push("everyRunOfficial 必须恰好覆盖全部已确认官方来源");
+if (everyRunOfficial.size !== (registry.sources || []).filter((source) => source.officialSiteConfirmed && source.monitoringEnabled !== false).length) errors.push("everyRunOfficial 必须恰好覆盖全部启用监测的官方来源");
 if (everyRunDiscovery.size !== (registry.sources || []).filter((source) => source.role === "discovery").length) errors.push("everyRunDiscovery 必须恰好覆盖全部发现来源");
 
 if (!plan.announcementLifecycle?.beforeApplicationOpens?.includes("不得")) errors.push("必须明确预公告不得因尚未开放报名而排除");

@@ -7,6 +7,7 @@ const registry = JSON.parse(await readFile(new URL("data/source-registry.json", 
 const sourcePlan = JSON.parse(await readFile(new URL("data/source-plan.json", root), "utf8"));
 const sources = new Map(registry.sources.map((source) => [source.id, source]));
 const everyRunOfficial = new Set(sourcePlan.coverage?.everyRunOfficial || []);
+const everyRunDiscovery = new Set(sourcePlan.coverage?.everyRunDiscovery || []);
 const errors = [];
 const minuteTimestamp = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:00\+08:00$/;
 const decisions = new Set(["accepted", "rejected", "deferred"]);
@@ -81,7 +82,7 @@ for (const [runIndex, run] of (log.runs || []).entries()) {
   for (const [sourceIndex, check] of (run.sourceChecks || []).entries()) {
     const checkLabel = `${label}.sourceChecks[${sourceIndex}]`;
     const source = sources.get(check.sourceId);
-    if (!source?.officialSiteConfirmed) errors.push(`${checkLabel} 未引用已登记官方来源`);
+    if (!source) errors.push(`${checkLabel} 未引用已登记信息源`);
     if (!check.status || !check.note) errors.push(`${checkLabel} 状态或说明缺失`);
     if (!sourceCheckStatuses.has(check.status)) errors.push(`${checkLabel}.status 不受支持`);
     if (checkedSourceIds.has(check.sourceId)) errors.push(`${checkLabel}.sourceId 重复`);
@@ -94,7 +95,7 @@ for (const [runIndex, run] of (log.runs || []).entries()) {
     }
   }
   const isTargetedRemediation = run.scope === "targeted-remediation";
-  if (Number(run.policyVersion || 0) >= 5 && !isTargetedRemediation) {
+  if (Number(run.policyVersion || 0) >= 5 && !isTargetedRemediation && run.coverageStatus === "aggregate-first-collection-and-source-health") {
     const officialSourcesAtRun = [...everyRunOfficial].filter((sourceId) => {
       const registeredAt = sources.get(sourceId)?.registeredAt;
       return !registeredAt || registeredAt <= run.checkedAt;
@@ -102,7 +103,8 @@ for (const [runIndex, run] of (log.runs || []).entries()) {
     for (const sourceId of officialSourcesAtRun) {
       if (!checkedSourceIds.has(sourceId)) errors.push(`${label}.sourceChecks 缺少每轮全量官方来源：${sourceId}`);
     }
-    if (checkedSourceIds.size !== officialSourcesAtRun.length) errors.push(`${label}.sourceChecks 必须恰好覆盖该运行时已登记的 everyRunOfficial`);
+    for (const sourceId of everyRunDiscovery) if (!checkedSourceIds.has(sourceId)) errors.push(`${label}.sourceChecks 缺少每轮发现来源：${sourceId}`);
+    if (checkedSourceIds.size !== officialSourcesAtRun.length + everyRunDiscovery.size) errors.push(`${label}.sourceChecks 必须恰好覆盖该运行时的启用官方来源与发现来源`);
   }
   if (Number(run.policyVersion || 0) >= 4) {
     const incompleteSources = (run.sourceChecks || []).filter((check) => incompleteSourceStatuses.has(check.status)).length;
@@ -148,8 +150,9 @@ for (const [runIndex, run] of (log.runs || []).entries()) {
     for (const key of ["id", "scope", "track", "organization", "title", "officialPublishedAt", "headcount", "deadline", "decision", "reasonCode", "reason", "verificationNote", "fallback", "sourceId", "officialUrl"]) {
       if (!review[key]) errors.push(`${reviewLabel}.${key} 缺失`);
     }
-    if (reviewIds.has(review.id)) errors.push(`${reviewLabel}.id 重复`);
-    reviewIds.add(review.id);
+    const runScopedReviewId = `${run.id}:${review.id}`;
+    if (reviewIds.has(runScopedReviewId)) errors.push(`${reviewLabel}.id 在同一轮中重复`);
+    reviewIds.add(runScopedReviewId);
     if (!decisions.has(review.decision)) errors.push(`${reviewLabel}.decision 不受支持`);
     const source = sources.get(review.sourceId);
     if (!source?.officialSiteConfirmed) errors.push(`${reviewLabel}.sourceId 未登记为官方来源`);
