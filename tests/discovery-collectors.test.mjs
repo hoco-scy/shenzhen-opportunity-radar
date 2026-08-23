@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { collectBuaaDiscovery } from "../scripts/collect-buaa-discovery.mjs";
 import { collectIGuopinDiscovery } from "../scripts/collect-iguopin-discovery.mjs";
+import { collectNCSSDiscovery } from "../scripts/collect-ncss-discovery.mjs";
 
 function response(data, url, { text } = {}) {
   return { ok: true, status: 200, url, json: async () => data, text: async () => text ?? JSON.stringify(data) };
@@ -102,4 +103,36 @@ test("国聘采集器排除民企，即使岗位专业与工作内容相关", as
   });
   assert.equal(result.leads.length, 0);
   assert.equal(result.detailOutcomes["employer-nature-mismatch"], 1);
+});
+test("国家大学生就业服务平台采集器只读取城市关键词分页，并在详情中排除纯计算机和民企", async () => {
+  const listRequests = [];
+  const result = await collectNCSSDiscovery({
+    city: "北京",
+    fetchImpl: async (url) => {
+      const parsed = new URL(String(url));
+      if (parsed.pathname.endsWith("/jobslist/ajax/")) {
+        listRequests.push(parsed);
+        assert.equal(parsed.searchParams.get("areaCode"), "110100");
+        assert.ok(parsed.searchParams.get("jobName"));
+        const keyword = parsed.searchParams.get("jobName");
+        const list = keyword === "医疗器械" ? [
+          { jobId: "ncss-good", jobName: "医疗器械研发工程师", recName: "示例国企", recProperty: "国有企业", degreeName: "硕士及以上", major: "生物医学工程", areaCodeName: "北京市", publishDate: Date.UTC(2099, 0, 1) },
+          { jobId: "ncss-ai", jobName: "人工智能工程师", recName: "示例国企", recProperty: "国有企业", degreeName: "硕士", major: "生物医学工程", areaCodeName: "北京市", publishDate: Date.UTC(2099, 0, 1) },
+          { jobId: "ncss-private", jobName: "医疗器械研发工程师", recName: "示例民企", recProperty: "民营企业", degreeName: "硕士", major: "生物医学工程", areaCodeName: "北京市", publishDate: Date.UTC(2099, 0, 1) }
+        ] : [];
+        return response({ flag: true, data: { list, pagenation: { count: list.length, total: 1, limit: 20, offset: 1 } } }, String(url));
+      }
+      if (parsed.pathname.endsWith("/ncss-good/detail.html")) return response(undefined, String(url), { text: "<title>医疗器械研发工程师-国家大学生就业服务平台</title><div>面向应届毕业生的医疗器械研发</div>" });
+      if (parsed.pathname.endsWith("/ncss-ai/detail.html")) return response(undefined, String(url), { text: "<title>人工智能工程师-国家大学生就业服务平台</title><div>通用大模型训练</div>" });
+      throw new Error(`unexpected request: ${url}`);
+    }
+  });
+  assert.equal(result.nativeFilterQueries, 6);
+  assert.equal(result.deduplicatedCandidates, 3);
+  assert.equal(result.detailsChecked, 2);
+  assert.equal(result.leads.length, 1);
+  assert.equal(result.leads[0].id, "ncss-good");
+  assert.equal(result.detailOutcomes["core-profession-mismatch"], 1);
+  assert.equal(result.detailOutcomes["employer-nature-mismatch"], 1);
+  assert.equal(listRequests.length, 6);
 });

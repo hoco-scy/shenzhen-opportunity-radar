@@ -14,7 +14,7 @@ const decisions = new Set(["accepted", "rejected", "deferred"]);
 const runStatuses = new Set(["completed", "completed-partial", "failed", "not-started"]);
 const sourceCheckStatuses = new Set([
   "checked-deferred", "checked-full-pagination", "checked-native-filtered", "checked-browser-route",
-  "checked-no-active-campaign", "checked-no-new-position-table",
+  "checked-official-notice-feed", "checked-no-active-campaign", "checked-no-new-position-table",
   "checked-no-publishable-change", "checked-roster-current",
   "accessible-incomplete", "temporarily-unavailable", "semantic-404", "failed"
 ]);
@@ -96,13 +96,13 @@ for (const [runIndex, run] of (log.runs || []).entries()) {
     if (Number(run.policyVersion || 0) >= 7) {
       const collectionMetrics = check.collectionMetrics;
       const metricLabel = `${checkLabel}.collectionMetrics`;
-      if (!collectionMetrics || !["completed", "not-completed", "unavailable"].includes(collectionMetrics.state)) {
-        errors.push(`${metricLabel}.state 必须明确说明本轮采集是否完成`);
+      if (!collectionMetrics || !["completed", "partial", "not-completed", "unavailable"].includes(collectionMetrics.state)) {
+        errors.push(`${metricLabel}.state 必须明确说明本轮采集是否完成、部分完成或不可用`);
       } else {
         if (!("collected" in collectionMetrics) || !("afterFilter" in collectionMetrics) || !collectionMetrics.filterDescription) {
           errors.push(`${metricLabel} 必须记录采集数、筛选后数量和筛选说明`);
         }
-        if (collectionMetrics.state === "completed") {
+        if (["completed", "partial"].includes(collectionMetrics.state)) {
           if (!Number.isInteger(collectionMetrics.collected) || collectionMetrics.collected < 0) errors.push(`${metricLabel}.collected 必须是非负整数`);
           if (!Number.isInteger(collectionMetrics.afterFilter) || collectionMetrics.afterFilter < 0) errors.push(`${metricLabel}.afterFilter 必须是非负整数`);
           if (Number.isInteger(collectionMetrics.collected) && Number.isInteger(collectionMetrics.afterFilter) && collectionMetrics.afterFilter > collectionMetrics.collected) errors.push(`${metricLabel} 筛选后数量不能大于采集数量`);

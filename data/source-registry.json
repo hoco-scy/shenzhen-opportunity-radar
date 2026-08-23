@@ -567,6 +567,9 @@
         "ncss.cn"
       ],
       "entryUrl": "https://www.ncss.cn/",
+      "collectionEntryUrl": "https://www.ncss.cn/student/jobs/index.html",
+      "collectionAccessMode": "script-ncss-public-filtered-discovery",
+      "collectionNote": "主采集入口：脚本按城市和生物医学相关关键词调用国家大学生就业服务平台公开列表接口，读取该筛选结果的分页，并仅对明确标注为国企、国有企业、中央企业或事业单位的记录打开公开详情作预筛；未取得单位官方原文的结果保留为待用户确认线索。",
       "officialSiteConfirmed": false
     },
     {

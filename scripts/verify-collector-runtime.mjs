@@ -1,11 +1,12 @@
 #!/usr/bin/env node
 /**
  * Stateless preflight for collectors that a fresh Codex cloud container can run.
- * With --live it performs the no-login, filtered 北航就业信息网 and 国聘 discovery checks.
+ * With --live it performs the no-login, filtered 北航就业信息网、国聘和国家大学生就业服务平台 discovery checks.
  */
 import { access, readFile } from "node:fs/promises";
 import { spawn } from "node:child_process";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { collectNCSSDiscovery } from "./collect-ncss-discovery.mjs";
 
 const root = new URL("../", import.meta.url);
 const MINIMUM_NODE_MAJOR = 18;
@@ -79,18 +80,19 @@ function run(command, args) {
 }
 
 export async function runLiveSmoke() {
-  const [buaaOut, iguopinOut] = await Promise.all([
+  const [buaaOut, iguopinOut, ncss] = await Promise.all([
     run(process.execPath, ["scripts/collect-buaa-discovery.mjs", "--city", "深圳"]),
-    run(process.execPath, ["scripts/collect-iguopin-discovery.mjs", "--city", "深圳"])
+    run(process.execPath, ["scripts/collect-iguopin-discovery.mjs", "--city", "深圳"]),
+    collectNCSSDiscovery({ city: "深圳" })
   ]);
   const buaa = JSON.parse(buaaOut);
   const iguopin = JSON.parse(iguopinOut);
-  for (const result of [buaa, iguopin]) {
+  for (const result of [buaa, iguopin, ncss]) {
     if (result.collectionMethod !== "script" || result.nativeFilterQueries < 1 || !Array.isArray(result.pagesVisited) || !result.pagesVisited.length) {
       throw new Error(`${result.sourceId || "公开"}筛选冒烟检查未能证明脚本实际使用原生筛选请求。`);
     }
   }
-  return { buaa, iguopin };
+  return { buaa, iguopin, ncss };
 }
 
 async function main() {

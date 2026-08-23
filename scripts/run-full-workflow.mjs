@@ -8,6 +8,8 @@ import { readFile, writeFile } from "node:fs/promises";
 import { buildPublicExamRun } from "./run-public-exam-sync.mjs";
 import { collectBuaaDiscovery } from "./collect-buaa-discovery.mjs";
 import { collectIGuopinDiscovery } from "./collect-iguopin-discovery.mjs";
+import { collectNCSSDiscovery } from "./collect-ncss-discovery.mjs";
+import { collectOfficialNoticeFeed } from "./collect-official-notice-feed.mjs";
 
 const root = new URL("../", import.meta.url);
 const args = new Set(process.argv.slice(2));
@@ -72,6 +74,21 @@ async function probeOfficialEntry(source, checkedAt) {
   };
 }
 
+function officialNoticeSourceCheck(result, checkedAt) {
+  const complete = Number.isInteger(result.collected) && Number.isInteger(result.afterFilter);
+  return {
+    sourceId: result.sourceId,
+    status: result.status,
+    attempts: result.attempts || 1,
+    checkedAt,
+    note: result.reason,
+    collectionMetrics: complete
+      ? { state: "completed", collected: result.collected, afterFilter: result.afterFilter, filterDescription: "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。" }
+      : { state: result.status === "temporarily-unavailable" || result.status === "semantic-404" ? "unavailable" : "not-completed", collected: null, afterFilter: null, filterDescription: "本轮未能完成该官方来源的公告列表、详情或站内筛选，不能把结果理解为 0 条。" },
+    accessEvidence: result.accessEvidence
+  };
+}
+
 function discoverySourceCheck(source, result, checkedAt) {
   if (result.collectionError) {
     return {
@@ -86,13 +103,13 @@ function discoverySourceCheck(source, result, checkedAt) {
   }
   const candidates = result.detailOutcomes?.candidate || 0;
   const excluded = Math.max(0, result.deduplicatedCandidates - candidates);
-  const paginationNote = result.truncated ? "筛选结果超过本轮安全分页上限，未把未读取部分当作无岗位。" : "已读取本轮全部已筛选分页。";
+  const paginationNote = result.truncated ? `公开访问在已读取分页后受限：${result.partialReason || "筛选结果超过本轮安全分页上限"}；未把未读取部分当作无岗位。` : "已读取本轮全部已筛选分页。";
   return {
-    sourceId: source.id, status: "checked-native-filtered", attempts: 1, checkedAt,
+    sourceId: source.id, status: result.truncated ? "accessible-incomplete" : "checked-native-filtered", attempts: 1, checkedAt,
     note: `已完成 ${result.nativeFilterQueries} 组本站筛选并读取 ${result.deduplicatedCandidates} 条去重候选。${candidates} 条通过应届硕士与专业相关性的初筛，进入官方回溯；${excluded} 条未进入回溯。${paginationNote}`,
     collectionMetrics: {
-      state: "completed", collected: result.deduplicatedCandidates, afterFilter: candidates,
-      filterDescription: "已使用本站城市、单位性质/关键词、应届硕士和生物医学相关性等条件完成预筛。"
+      state: result.truncated ? "partial" : "completed", collected: result.deduplicatedCandidates, afterFilter: candidates,
+      filterDescription: result.truncated ? "已记录公开可读取分页的采集和筛选数量；后续分页要求登录或未能公开读取，不能把本轮结果理解为完整平台全集。" : "已使用本站城市、单位性质/关键词、应届硕士和生物医学相关性等条件完成预筛。"
     },
     accessEvidence: [{ requestedUrl: source.entryUrl, finalUrl: result.pagesVisited[0], outcome: "official-page", recipe: result.collectionRoute }]
   };
@@ -165,7 +182,7 @@ function candidateFromDiscoveryLead(lead, sourceId, checkedAt) {
       automaticResult: hasDirectLink ? "已保留平台提供的直达链接，不把它自动视为官方核验。" : "平台未返回可验证的单位直达链接，脚本不会猜测或搜索拼接官网。"
     },
     collectionEvidence: lead.evidence,
-    tags: ["国聘/北航筛选", lead.employerNature || "平台未注明单位性质", "应届生", "生物医学相关", hasDirectLink ? "平台提供投递链接" : "需手动确认"]
+    tags: [sourceId === "national-college-employment" ? "国家大学生就业服务平台筛选" : "国聘/北航筛选", lead.employerNature || "平台未注明单位性质", "应届生", "生物医学相关", hasDirectLink ? "平台提供投递链接" : "需手动确认"]
   };
 }
 
@@ -175,10 +192,11 @@ async function main() {
   ]);
   const checkedAt = shanghaiMinute();
   const sources = new Map(registry.sources.map((source) => [source.id, source]));
-  const [publicExamRun, buaa, iguopin] = await Promise.all([
+  const [publicExamRun, buaa, iguopin, ncss] = await Promise.all([
     buildPublicExamRun({ registry, recipes, checkedAt }),
     collectBuaaDiscovery({ city: recipes.city }).catch((error) => unavailableDiscoveryResult("buaa-career-discovery", error)),
-    collectIGuopinDiscovery({ city: recipes.city }).catch((error) => unavailableDiscoveryResult("iguopin-discovery", error))
+    collectIGuopinDiscovery({ city: recipes.city }).catch((error) => unavailableDiscoveryResult("iguopin-discovery", error)),
+    collectNCSSDiscovery({ city: recipes.city }).catch((error) => unavailableDiscoveryResult("national-college-employment", error))
   ]);
   const publicExamChecks = new Map(publicExamRun.sourceChecks.map((check) => [check.sourceId, check]));
   const scheduledIds = [...new Set([...(sourcePlan.coverage.everyRunOfficial || []), ...(sourcePlan.coverage.everyRunDiscovery || [])])];
@@ -188,13 +206,15 @@ async function main() {
     if (publicExamChecks.has(sourceId)) return publicExamChecks.get(sourceId);
     if (sourceId === "buaa-career-discovery") return discoverySourceCheck(source, buaa, checkedAt);
     if (sourceId === "iguopin-discovery") return discoverySourceCheck(source, iguopin, checkedAt);
-    return probeOfficialEntry(source, checkedAt);
+    if (sourceId === "national-college-employment") return discoverySourceCheck(source, ncss, checkedAt);
+    return officialNoticeSourceCheck(await collectOfficialNoticeFeed({ source }), checkedAt);
   }));
   const incomplete = incompleteCount(sourceChecks);
   const publicMetrics = publicExamRun.screeningMetrics || {};
   const discoveryCandidates = [
     ...buaa.leads.map((lead) => candidateFromDiscoveryLead(lead, "buaa-career-discovery", checkedAt)),
-    ...iguopin.leads.map((lead) => candidateFromDiscoveryLead(lead, "iguopin-discovery", checkedAt))
+    ...iguopin.leads.map((lead) => candidateFromDiscoveryLead(lead, "iguopin-discovery", checkedAt)),
+    ...ncss.leads.map((lead) => candidateFromDiscoveryLead(lead, "national-college-employment", checkedAt))
   ].sort((left, right) => right.priority - left.priority || left.title.localeCompare(right.title, "zh-CN"));
   const run = {
     id: `run-${checkedAt.slice(0, 10).replaceAll("-", "")}-${checkedAt.slice(11, 16).replace(":", "")}-aggregate-first-full-sync`,
@@ -203,22 +223,22 @@ async function main() {
     coverageStatus: "aggregate-first-collection-and-source-health",
     status: incomplete ? "completed-partial" : "completed",
     outcome: "aggregate-platform-discovery-plus-official-verification",
-    summary: `本轮已执行国考、本地公考、选调优培与聚合平台的公开采集。北航就业信息网${buaa.collectionError ? "本轮未完成公开筛选" : `有 ${buaa.leads.length} 条通过初筛的线索`}，国聘${iguopin.collectionError ? "本轮未完成公开筛选" : `有 ${iguopin.leads.length} 条通过初筛的线索`}；未取得单位或政府官方原文的线索不会混入已核验岗位。国家大学生就业服务平台和重点官网尚未完成本站筛选的来源仍明确记为未完成。`,
+    summary: `本轮已执行国考、本地公考、选调优培与三类聚合平台的公开采集，并对其余官方来源实际读取公告/招聘页、同域招聘链接和公开正文。北航就业信息网${buaa.collectionError ? "本轮未完成公开筛选" : `有 ${buaa.leads.length} 条通过初筛的线索`}，国聘${iguopin.collectionError ? "本轮未完成公开筛选" : `有 ${iguopin.leads.length} 条通过初筛的线索`}，国家大学生就业服务平台${ncss.collectionError ? "本轮未完成公开筛选" : `有 ${ncss.leads.length} 条通过初筛的线索`}；未取得单位或政府官方原文、或只取得公告但没有具体岗位字段的结果不会混入已核验岗位。`,
     metrics: {
       officialSystemsChecked: sourceChecks.length, officialSystemsSucceeded: sourceChecks.length - incomplete, officialSystemsFailed: incomplete,
-      newLeads: (publicExamRun.metrics?.newLeads || 0) + buaa.leads.length + iguopin.leads.length,
+      newLeads: (publicExamRun.metrics?.newLeads || 0) + buaa.leads.length + iguopin.leads.length + ncss.leads.length,
       reviewedItems: publicExamRun.reviews.length, accepted: 0, rejected: 0, deferred: publicExamRun.reviews.length,
       published: 0, updated: 0, closed: 0
     },
     screeningMetrics: {
-      portalResultsReported: (publicMetrics.portalResultsReported || 0) + buaa.portalResultsReported + iguopin.portalResultsReported,
-      nativeFilterQueries: (publicMetrics.nativeFilterQueries || 0) + buaa.nativeFilterQueries + iguopin.nativeFilterQueries,
-      nativeFilteredResults: (publicMetrics.nativeFilteredResults || 0) + buaa.nativeFilteredResults + iguopin.nativeFilteredResults,
-      deduplicatedCandidates: (publicMetrics.deduplicatedCandidates || 0) + buaa.deduplicatedCandidates + iguopin.deduplicatedCandidates,
-      positionsBatchReviewed: (publicMetrics.positionsBatchReviewed || 0) + buaa.detailsChecked + iguopin.detailsChecked,
+      portalResultsReported: (publicMetrics.portalResultsReported || 0) + buaa.portalResultsReported + iguopin.portalResultsReported + ncss.portalResultsReported,
+      nativeFilterQueries: (publicMetrics.nativeFilterQueries || 0) + buaa.nativeFilterQueries + iguopin.nativeFilterQueries + ncss.nativeFilterQueries,
+      nativeFilteredResults: (publicMetrics.nativeFilteredResults || 0) + buaa.nativeFilteredResults + iguopin.nativeFilteredResults + ncss.nativeFilteredResults,
+      deduplicatedCandidates: (publicMetrics.deduplicatedCandidates || 0) + buaa.deduplicatedCandidates + iguopin.deduplicatedCandidates + ncss.deduplicatedCandidates,
+      positionsBatchReviewed: (publicMetrics.positionsBatchReviewed || 0) + buaa.detailsChecked + iguopin.detailsChecked + ncss.detailsChecked,
       positionsOfficiallyVerified: publicMetrics.positionsOfficiallyVerified || 0,
       positionsEscalated: 0, positionsDeferredByBudget: publicMetrics.positionsDeferredByBudget || 0,
-      discoverySourcesChecked: 2, discoveryOfficialCandidates: buaa.leads.length + iguopin.leads.length
+      discoverySourcesChecked: 3, discoveryOfficialCandidates: buaa.leads.length + iguopin.leads.length + ncss.leads.length
     },
     sourceChecks, reviews: publicExamRun.reviews
   };
@@ -238,7 +258,7 @@ async function main() {
     writeFile(new URL("data/review-log.json", root), `${JSON.stringify(log, null, 2)}\n`),
     writeFile(new URL("data/opportunities.json", root), `${JSON.stringify(opportunities, null, 2)}\n`)
   ]);
-  console.log(JSON.stringify({ written: true, city: recipes.city, checkedAt, buaaLeads: buaa.leads.length, iguopinLeads: iguopin.leads.length, incomplete }, null, 2));
+  console.log(JSON.stringify({ written: true, city: recipes.city, checkedAt, buaaLeads: buaa.leads.length, iguopinLeads: iguopin.leads.length, ncssLeads: ncss.leads.length, incomplete }, null, 2));
 }
 
 main().catch((error) => { console.error(error.message); process.exitCode = 1; });
