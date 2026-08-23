@@ -93,10 +93,14 @@ for (const [runIndex, run] of (log.runs || []).entries()) {
   }
   const isTargetedRemediation = run.scope === "targeted-remediation";
   if (Number(run.policyVersion || 0) >= 5 && !isTargetedRemediation) {
-    for (const sourceId of everyRunOfficial) {
+    const officialSourcesAtRun = [...everyRunOfficial].filter((sourceId) => {
+      const registeredAt = sources.get(sourceId)?.registeredAt;
+      return !registeredAt || registeredAt <= run.checkedAt;
+    });
+    for (const sourceId of officialSourcesAtRun) {
       if (!checkedSourceIds.has(sourceId)) errors.push(`${label}.sourceChecks 缺少每轮全量官方来源：${sourceId}`);
     }
-    if (checkedSourceIds.size !== everyRunOfficial.size) errors.push(`${label}.sourceChecks 必须恰好覆盖 everyRunOfficial`);
+    if (checkedSourceIds.size !== officialSourcesAtRun.length) errors.push(`${label}.sourceChecks 必须恰好覆盖该运行时已登记的 everyRunOfficial`);
   }
   if (Number(run.policyVersion || 0) >= 4) {
     const incompleteSources = (run.sourceChecks || []).filter((check) => incompleteSourceStatuses.has(check.status)).length;

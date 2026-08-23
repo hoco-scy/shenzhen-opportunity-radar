@@ -26,10 +26,10 @@
     "搜索引擎只用于重新发现入口，结论仍须回到官方页面"
   ],
   "coverage": {
-    "criticalEveryRun": ["national-civil","shenzhen-civil","shenzhen-personnel-exam","shenzhen-institutions","central-institutions","china-public-recruitment","central-sasac-recruitment","central-enterprise-roster","shenzhen-state-assets"],
+    "criticalEveryRun": ["national-civil","shenzhen-civil","shenzhen-personnel-exam","shenzhen-selection-program","shenzhen-institutions","central-institutions","china-public-recruitment","central-sasac-recruitment","central-enterprise-roster","shenzhen-state-assets"],
     "activeUntilDeadline": true,
     "activeDefinition": ["正文已有在招岗位","截止未过的正式公告或预公告","上轮 deferred 的待补字段对象"],
-    "everyRunOfficial": ["national-civil","shenzhen-civil","shenzhen-personnel-exam","shenzhen-institutions","central-institutions","china-public-recruitment","central-sasac-recruitment","central-enterprise-roster","shenzhen-state-assets","picc-campus","boe-campus","sinopharm-careers","genertec-official","crc-careers","cec-campus","cetc-recruitment","sgcc-careers","cnpc-careers","sinopec-careers","cmcc-careers","chinatelecom-careers","casic-careers","spacechina-careers","chinapost-recruitment"],
+    "everyRunOfficial": ["national-civil","shenzhen-civil","shenzhen-personnel-exam","shenzhen-selection-program","shenzhen-institutions","central-institutions","china-public-recruitment","central-sasac-recruitment","central-enterprise-roster","shenzhen-state-assets","picc-campus","boe-campus","sinopharm-careers","genertec-official","crc-careers","cec-campus","cetc-recruitment","sgcc-careers","cnpc-careers","sinopec-careers","cmcc-careers","chinatelecom-careers","casic-careers","spacechina-careers","chinapost-recruitment"],
     "everyRunDiscovery": ["national-college-employment","iguopin-discovery"],
     "maxUnseenHours": 24,
     "dynamicExpansion": "每轮检查国务院国资委央企名录和深圳市国资委企业名单变化；仅在发现可核验官方招聘入口时更新来源登记"

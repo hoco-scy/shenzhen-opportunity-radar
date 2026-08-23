@@ -6,8 +6,12 @@
 import { createHash } from "node:crypto";
 import { collectPublicExam } from "./collect-public-exams.mjs";
 
-const SUPPORTED = new Set(["national-civil", "beijing-civil", "shanghai-civil", "guangzhou-civil", "shenzhen-civil"]);
+const SUPPORTED = new Set([
+  "national-civil", "beijing-civil", "shanghai-civil", "guangzhou-civil", "shenzhen-civil",
+  "beijing-selection-program", "shanghai-selection-program", "guangzhou-selection-program", "shenzhen-selection-program"
+]);
 const CAMPAIGN_CATEGORIES = new Set(["position-table", "recruitment-announcement", "supplementary-recruitment", "selection-program"]);
+const PRE_ANNOUNCEMENT_PATTERN = /(预公告|预报名|即将(?:启动|开始)|拟于.{0,20}(?:启动|报名)|招录计划(?:公布|发布)|敬请关注)/;
 
 function reviewId(sourceId, notice) {
   return `review-${sourceId}-${createHash("sha256").update(notice.id).digest("hex").slice(0, 16)}`;
@@ -29,16 +33,21 @@ export function campaignNotices(result) {
 }
 
 function activeCampaignNotices(result) {
-  // A missing deadline is not evidence that a campaign remains open.  Keep it
-  // out of the public, candidate-facing audit until a current announcement or
-  // official application window can be demonstrated.
-  return campaignNotices(result).filter((notice) => notice.lifecycle?.status === "open-or-upcoming");
+  // A missing deadline is not evidence that a campaign remains open. The one
+  // exception is an explicit official pre-announcement: it is retained as a
+  // deferred announcement, never promoted to a position or an open deadline.
+  return campaignNotices(result).filter((notice) =>
+    notice.lifecycle?.status === "open-or-upcoming" || (notice.lifecycle?.status === "unknown" && PRE_ANNOUNCEMENT_PATTERN.test(notice.title || ""))
+  );
 }
 
 export function publicExamReview(source, notice) {
   const lifecycle = notice.lifecycle || { status: "unknown" };
-  const reason = lifecycle.status === "unknown"
-    ? "官方公告已采集，但报名截止时间或完整资格字段无法由公开文本可靠结构化，需继续核验。"
+  const preAnnouncement = lifecycle.status === "unknown" && PRE_ANNOUNCEMENT_PATTERN.test(notice.title || "");
+  const reason = preAnnouncement
+    ? "官方已发布预公告，尚未给出可用于逐岗判断的完整报名期限或职位表；保留追踪，不能当作可报岗位。"
+    : lifecycle.status === "unknown"
+      ? "官方公告已采集，但报名截止时间或完整资格字段无法由公开文本可靠结构化，需继续核验。"
     : "官方公告仍处于可关注周期；在使用私有资格档案逐项核对前，不得发布为确认可报岗位。";
   return {
     id: reviewId(source.id, notice),
@@ -48,9 +57,9 @@ export function publicExamReview(source, notice) {
     title: notice.title,
     officialPublishedAt: notice.publishedAt || "官方未注明",
     headcount: "公告级待核验",
-    deadline: lifecycle.deadline || "官方未注明",
+    deadline: lifecycle.deadline || (preAnnouncement ? "预公告：报名期限待官方公布" : "官方未注明"),
     decision: "deferred",
-    reasonCode: lifecycle.status === "unknown" ? "application-window-or-eligibility-unknown" : "private-eligibility-check-required",
+    reasonCode: preAnnouncement ? "official-preannouncement-position-table-pending" : lifecycle.status === "unknown" ? "application-window-or-eligibility-unknown" : "private-eligibility-check-required",
     reason,
     verificationNote: "已通过官方公告入口、详情与可公开附件完成脚本采集；本记录不含任何个人资格字段。",
     fallback: "等待官方职位表/报名窗口信息完整，或在私有资格流程逐项完成硬条件校验后再决定是否拆分并发布具体岗位。",

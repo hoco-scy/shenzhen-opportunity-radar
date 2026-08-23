@@ -28,6 +28,7 @@ const scopeLabels = { announcement: "整份公告", position: "具体岗位", "o
 const sourceLabels = {
   "national-civil": "国家公务员局",
   "shenzhen-civil": "深圳市公务员招考",
+  "shenzhen-selection-program": "深圳选调／优培公告",
   "shenzhen-personnel-exam": "深圳市人事考试平台",
   "shenzhen-institutions": "深圳市事业单位招聘",
   "central-institutions": "中央和国家机关事业单位招聘",

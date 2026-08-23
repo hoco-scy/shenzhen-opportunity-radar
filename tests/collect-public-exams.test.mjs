@@ -7,7 +7,9 @@ import {
   collectGuangdongCivil,
   collectNationalCivil,
   collectPublicExam,
+  collectShanghaiSelectionProgram,
   collectShanghaiCivil,
+  collectStaticSelectionProgram,
   diffSnapshots,
   extractApplicationLifecycle,
   parseNationalCoreConstants,
@@ -109,6 +111,47 @@ test("collects Beijing static notices and discovers its attached position table"
   assert.equal(result.notices[0].attachments[0].officialUrl, "https://www.beijing.gov.cn/gongkai/rsxx/gwyzk/202610/position.xlsx");
 });
 
+test("collects a standalone official selection-program announcement and retains its lifecycle", async () => {
+  const entry = "https://rsj.beijing.gov.cn/xxgk/tzgg/";
+  const notice = "https://rsj.beijing.gov.cn/xxgk/tzgg/209910/t20991015_1.html";
+  const fetchImpl = mockFetch({
+    [entry]: { body: '<a href="./209910/t20991015_1.html" title="北京市2099年度定向选调和优培毕业生公告">公告</a>' },
+    [notice]: { body: "网上报名：2099年10月20日至11月5日。<a href=\"./positions.xlsx\">附件1：职位表</a>" }
+  });
+  const result = await collectStaticSelectionProgram({ sourceId: "beijing-selection-program", fetchImpl });
+  assert.equal(result.noticeCount, 1);
+  assert.equal(result.notices[0].category, "selection-program");
+  assert.equal(result.notices[0].lifecycle.status, "open-or-upcoming");
+  assert.equal(result.notices[0].attachments[0].officialUrl, "https://rsj.beijing.gov.cn/xxgk/tzgg/209910/positions.xlsx");
+});
+
+test("discovers a selection notice when the official list exposes only a script URL", async () => {
+  const entry = "https://rsj.beijing.gov.cn/xxgk/tzgg/";
+  const notice = "https://rsj.beijing.gov.cn/xxgk/tzgg/209910/t20991016_2.html";
+  const fetchImpl = mockFetch({
+    [entry]: { body: '<script>const record = {"title":"","url":"./209910/t20991016_2.html"};</script>' },
+    [notice]: { body: "<h1>北京市2099年度定向选调应届优秀大学毕业生公告</h1>网上报名：2099年10月20日至11月5日。" }
+  });
+  const result = await collectStaticSelectionProgram({ sourceId: "beijing-selection-program", fetchImpl });
+  assert.equal(result.noticeCount, 1);
+  assert.equal(result.notices[0].title, "北京市2099年度定向选调应届优秀大学毕业生公告");
+});
+
+test("uses the official mobile detail fallback when a Beijing CMS list URL is stale", async () => {
+  const entry = "https://rsj.beijing.gov.cn/xxgk/tzgg/";
+  const notice = "https://rsj.beijing.gov.cn/xxgk/tzgg/209910/t20991017_3.html";
+  const fallback = "https://rsj.beijing.gov.cn/xxgk/tzgg/209910/t20991017_3_ext.html";
+  const fetchImpl = mockFetch({
+    [entry]: { body: '<script>const record = {"title":"","url":"./209910/t20991017_3.html"};</script>' },
+    [notice]: { status: 404, body: "not found" },
+    [fallback]: { body: "<title>北京市2099年度优培计划招聘公告</title>网上报名：2099年10月20日至11月5日。" }
+  });
+  const result = await collectStaticSelectionProgram({ sourceId: "beijing-selection-program", fetchImpl });
+  assert.equal(result.status, "completed");
+  assert.equal(result.noticeCount, 1);
+  assert.equal(result.notices[0].officialUrl, fallback);
+});
+
 test("collects Shanghai notices through the official API hierarchy", async () => {
   const sections = "https://shacs.gov.cn/gwyj/api/gwy-column-section.json?listChild=true";
   const news = "https://shacs.gov.cn/gwyj/api/child-section-and-news.json?sectionId=407&pageSize=2000";
@@ -122,6 +165,50 @@ test("collects Shanghai notices through the official API hierarchy", async () =>
   assert.equal(result.noticeCount, 1);
   assert.equal(result.notices[0].sectionName, "上海市2027年度考试录用公务员专题");
   assert.equal(result.notices[0].attachments[0].officialUrl, "https://shacs.gov.cn/files/position.xlsx");
+});
+
+test("uses Shanghai's official selection topic as a separate collection path", async () => {
+  const sections = "https://shacs.gov.cn/gwyj/api/gwy-column-section.json?listChild=true";
+  const news = "https://shacs.gov.cn/gwyj/api/child-section-and-news.json?sectionId=408&pageSize=2000";
+  const detail = "https://shacs.gov.cn/gwyj/api/show-news.json?id=1285";
+  const fetchImpl = mockFetch({
+    [sections]: { body: json({ state: "SUCCESS", result: { child: [{ id: 408, name: "上海市2099年度选调优秀大学毕业生专题" }] } }) },
+    [news]: { body: json({ state: "SUCCESS", result: { secNews: { list: [{ id: 1285, title: "上海市2099年度选调优秀大学毕业生公告", postDate: "2099-10-01" }] } } }) },
+    [detail]: { body: json({ state: "SUCCESS", result: { title: "上海市2099年度选调优秀大学毕业生公告", postDate: "2099-10-01", content: "网上报名：2099年10月20日至11月5日。" } }) }
+  });
+  const result = await collectShanghaiSelectionProgram({ fetchImpl });
+  assert.equal(result.sourceId, "shanghai-selection-program");
+  assert.equal(result.noticeCount, 1);
+  assert.equal(result.notices[0].category, "selection-program");
+});
+
+test("does not fetch ordinary civil-service details while checking the Shanghai selection feed", async () => {
+  const sections = "https://shacs.gov.cn/gwyj/api/gwy-column-section.json?listChild=true";
+  const selectionNews = "https://shacs.gov.cn/gwyj/api/child-section-and-news.json?sectionId=408&pageSize=2000";
+  const civilNews = "https://shacs.gov.cn/gwyj/api/child-section-and-news.json?sectionId=407&pageSize=2000";
+  const selectionDetail = "https://shacs.gov.cn/gwyj/api/show-news.json?id=1285";
+  const fetchImpl = mockFetch({
+    [sections]: { body: json({ state: "SUCCESS", result: { child: [{ id: 408, name: "上海市2099年度选调优秀大学毕业生专题" }, { id: 407, name: "上海市2099年度考试录用公务员专题" }] } }) },
+    [selectionNews]: { body: json({ state: "SUCCESS", result: { secNews: { list: [{ id: 1285, title: "上海市2099年度选调优秀大学毕业生公告", postDate: "2099-10-01" }] } } }) },
+    [civilNews]: { body: json({ state: "SUCCESS", result: { secNews: { list: [{ id: 1284, title: "上海市2099年度考试录用公务员公告", postDate: "2099-10-01" }] } } }) },
+    [selectionDetail]: { body: json({ state: "SUCCESS", result: { title: "上海市2099年度选调优秀大学毕业生公告", postDate: "2099-10-01", content: "网上报名：2099年10月20日至11月5日。" } }) }
+  });
+  const result = await collectShanghaiSelectionProgram({ fetchImpl });
+  assert.equal(result.noticeCount, 1);
+  assert.equal(result.errors.length, 0);
+});
+
+test("uses Shenzhen's official announcement JSON rather than scraping a rendered list", async () => {
+  const feed = "http://www.zzb.sz.gov.cn/postmeta/i/29672.json";
+  const detail = "http://www.zzb.sz.gov.cn/notice/announcement/content/post_2099001.html";
+  const fetchImpl = mockFetch({
+    [feed]: { body: json({ articles: [{ title: "广东省2099年度选调优秀大学毕业生公告", url: detail, date: "2099-10-01" }] }) },
+    [detail]: { body: "<h1>广东省2099年度选调优秀大学毕业生公告</h1>网上报名：2099年10月20日至11月5日。" }
+  });
+  const result = await collectPublicExam({ sourceId: "shenzhen-selection-program", fetchImpl });
+  assert.equal(result.collectionRoute, "官方公告 JSON → 公告详情 → 职位表/附件");
+  assert.equal(result.noticeCount, 1);
+  assert.equal(result.notices[0].category, "selection-program");
 });
 
 test("parses a Guangzhou-filtered official position workbook without asking a browser to open each job", () => {

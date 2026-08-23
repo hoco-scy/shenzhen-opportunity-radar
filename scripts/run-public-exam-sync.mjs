@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
- * Runs the registered script-backed public-exam sources and records an
- * anonymous, targeted remediation. It never publishes a public-exam position;
+ * Runs the registered script-backed civil-exam and selection-program sources and records an
+ * anonymous, targeted remediation. It never publishes a position directly;
  * publishing requires a separate private eligibility decision for every row.
  */
 import { readFile, writeFile } from "node:fs/promises";
@@ -24,7 +24,7 @@ async function readJson(path) {
 
 export async function buildPublicExamRun({ registry, recipes, checkedAt, fetchImpl = fetch } = {}) {
   const outcomes = await collectPublicExamWorkflowSources({ registry, recipes, fetchImpl });
-  if (!outcomes.length) throw new Error("本仓库没有登记为 primary: script 的公考采集来源，不能生成同步记录。");
+  if (!outcomes.length) throw new Error("本仓库没有登记为 primary: script 的公务员考试或选调优培采集来源，不能生成同步记录。");
   const summary = summarizePublicExamOutcomes(outcomes);
   const sourceChecks = outcomes.map((outcome) => ({ ...outcome.sourceCheck, checkedAt }));
   const reviews = outcomes.flatMap((outcome) => outcome.reviews);
@@ -40,7 +40,7 @@ export async function buildPublicExamRun({ registry, recipes, checkedAt, fetchIm
     coverageStatus: "targeted-public-exam-sources",
     status: incomplete ? "completed-partial" : "completed",
     outcome: "official-public-exam-announcements-synchronized",
-    summary: `已用脚本完成 ${summary.sources} 个登记公考来源的官方公告、详情和可公开附件检查；发现 ${summary.notices} 条公告，${summary.deferred} 条仍需私有资格判断的公告级待核验对象。未将任何公考职位直接发布到岗位页。`,
+    summary: `已用脚本完成 ${summary.sources} 个登记公务员考试与选调优培来源的官方公告、详情和可公开附件检查；发现 ${summary.notices} 条公告，${summary.deferred} 条仍需私有资格判断的公告级待核验对象。未将任何具体岗位直接发布到岗位页。`,
     metrics: {
       officialSystemsChecked: sourceChecks.length,
       officialSystemsSucceeded: sourceChecks.length - incomplete,

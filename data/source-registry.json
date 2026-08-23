@@ -66,6 +66,28 @@
       "officialSiteConfirmed": true
     },
     {
+      "id": "shenzhen-selection-program",
+      "organization": "中共深圳市委组织部选调优培公告",
+      "type": "政府官网",
+      "role": "authoritative",
+      "tier": "critical",
+      "cadence": "every-run",
+      "coverage": [
+        "选调优培"
+      ],
+      "domains": [
+        "www.zzb.sz.gov.cn"
+      ],
+      "entryUrl": "http://www.zzb.sz.gov.cn/notice/announcement/",
+      "transportSecurity": "official-http-only",
+      "httpOnlyVerifiedAt": "2026-08-23",
+      "accessMode": "script-official-public-json",
+      "recipeRequired": true,
+      "registeredAt": "2026-08-23T15:39:00+08:00",
+      "lastAccessAuditAt": "2026-08-23",
+      "officialSiteConfirmed": true
+    },
+    {
       "id": "shenzhen-institutions",
       "organization": "深圳市人力资源和社会保障局事业单位招聘",
       "type": "政府官网",

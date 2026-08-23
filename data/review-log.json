@@ -2,11 +2,373 @@
   "meta": {
     "schemaVersion": 1,
     "initializationStatus": "synchronized",
-    "lastRunAt": "2026-08-23T14:59:00+08:00",
+    "lastRunAt": "2026-08-23T15:48:00+08:00",
     "timezone": "Asia/Shanghai",
     "privacyRule": "只记录公开招聘事实、匿名审核结论和公开安全原因；不记录或反推任何私人资格字段"
   },
   "runs": [
+    {
+      "id": "run-20260823-1548-public-exam-sync",
+      "scope": "targeted-remediation",
+      "checkedAt": "2026-08-23T15:48:00+08:00",
+      "trigger": "public-exam-script-sync",
+      "policyVersion": 6,
+      "screeningStrategyVersion": 2,
+      "candidateProcessingVersion": 3,
+      "coverageStatus": "targeted-public-exam-sources",
+      "status": "completed",
+      "outcome": "official-public-exam-announcements-synchronized",
+      "summary": "已用脚本完成 3 个登记公务员考试与选调优培来源的官方公告、详情和可公开附件检查；发现 84 条公告，0 条仍需私有资格判断的公告级待核验对象。未将任何具体岗位直接发布到岗位页。",
+      "metrics": {
+        "officialSystemsChecked": 3,
+        "officialSystemsSucceeded": 3,
+        "officialSystemsFailed": 0,
+        "newLeads": 84,
+        "reviewedItems": 0,
+        "accepted": 0,
+        "rejected": 0,
+        "deferred": 0,
+        "published": 0,
+        "updated": 0,
+        "closed": 0
+      },
+      "screeningMetrics": {
+        "portalResultsReported": 84,
+        "nativeFilterQueries": 3,
+        "nativeFilteredResults": 84,
+        "deduplicatedCandidates": 0,
+        "positionsBatchReviewed": 0,
+        "positionsOfficiallyVerified": 0,
+        "positionsEscalated": 0,
+        "positionsDeferredByBudget": 0,
+        "discoverySourcesChecked": 0,
+        "discoveryOfficialCandidates": 0
+      },
+      "sourceChecks": [
+        {
+          "sourceId": "national-civil",
+          "status": "checked-no-active-campaign",
+          "attempts": 2,
+          "note": "官方公告、详情和可见附件已完成脚本检查；本轮未发现报名截止日未过且可进入资格判断的公务员/选调公告；另有 4 条缺少可解析报名期限的历史/归档公告，未作为在招处理。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "http://bm.scs.gov.cn/pp/gkweb/core/web/ui/business/home/gkhome.html",
+              "finalUrl": "http://bm.scs.gov.cn/pp/gkweb/core/web/ui/business/home/gkhome.html",
+              "outcome": "official-page",
+              "recipe": "官方 SPA 配置 → 官方 JSON 专题 → 公告详情/附件"
+            }
+          ],
+          "checkedAt": "2026-08-23T15:48:00+08:00"
+        },
+        {
+          "sourceId": "shenzhen-civil",
+          "status": "checked-no-active-campaign",
+          "attempts": 2,
+          "note": "官方公告、详情和可见附件已完成脚本检查；本轮未发现报名截止日未过且可进入资格判断的公务员/选调公告。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.gdzz.gov.cn/gwygz/lypytzgg/index.html",
+              "finalUrl": "https://www.gdzz.gov.cn/gwygz/lypytzgg/index.html",
+              "outcome": "official-page",
+              "recipe": "广东组织工作网公告列表 → 公告详情 → 官方附件/压缩包"
+            }
+          ],
+          "checkedAt": "2026-08-23T15:48:00+08:00"
+        },
+        {
+          "sourceId": "shenzhen-selection-program",
+          "status": "checked-no-active-campaign",
+          "attempts": 1,
+          "note": "官方公告、详情和可见附件已完成脚本检查；本轮未发现报名截止日未过且可进入资格判断的公务员/选调公告。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "http://www.zzb.sz.gov.cn/notice/announcement/",
+              "finalUrl": "http://www.zzb.sz.gov.cn/postmeta/i/29672.json",
+              "outcome": "official-page",
+              "recipe": "官方公告 JSON → 公告详情 → 职位表/附件"
+            }
+          ],
+          "checkedAt": "2026-08-23T15:48:00+08:00"
+        }
+      ],
+      "reviews": []
+    },
+    {
+      "id": "run-20260823-1545-public-exam-sync",
+      "scope": "targeted-remediation",
+      "checkedAt": "2026-08-23T15:45:00+08:00",
+      "trigger": "public-exam-script-sync",
+      "policyVersion": 6,
+      "screeningStrategyVersion": 2,
+      "candidateProcessingVersion": 3,
+      "coverageStatus": "targeted-public-exam-sources",
+      "status": "completed",
+      "outcome": "official-public-exam-announcements-synchronized",
+      "summary": "已用脚本完成 3 个登记公务员考试与选调优培来源的官方公告、详情和可公开附件检查；发现 84 条公告，0 条仍需私有资格判断的公告级待核验对象。未将任何具体岗位直接发布到岗位页。",
+      "metrics": {
+        "officialSystemsChecked": 3,
+        "officialSystemsSucceeded": 3,
+        "officialSystemsFailed": 0,
+        "newLeads": 84,
+        "reviewedItems": 0,
+        "accepted": 0,
+        "rejected": 0,
+        "deferred": 0,
+        "published": 0,
+        "updated": 0,
+        "closed": 0
+      },
+      "screeningMetrics": {
+        "portalResultsReported": 84,
+        "nativeFilterQueries": 3,
+        "nativeFilteredResults": 84,
+        "deduplicatedCandidates": 0,
+        "positionsBatchReviewed": 0,
+        "positionsOfficiallyVerified": 0,
+        "positionsEscalated": 0,
+        "positionsDeferredByBudget": 0,
+        "discoverySourcesChecked": 0,
+        "discoveryOfficialCandidates": 0
+      },
+      "sourceChecks": [
+        {
+          "sourceId": "national-civil",
+          "status": "checked-no-active-campaign",
+          "attempts": 2,
+          "note": "官方公告、详情和可见附件已完成脚本检查；本轮未发现报名截止日未过且可进入资格判断的公务员/选调公告；另有 4 条缺少可解析报名期限的历史/归档公告，未作为在招处理。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "http://bm.scs.gov.cn/pp/gkweb/core/web/ui/business/home/gkhome.html",
+              "finalUrl": "http://bm.scs.gov.cn/pp/gkweb/core/web/ui/business/home/gkhome.html",
+              "outcome": "official-page",
+              "recipe": "官方 SPA 配置 → 官方 JSON 专题 → 公告详情/附件"
+            }
+          ],
+          "checkedAt": "2026-08-23T15:45:00+08:00"
+        },
+        {
+          "sourceId": "shenzhen-civil",
+          "status": "checked-no-active-campaign",
+          "attempts": 2,
+          "note": "官方公告、详情和可见附件已完成脚本检查；本轮未发现报名截止日未过且可进入资格判断的公务员/选调公告。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.gdzz.gov.cn/gwygz/lypytzgg/index.html",
+              "finalUrl": "https://www.gdzz.gov.cn/gwygz/lypytzgg/index.html",
+              "outcome": "official-page",
+              "recipe": "广东组织工作网公告列表 → 公告详情 → 官方附件/压缩包"
+            }
+          ],
+          "checkedAt": "2026-08-23T15:45:00+08:00"
+        },
+        {
+          "sourceId": "shenzhen-selection-program",
+          "status": "checked-no-active-campaign",
+          "attempts": 1,
+          "note": "官方公告、详情和可见附件已完成脚本检查；本轮未发现报名截止日未过且可进入资格判断的公务员/选调公告。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "http://www.zzb.sz.gov.cn/notice/announcement/",
+              "finalUrl": "http://www.zzb.sz.gov.cn/postmeta/i/29672.json",
+              "outcome": "official-page",
+              "recipe": "官方公告 JSON → 公告详情 → 职位表/附件"
+            }
+          ],
+          "checkedAt": "2026-08-23T15:45:00+08:00"
+        }
+      ],
+      "reviews": []
+    },
+    {
+      "id": "run-20260823-1539-public-exam-sync",
+      "scope": "targeted-remediation",
+      "checkedAt": "2026-08-23T15:39:00+08:00",
+      "trigger": "public-exam-script-sync",
+      "policyVersion": 6,
+      "screeningStrategyVersion": 2,
+      "candidateProcessingVersion": 3,
+      "coverageStatus": "targeted-public-exam-sources",
+      "status": "completed-partial",
+      "outcome": "official-public-exam-announcements-synchronized",
+      "summary": "已用脚本完成 3 个登记公考来源的官方公告、详情和可公开附件检查；发现 84 条公告，0 条仍需私有资格判断的公告级待核验对象。未将任何公考职位直接发布到岗位页。",
+      "metrics": {
+        "officialSystemsChecked": 3,
+        "officialSystemsSucceeded": 2,
+        "officialSystemsFailed": 1,
+        "newLeads": 84,
+        "reviewedItems": 0,
+        "accepted": 0,
+        "rejected": 0,
+        "deferred": 0,
+        "published": 0,
+        "updated": 0,
+        "closed": 0
+      },
+      "screeningMetrics": {
+        "portalResultsReported": 84,
+        "nativeFilterQueries": 3,
+        "nativeFilteredResults": 84,
+        "deduplicatedCandidates": 0,
+        "positionsBatchReviewed": 0,
+        "positionsOfficiallyVerified": 0,
+        "positionsEscalated": 0,
+        "positionsDeferredByBudget": 0,
+        "discoverySourcesChecked": 0,
+        "discoveryOfficialCandidates": 0
+      },
+      "sourceChecks": [
+        {
+          "sourceId": "national-civil",
+          "status": "checked-no-active-campaign",
+          "attempts": 2,
+          "note": "官方公告、详情和可见附件已完成脚本检查；本轮未发现报名截止日未过且可进入资格判断的公务员/选调公告；另有 4 条缺少可解析报名期限的历史/归档公告，未作为在招处理。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "http://bm.scs.gov.cn/pp/gkweb/core/web/ui/business/home/gkhome.html",
+              "finalUrl": "http://bm.scs.gov.cn/pp/gkweb/core/web/ui/business/home/gkhome.html",
+              "outcome": "official-page",
+              "recipe": "官方 SPA 配置 → 官方 JSON 专题 → 公告详情/附件"
+            }
+          ],
+          "checkedAt": "2026-08-23T15:39:00+08:00"
+        },
+        {
+          "sourceId": "shenzhen-civil",
+          "status": "accessible-incomplete",
+          "attempts": 2,
+          "note": "官方入口可访问，但公告详情、附件或职位表解析未完成；不据此判断无岗位。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.gdzz.gov.cn/gwygz/lypytzgg/index.html",
+              "finalUrl": "https://www.gdzz.gov.cn/gwygz/lypytzgg/index.html",
+              "outcome": "official-page",
+              "recipe": "广东组织工作网公告列表 → 公告详情 → 官方附件/压缩包"
+            }
+          ],
+          "checkedAt": "2026-08-23T15:39:00+08:00"
+        },
+        {
+          "sourceId": "shenzhen-selection-program",
+          "status": "checked-no-active-campaign",
+          "attempts": 1,
+          "note": "官方公告、详情和可见附件已完成脚本检查；本轮未发现报名截止日未过且可进入资格判断的公务员/选调公告。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "http://www.zzb.sz.gov.cn/notice/announcement/",
+              "finalUrl": "http://www.zzb.sz.gov.cn/postmeta/i/29672.json",
+              "outcome": "official-page",
+              "recipe": "官方公告 JSON → 公告详情 → 职位表/附件"
+            }
+          ],
+          "checkedAt": "2026-08-23T15:39:00+08:00"
+        }
+      ],
+      "reviews": []
+    },
+    {
+      "id": "run-20260823-1538-public-exam-sync",
+      "scope": "targeted-remediation",
+      "checkedAt": "2026-08-23T15:38:00+08:00",
+      "trigger": "public-exam-script-sync",
+      "policyVersion": 6,
+      "screeningStrategyVersion": 2,
+      "candidateProcessingVersion": 3,
+      "coverageStatus": "targeted-public-exam-sources",
+      "status": "completed",
+      "outcome": "official-public-exam-announcements-synchronized",
+      "summary": "已用脚本完成 3 个登记公考来源的官方公告、详情和可公开附件检查；发现 84 条公告，1 条仍需私有资格判断的公告级待核验对象。未将任何公考职位直接发布到岗位页。",
+      "metrics": {
+        "officialSystemsChecked": 3,
+        "officialSystemsSucceeded": 3,
+        "officialSystemsFailed": 0,
+        "newLeads": 84,
+        "reviewedItems": 1,
+        "accepted": 0,
+        "rejected": 0,
+        "deferred": 1,
+        "published": 0,
+        "updated": 0,
+        "closed": 0
+      },
+      "screeningMetrics": {
+        "portalResultsReported": 84,
+        "nativeFilterQueries": 3,
+        "nativeFilteredResults": 84,
+        "deduplicatedCandidates": 1,
+        "positionsBatchReviewed": 1,
+        "positionsOfficiallyVerified": 0,
+        "positionsEscalated": 0,
+        "positionsDeferredByBudget": 0,
+        "discoverySourcesChecked": 0,
+        "discoveryOfficialCandidates": 0
+      },
+      "sourceChecks": [
+        {
+          "sourceId": "national-civil",
+          "status": "checked-deferred",
+          "attempts": 2,
+          "note": "已采集 1 条仍需处理的官方公告；尚未使用私有资格档案完成逐项硬条件判断，因此未发布具体岗位。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "http://bm.scs.gov.cn/pp/gkweb/core/web/ui/business/home/gkhome.html",
+              "finalUrl": "http://bm.scs.gov.cn/pp/gkweb/core/web/ui/business/home/gkhome.html",
+              "outcome": "official-page",
+              "recipe": "官方 SPA 配置 → 官方 JSON 专题 → 公告详情/附件"
+            }
+          ],
+          "checkedAt": "2026-08-23T15:38:00+08:00"
+        },
+        {
+          "sourceId": "shenzhen-civil",
+          "status": "checked-no-active-campaign",
+          "attempts": 2,
+          "note": "官方公告、详情和可见附件已完成脚本检查；本轮未发现报名截止日未过且可进入资格判断的公务员/选调公告。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.gdzz.gov.cn/gwygz/lypytzgg/index.html",
+              "finalUrl": "https://www.gdzz.gov.cn/gwygz/lypytzgg/index.html",
+              "outcome": "official-page",
+              "recipe": "广东组织工作网公告列表 → 公告详情 → 官方附件/压缩包"
+            }
+          ],
+          "checkedAt": "2026-08-23T15:38:00+08:00"
+        },
+        {
+          "sourceId": "shenzhen-selection-program",
+          "status": "checked-no-active-campaign",
+          "attempts": 1,
+          "note": "官方公告、详情和可见附件已完成脚本检查；本轮未发现报名截止日未过且可进入资格判断的公务员/选调公告。",
+          "accessEvidence": [
+            {
+              "requestedUrl": "http://www.zzb.sz.gov.cn/notice/announcement/",
+              "finalUrl": "http://www.zzb.sz.gov.cn/postmeta/i/29672.json",
+              "outcome": "official-page",
+              "recipe": "官方公告 JSON → 公告详情 → 职位表/附件"
+            }
+          ],
+          "checkedAt": "2026-08-23T15:38:00+08:00"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "review-national-civil-f479fbc67dd4c577",
+          "scope": "official-announcement",
+          "track": "考公",
+          "organization": "国家公务员局",
+          "title": "中央机关及其直属机构2026年度补充录用公务员报名即将开始",
+          "officialPublishedAt": "2026-05-06",
+          "headcount": "公告级待核验",
+          "deadline": "2026-05-10",
+          "decision": "deferred",
+          "reasonCode": "private-eligibility-check-required",
+          "reason": "官方公告仍处于可关注周期；在使用私有资格档案逐项核对前，不得发布为确认可报岗位。",
+          "verificationNote": "已通过官方公告入口、详情与可公开附件完成脚本采集；本记录不含任何个人资格字段。",
+          "fallback": "等待官方职位表/报名窗口信息完整，或在私有资格流程逐项完成硬条件校验后再决定是否拆分并发布具体岗位。",
+          "sourceId": "national-civil",
+          "officialUrl": "http://dl.scs.gov.cn/api/article/8a81f6d09bb1deaf019e0022df180962"
+        }
+      ]
+    },
     {
       "id": "run-20260823-1459-public-exam-sync",
       "scope": "targeted-remediation",

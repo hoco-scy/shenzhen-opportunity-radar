@@ -42,11 +42,27 @@ const SOURCE_CONFIG = {
     entries: [{ role: "公告列表", url: "https://www.beijing.gov.cn/gongkai/rsxx/gwyzk/" }],
     defaultCity: "北京市"
   },
+  "beijing-selection-program": {
+    sourceId: "beijing-selection-program",
+    label: "北京市人力资源和社会保障局选调优培公告",
+    allowedDomains: ["rsj.beijing.gov.cn"],
+    detailTitleDiscovery: true,
+    detailExtFallback: true,
+    entries: [{ role: "选调优培公告列表", url: "https://rsj.beijing.gov.cn/xxgk/tzgg/" }],
+    defaultCity: "北京市"
+  },
   "shanghai-civil": {
     sourceId: "shanghai-civil",
     label: "上海市公务员局",
     allowedDomains: ["shacs.gov.cn"],
     entries: [{ role: "公告专题", url: "https://shacs.gov.cn/" }],
+    defaultCity: "上海市"
+  },
+  "shanghai-selection-program": {
+    sourceId: "shanghai-selection-program",
+    label: "上海市公务员局选调生专题",
+    allowedDomains: ["shacs.gov.cn"],
+    entries: [{ role: "选调生官方专题", url: "https://www.shacs.gov.cn/" }],
     defaultCity: "上海市"
   },
   "guangzhou-civil": {
@@ -68,10 +84,27 @@ const SOURCE_CONFIG = {
       { role: "报名系统公告", url: "https://ggfw.hrss.gd.gov.cn/gwyks/anouns.do" }
     ],
     defaultCity: "深圳市"
+  },
+  "guangzhou-selection-program": {
+    sourceId: "guangzhou-selection-program",
+    label: "广州市人力资源和社会保障局选调优培公告",
+    allowedDomains: ["rsj.gz.gov.cn"],
+    entries: [{ role: "公务员考录公告列表", url: "https://rsj.gz.gov.cn/ywzt/rszdgg/gwykl/" }],
+    defaultCity: "广州市"
+  },
+  "shenzhen-selection-program": {
+    sourceId: "shenzhen-selection-program",
+    label: "中共深圳市委组织部选调优培公告",
+    allowedDomains: ["www.zzb.sz.gov.cn"],
+    allowHttp: true,
+    detailTitleDiscovery: true,
+    dataApiUrl: "http://www.zzb.sz.gov.cn/postmeta/i/29672.json",
+    entries: [{ role: "组织部公告列表", url: "http://www.zzb.sz.gov.cn/notice/announcement/" }],
+    defaultCity: "深圳市"
   }
 };
 
-const NOTICE_PATTERN = /(考试录用.{0,12}公务员|公务员.{0,24}(公告|职位|招考|补充录用|调剂|遴选|选调)|选调优秀大学毕业生|定向选调|优培)/;
+const NOTICE_PATTERN = /(考试录用.{0,12}公务员|公务员.{0,24}(公告|职位|招考|补充录用|调剂|遴选|选调)|选调优秀大学毕业生|定向选调|公开选调(?:公务员)?|选调生|优培)/;
 const POSITION_ATTACHMENT_PATTERN = /(职位|招考简章|职位查询|附件\s*[一1]|附件1[-—至]?[\d一二三四五六七八九十]*)/;
 const FILE_ATTACHMENT_PATTERN = /\.(?:zip|xls|xlsx|csv|pdf|doc|docx)(?:$|[?#])/i;
 
@@ -262,6 +295,21 @@ export function extractLinks(html, baseUrl, config) {
   return links;
 }
 
+function extractEmbeddedOfficialUrls(html, baseUrl, config) {
+  const links = [];
+  const seen = new Set();
+  for (const match of String(html).matchAll(/["'](?:url|link)["']\s*:\s*["']([^"']+\.html(?:[?#][^"']*)?)["']/gi)) {
+    try {
+      const url = new URL(decodeHtml(match[1]), baseUrl);
+      assertOfficialUrl(url, config);
+      if (seen.has(url.toString())) continue;
+      seen.add(url.toString());
+      links.push({ title: "", officialUrl: url.toString(), publishedAt: publicationDateFromUrl(url.toString()), raw: match[0] });
+    } catch { /* Ignore malformed or off-domain embedded records. */ }
+  }
+  return links;
+}
+
 function publicationDateFromUrl(url) {
   const match = String(url).match(/(?:t|_)((?:20)\d{2})(\d{2})(\d{2})(?:_|\.|$)/);
   return match ? `${match[1]}-${match[2]}-${match[3]}` : undefined;
@@ -271,7 +319,7 @@ function classifyNotice(title = "") {
   if (/拟录用|公示|面试|资格审核|体检|考察|成绩|笔试/.test(title)) return "exam-process-notice";
   if (/职位表|招考简章|职位查询/.test(title)) return "position-table";
   if (/补充录用|调剂/.test(title)) return "supplementary-recruitment";
-  if (/选调优秀大学毕业生|定向选调|优培/.test(title)) return "selection-program";
+  if (/选调优秀大学毕业生|定向选调|公开选调(?:公务员)?|选调生|优培/.test(title)) return "selection-program";
   if (/考试录用.*公务员公告|公务员.*招考公告/.test(title)) return "recruitment-announcement";
   return "exam-process-notice";
 }
@@ -324,6 +372,20 @@ function normaliseNotice({ sourceId, title, officialUrl, publishedAt, category, 
   };
 }
 
+function titleFromOfficialDetail(html, fallback = "") {
+  const source = String(html);
+  const candidates = [
+    source.match(/<meta\b[^>]*(?:name|property)\s*=\s*["'](?:title|og:title)["'][^>]*content\s*=\s*["']([^"']+)["']/i)?.[1],
+    source.match(/<title\b[^>]*>([\s\S]*?)<\/title>/i)?.[1],
+    source.match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/i)?.[1]
+  ];
+  for (const value of candidates) {
+    const title = textFromHtml(value || "").replace(/\s*[_-]\s*(?:北京人社|深圳先锋网|北京市人力资源和社会保障局.*|.*网站)\s*$/i, "").trim();
+    if (title && !/^title$/i.test(title) && !/^(?:北京人社|深圳先锋网|公告公示|通知公告)(?:\s*[-_]\s*深圳先锋网)?$/i.test(title)) return title;
+  }
+  return fallback;
+}
+
 function uniqueByUrl(notices) {
   const found = new Map();
   for (const notice of notices) found.set(notice.officialUrl, notice);
@@ -338,9 +400,21 @@ async function enrichStaticNotices(notices, config, fetchImpl) {
   const errors = [];
   const enriched = await Promise.all(notices.map(async (notice) => {
     try {
-      const detail = await fetchOfficialText(notice.officialUrl, config, fetchImpl);
+      let detail;
+      try {
+        detail = await fetchOfficialText(notice.officialUrl, config, fetchImpl);
+      } catch (error) {
+        const extensionUrl = config.detailExtFallback && /HTTP 404/.test(error.message) && /\.html(?:[?#].*)?$/i.test(notice.officialUrl)
+          ? notice.officialUrl.replace(/\.html(?=([?#].*)?$)/i, "_ext.html")
+          : undefined;
+        if (!extensionUrl) throw error;
+        detail = await fetchOfficialText(extensionUrl, config, fetchImpl);
+      }
+      const title = titleFromOfficialDetail(detail.text, notice.title);
       return {
         ...notice,
+        title,
+        category: classifyNotice(title),
         officialUrl: detail.finalUrl,
         attachments: extractAttachments(detail.text, detail.finalUrl, config),
         lifecycle: extractApplicationLifecycle(detail.text, new Date(), notice)
@@ -377,24 +451,64 @@ async function collectStaticNoticeList({ source, entry, fetchImpl, maxPages = 12
       errors.push({ officialUrl: url, error: error.message });
     }
   }
-  const notices = uniqueByUrl(pages.flatMap(({ html, url }) => extractLinks(html, url, source)
-    .filter((link) => isRelevantNotice(link.title))
+  const listedLinks = pages.flatMap(({ html, url }) => [
+    ...extractLinks(html, url, source),
+    ...(source.detailTitleDiscovery ? extractEmbeddedOfficialUrls(html, url, source) : [])
+  ]);
+  const linkedByUrl = new Map();
+  for (const link of listedLinks) {
+    const existing = linkedByUrl.get(link.officialUrl);
+    if (!existing || (!existing.title && link.title)) linkedByUrl.set(link.officialUrl, link);
+  }
+  const notices = uniqueByUrl([...linkedByUrl.values()]
+    .filter((link) => isRelevantNotice(link.title) || (source.detailTitleDiscovery && !link.title))
     .map((link) => normaliseNotice({
       sourceId: source.sourceId,
       title: link.title,
       officialUrl: link.officialUrl,
       publishedAt: publicationDateFromUrl(link.officialUrl) || link.publishedAt,
       entryRole: entry.role
-    }))));
+    })));
   const chosen = limited(notices, maxNotices);
   const detail = await enrichStaticNotices(chosen, source, fetchImpl);
-  return { notices: detail.notices, errors: [...errors, ...detail.errors], pagesVisited: pages.map((page) => page.url), truncated: chosen.length < notices.length };
+  return { notices: detail.notices.filter((notice) => isRelevantNotice(notice.title)), errors: [...errors, ...detail.errors], pagesVisited: pages.map((page) => page.url), truncated: chosen.length < notices.length };
+}
+
+async function collectOfficialJsonNoticeList({ source, fetchImpl, maxNotices }) {
+  const feed = await fetchOfficialJson(source.dataApiUrl, source, fetchImpl);
+  const notices = uniqueByUrl((feed.data?.articles || []).flatMap((article) => {
+    if (!isRelevantNotice(article.title)) return [];
+    try {
+      assertOfficialUrl(article.url, source);
+      return [normaliseNotice({
+        sourceId: source.sourceId,
+        title: article.title,
+        officialUrl: article.url,
+        publishedAt: article.date || article.created_at || article.publish_time,
+        entryRole: source.entries[0].role
+      })];
+    } catch { return []; }
+  }));
+  const chosen = limited(notices, maxNotices);
+  const detail = await enrichStaticNotices(chosen, source, fetchImpl);
+  return { notices: detail.notices.filter((notice) => isRelevantNotice(notice.title)), errors: detail.errors, pagesVisited: [feed.finalUrl], truncated: chosen.length < notices.length };
 }
 
 export async function collectBeijingCivil({ fetchImpl = fetch, maxPages, maxNotices } = {}) {
   const source = SOURCE_CONFIG["beijing-civil"];
   const result = await collectStaticNoticeList({ source, entry: source.entries[0], fetchImpl, maxPages, maxNotices });
   return collectionResult(source, result, { collectionRoute: "官方静态公告列表 → 公告详情 → 附件" });
+}
+
+export async function collectStaticSelectionProgram({ sourceId, fetchImpl = fetch, maxPages, maxNotices } = {}) {
+  const source = SOURCE_CONFIG[sourceId];
+  if (!source) throw new CollectionSafetyError(`未知选调优培来源：${sourceId}`);
+  const result = source.dataApiUrl
+    ? await collectOfficialJsonNoticeList({ source, fetchImpl, maxNotices })
+    : await collectStaticNoticeList({ source, entry: source.entries[0], fetchImpl, maxPages, maxNotices });
+  return collectionResult(source, { ...result, notices: result.notices.filter((notice) => notice.category === "selection-program") }, {
+    collectionRoute: source.dataApiUrl ? "官方公告 JSON → 公告详情 → 职位表/附件" : "官方选调优培公告列表 → 公告详情 → 职位表/附件"
+  });
 }
 
 export function parseNationalCoreConstants(script) {
@@ -535,11 +649,11 @@ function flattenShanghaiNews(value, sectionName, output = []) {
 }
 
 function isShanghaiTopic(section) {
-  return /(考试录用公务员|公开遴选|公开选调|聘任制公务员)/.test(`${section.name || ""} ${section.title || ""}`) && !/(辅警|辅助文员)/.test(`${section.name || ""} ${section.title || ""}`);
+  return /(考试录用公务员|公开遴选|公开选调|聘任制公务员|选调优秀大学毕业生|定向选调|选调生|优培)/.test(`${section.name || ""} ${section.title || ""}`) && !/(辅警|辅助文员)/.test(`${section.name || ""} ${section.title || ""}`);
 }
 
-export async function collectShanghaiCivil({ fetchImpl = fetch, maxNotices } = {}) {
-  const source = SOURCE_CONFIG["shanghai-civil"];
+export async function collectShanghaiCivil({ sourceId = "shanghai-civil", selectionOnly = false, fetchImpl = fetch, maxNotices } = {}) {
+  const source = SOURCE_CONFIG[sourceId];
   const apiOrigin = "https://shacs.gov.cn";
   const sectionUrl = new URL("/gwyj/api/gwy-column-section.json?listChild=true", apiOrigin).toString();
   const sectionData = await fetchOfficialJson(sectionUrl, source, fetchImpl);
@@ -574,7 +688,12 @@ export async function collectShanghaiCivil({ fetchImpl = fetch, maxNotices } = {
         sectionName: record.sectionName
       });
     }));
-  const chosen = limited(relevant, maxNotices);
+  // The independent selection feed must not spend its detail budget on ordinary
+  // civil-service notices from the shared Shanghai topic directory. Besides
+  // being wasteful, a historical generic notice returning 502 must not make a
+  // successfully checked selection feed look incomplete.
+  const sourceRelevant = selectionOnly ? relevant.filter((notice) => notice.category === "selection-program") : relevant;
+  const chosen = limited(sourceRelevant, maxNotices);
   const notices = await Promise.all(chosen.map(async (notice) => {
     try {
       const detail = await fetchOfficialJson(notice.detailApiUrl, source, fetchImpl);
@@ -594,7 +713,12 @@ export async function collectShanghaiCivil({ fetchImpl = fetch, maxNotices } = {
       return { ...notice, detailStatus: "unavailable" };
     }
   }));
-  return collectionResult(source, { notices, errors, pagesVisited, truncated: chosen.length < relevant.length }, { collectionRoute: "官方专题 JSON → 专题公告 JSON → 公告详情/附件" });
+  const sourceNotices = selectionOnly ? notices.filter((notice) => notice.category === "selection-program") : notices;
+  return collectionResult(source, { notices: sourceNotices, errors, pagesVisited, truncated: chosen.length < sourceRelevant.length }, { collectionRoute: selectionOnly ? "官方选调生专题 JSON → 公告详情/附件" : "官方专题 JSON → 专题公告 JSON → 公告详情/附件" });
+}
+
+export async function collectShanghaiSelectionProgram({ fetchImpl = fetch, maxNotices } = {}) {
+  return collectShanghaiCivil({ sourceId: "shanghai-selection-program", selectionOnly: true, fetchImpl, maxNotices });
 }
 
 function parseGuangdongNoticeLinks(html, baseUrl, source) {
@@ -820,7 +944,9 @@ export async function collectPublicExam({ sourceId, fetchImpl = fetch, maxPages,
   if (sourceId === "national-civil") result = await collectNationalCivil({ fetchImpl, maxNotices });
   else if (sourceId === "beijing-civil") result = await collectBeijingCivil({ fetchImpl, maxPages, maxNotices });
   else if (sourceId === "shanghai-civil") result = await collectShanghaiCivil({ fetchImpl, maxNotices });
+  else if (sourceId === "shanghai-selection-program") result = await collectShanghaiSelectionProgram({ fetchImpl, maxNotices });
   else if (sourceId === "guangzhou-civil" || sourceId === "shenzhen-civil") result = await collectGuangdongCivil({ sourceId, fetchImpl, maxPages, maxNotices });
+  else if (["beijing-selection-program", "guangzhou-selection-program", "shenzhen-selection-program"].includes(sourceId)) result = await collectStaticSelectionProgram({ sourceId, fetchImpl, maxPages, maxNotices });
   else throw new CollectionSafetyError(`不支持的来源：${sourceId}`);
   if (!parseTables) return result;
   const positionTables = await parsePositionTables(result, { city, fetchImpl });

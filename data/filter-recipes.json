@@ -105,6 +105,53 @@
       }
     },
     {
+      "sourceId": "shenzhen-selection-program",
+      "status": "route-verified",
+      "observedAt": "2026-08-23",
+      "officialEntryUrl": "http://www.zzb.sz.gov.cn/notice/announcement/",
+      "accessMode": "script-official-public-json",
+      "nativeFilters": [],
+      "queryPlan": {
+        "everyRun": [
+          "脚本从中共深圳市委组织部公告页面公开引用的 JSON 数据接口读取公告，只保留选调、优培、定向选调和选调生相关公告。",
+          "进入每条同域官方详情，采集报名期限、职位表和官方附件；HTTPS 异常不能替换为第三方转载。",
+          "有效报名公告才进入职位表结构化处理；明确预公告保留为公告级待核验。"
+        ],
+        "completionRule": "HTTP 官方公告 JSON、相关详情和可公开附件均有访问证据；页面可访问但数据接口或附件未完成时如实记录部分完成。"
+      },
+      "availabilityRule": "该组织部公告系统经核验仅稳定提供官方 HTTP 路径；该例外只允许登记域名，任何失败都不能被解释为无公告。",
+      "collection": {
+        "primary": "script",
+        "mode": "official-announcement-json-collector",
+        "steps": [
+          "运行 node scripts/collect-public-exams.mjs --source shenzhen-selection-program --parse-position-tables。",
+          "采集器从官方页面公开引用的公告 JSON 进入详情并验证最终地址仍在 www.zzb.sz.gov.cn。",
+          "仅把明确有效或预公告写入匿名审核记录，具体职位仍须私有资格核验。"
+        ],
+        "completion": "官方公告 JSON、详情和公开附件路径均被采集；没有当期项目时记录 checked-no-active-campaign。",
+        "fallback": "HTTP 页面、公告 JSON 或附件失败时记录 accessible-incomplete，再用浏览器校准公开结构；不降级到转载站。",
+        "implementation": {
+          "command": "node scripts/collect-public-exams.mjs --source shenzhen-selection-program --parse-position-tables",
+          "smokeTest": "node scripts/collect-public-exams.mjs --source shenzhen-selection-program --max-notices 8 --summary",
+          "runtime": "Node.js 18+；npm ci --ignore-scripts 后运行；仅允许 www.zzb.sz.gov.cn 的已核验 HTTP 官方页面、其公开引用的 JSON 和同域附件。",
+          "hardGuard": "HTTPS 失败不是改用非官方页面的理由；未知期限或未解析职位表不得被写成可报岗位。"
+        }
+      },
+      "availability": {
+        "state": "available",
+        "summary": "中共深圳市委组织部公告列表的官方 HTTP 路径可打开，并含有深圳选调资格审核等官方公告。",
+        "evidence": [
+          {
+            "method": "official-public-page-check",
+            "target": "http://www.zzb.sz.gov.cn/notice/announcement/",
+            "outcome": "non-error official page via verified HTTP route",
+            "checkedAt": "2026-08-23T10:20:00+08:00"
+          }
+        ],
+        "nextAction": "每轮继续验证 HTTP 页面和详情语义；若官方迁移 HTTPS，先重新审计后才改入口。"
+      }
+    },
+    {
       "sourceId": "shenzhen-personnel-exam",
       "status": "route-verified",
       "observedAt": "2026-08-22",
