@@ -81,11 +81,14 @@
       "entryUrl": "http://www.zzb.sz.gov.cn/notice/announcement/",
       "transportSecurity": "official-http-only",
       "httpOnlyVerifiedAt": "2026-08-23",
-      "accessMode": "script-official-public-json",
+      "accessMode": "script-official-university-announcement-api",
       "recipeRequired": true,
       "registeredAt": "2026-08-23T15:39:00+08:00",
       "lastAccessAuditAt": "2026-08-23",
-      "officialSiteConfirmed": true
+      "officialSiteConfirmed": true,
+      "collectionEntryUrl": "https://career.buaa.edu.cn/frontpage/buaa/html/newsList.html?id=5453aeeb99e74d78aea0b45fd456ae68",
+      "collectionAccessMode": "script-official-university-announcement-api",
+      "collectionNote": "页面继续展示并链接深圳市委组织部原生入口；后台从选调高校公开栏目筛选广东省应届选调公告，职位表再按深圳市处理。"
     },
     {
       "id": "shenzhen-institutions",

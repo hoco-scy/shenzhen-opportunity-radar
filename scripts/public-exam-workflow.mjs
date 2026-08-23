@@ -69,14 +69,16 @@ export function publicExamReview(source, notice) {
 }
 
 function accessEvidence(source, result) {
+  const collectionEntryUrl = source.collectionEntryUrl || source.entryUrl;
+  const collectionHost = new URL(collectionEntryUrl).hostname;
   const finalUrl = result.pagesVisited.find((url) => {
     try {
       const host = new URL(url).hostname;
-      return source.domains.some((domain) => host === domain || host.endsWith(`.${domain}`));
+      return host === collectionHost || host.endsWith(`.${collectionHost}`);
     } catch { return false; }
-  }) || source.entryUrl;
+  }) || collectionEntryUrl;
   return [{
-    requestedUrl: source.entryUrl,
+    requestedUrl: collectionEntryUrl,
     finalUrl,
     outcome: "official-page",
     recipe: result.collectionRoute || "官方公开公告采集器已完成列表、详情与附件路径处理。"

@@ -33,7 +33,9 @@ function officialDomain(urlValue, source) {
   try {
     const url = new URL(urlValue);
     const permittedProtocol = url.protocol === "https:" || (["official-http-only", "official-http-fallback"].includes(source.transportSecurity) && url.protocol === "http:");
-    return permittedProtocol && source.domains.some((domain) =>
+    const domains = [...source.domains];
+    if (source.collectionEntryUrl) domains.push(new URL(source.collectionEntryUrl).hostname);
+    return permittedProtocol && domains.some((domain) =>
       url.hostname === domain || url.hostname.endsWith(`.${domain}`));
   } catch { return false; }
 }

@@ -109,46 +109,47 @@
       "status": "route-verified",
       "observedAt": "2026-08-23",
       "officialEntryUrl": "http://www.zzb.sz.gov.cn/notice/announcement/",
-      "accessMode": "script-official-public-json",
-      "nativeFilters": [],
+      "collectionEntryUrl": "https://career.buaa.edu.cn/frontpage/buaa/html/newsList.html?id=5453aeeb99e74d78aea0b45fd456ae68",
+      "accessMode": "script-official-university-announcement-api",
+      "nativeFilters": ["北航就业信息网栏目：公务员／选调生", "标题：广东省 + 选调 + 应届优秀大学毕业生"],
       "queryPlan": {
         "everyRun": [
-          "脚本从中共深圳市委组织部公告页面公开引用的 JSON 数据接口读取公告，只保留选调、优培、定向选调和选调生相关公告。",
-          "进入每条同域官方详情，采集报名期限、职位表和官方附件；HTTPS 异常不能替换为第三方转载。",
+          "页面的信息源卡片保留深圳市委组织部原生入口；脚本读取北航就业网“公务员／选调生”公开栏目全部分页，不扫描未筛选的全站招聘列表。",
+          "仅打开标题命中广东省应届选调的详情，并确认正文标明中共广东省委组织部为发布机关；职位表再按深圳市筛选。",
           "有效报名公告才进入职位表结构化处理；明确预公告保留为公告级待核验。"
         ],
-        "completionRule": "HTTP 官方公告 JSON、相关详情和可公开附件均有访问证据；页面可访问但数据接口或附件未完成时如实记录部分完成。"
+        "completionRule": "选调高校公开栏目全部分页、广东省标题命中详情和可公开附件均有访问证据；页面可访问但数据接口或附件未完成时如实记录部分完成。"
       },
-      "availabilityRule": "该组织部公告系统经核验仅稳定提供官方 HTTP 路径；该例外只允许登记域名，任何失败都不能被解释为无公告。",
+      "availabilityRule": "原生组织部入口保留给用户直接访问；后台采集以选调高校公开栏目、详情发布机关和后续深圳市职位表筛选为准。栏目、详情或附件未完整返回时只能记 accessible-incomplete。",
       "collection": {
         "primary": "script",
-        "mode": "official-announcement-json-collector",
+        "mode": "official-university-selection-announcement-collector",
         "steps": [
           "运行 node scripts/collect-public-exams.mjs --source shenzhen-selection-program --parse-position-tables。",
-          "采集器从官方页面公开引用的公告 JSON 进入详情并验证最终地址仍在 www.zzb.sz.gov.cn。",
+          "采集器从北航就业网公开栏目完成分页，筛出广东省应届选调标题后进入详情并验证中共广东省委组织部发布机关。",
           "仅把明确有效或预公告写入匿名审核记录，具体职位仍须私有资格核验。"
         ],
-        "completion": "官方公告 JSON、详情和公开附件路径均被采集；没有当期项目时记录 checked-no-active-campaign。",
-        "fallback": "HTTP 页面、公告 JSON 或附件失败时记录 accessible-incomplete，再用浏览器校准公开结构；不降级到转载站。",
+        "completion": "选调高校栏目、广东省匹配详情和公开附件路径均被采集；没有当期项目时记录 checked-no-active-campaign。",
+        "fallback": "栏目接口、分页或附件失败时记录 accessible-incomplete，再用浏览器校准公开结构；不降级到转载站。",
         "implementation": {
           "command": "node scripts/collect-public-exams.mjs --source shenzhen-selection-program --parse-position-tables",
           "smokeTest": "node scripts/collect-public-exams.mjs --source shenzhen-selection-program --max-notices 8 --summary",
-          "runtime": "Node.js 18+；npm ci --ignore-scripts 后运行；仅允许 www.zzb.sz.gov.cn 的已核验 HTTP 官方页面、其公开引用的 JSON 和同域附件。",
-          "hardGuard": "HTTPS 失败不是改用非官方页面的理由；未知期限或未解析职位表不得被写成可报岗位。"
+          "runtime": "Node.js 18+；npm ci --ignore-scripts 后运行；只访问 career.buaa.edu.cn 的公开栏目、详情和附件。",
+          "hardGuard": "详情必须确认中共广东省委组织部且明确面向应届毕业生；广东省统一公告不能仅凭标题自动判定为深圳具体岗位，须等官方职位表筛选和私有资格判断。"
         }
       },
       "availability": {
         "state": "available",
-        "summary": "中共深圳市委组织部公告列表的官方 HTTP 路径可打开，并含有深圳选调资格审核等官方公告。",
+        "summary": "原生深圳市委组织部入口保留给用户；北航就业网“选调生”公开栏目可匿名分页访问，详情逐条确认发布机关。",
         "evidence": [
           {
-            "method": "official-public-page-check",
-            "target": "http://www.zzb.sz.gov.cn/notice/announcement/",
-            "outcome": "non-error official page via verified HTTP route",
-            "checkedAt": "2026-08-23T10:20:00+08:00"
+            "method": "official-university-public-api-check",
+            "target": "https://career.buaa.edu.cn/f/newsCenter/ajax_list",
+            "outcome": "公开“选调生”栏目接口返回分页，无需登录",
+            "checkedAt": "2026-08-23T17:30:00+08:00"
           }
         ],
-        "nextAction": "每轮继续验证 HTTP 页面和详情语义；若官方迁移 HTTPS，先重新审计后才改入口。"
+        "nextAction": "每轮完成栏目分页后，按广东省标题筛选并在详情确认发布机关；出现职位表后再按深圳市字段筛选。"
       }
     },
     {

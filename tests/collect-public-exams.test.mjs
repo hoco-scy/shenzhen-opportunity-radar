@@ -198,15 +198,22 @@ test("does not fetch ordinary civil-service details while checking the Shanghai 
   assert.equal(result.errors.length, 0);
 });
 
-test("uses Shenzhen's official announcement JSON rather than scraping a rendered list", async () => {
-  const feed = "http://www.zzb.sz.gov.cn/postmeta/i/29672.json";
-  const detail = "http://www.zzb.sz.gov.cn/notice/announcement/content/post_2099001.html";
+test("collects Shenzhen-targeted Guangdong selection announcements from the selected-university public category", async () => {
+  const config = "https://career.buaa.edu.cn/frontpage/buaa/js/init.js";
+  const feed = "https://career.buaa.edu.cn/f/newsCenter/ajax_list";
+  const detail = "https://career.buaa.edu.cn/f/newsCenter/ajax_view?id=selection-2099";
+  const title = "广东省2099年度选调优秀大学毕业生公告";
   const fetchImpl = mockFetch({
-    [feed]: { body: json({ articles: [{ title: "广东省2099年度选调优秀大学毕业生公告", url: detail, date: "2099-10-01" }] }) },
-    [detail]: { body: "<h1>广东省2099年度选调优秀大学毕业生公告</h1>网上报名：2099年10月20日至11月5日。" }
+    [config]: { body: "window._config = { token: 'public-token' };" },
+    [feed]: { body: json({ state: 1, object: { newsPage: { totalPage: 1, list: [{ id: "selection-2099", title, releaseDate: "2099-10-01", url: "/frontpage/buaa/html/newsDetail.html?id=selection-2099" }] } } }) },
+    [detail]: { body: json({ state: 1, object: { article: {
+      title,
+      releaseDate: "2099-10-01",
+      articleData: { content: "<p>中共广东省委组织部</p><p>面向应届优秀大学毕业生。</p><p>网上报名：2099年10月20日至11月5日。</p>" }
+    }, fileMap: [] } }) }
   });
   const result = await collectPublicExam({ sourceId: "shenzhen-selection-program", fetchImpl });
-  assert.equal(result.collectionRoute, "官方公告 JSON → 公告详情 → 职位表/附件");
+  assert.equal(result.collectionRoute, "北航就业网选调生公开栏目 API → 城市应届选调公告详情/附件");
   assert.equal(result.noticeCount, 1);
   assert.equal(result.notices[0].category, "selection-program");
 });

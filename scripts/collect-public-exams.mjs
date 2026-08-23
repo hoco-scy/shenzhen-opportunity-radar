@@ -94,18 +94,24 @@ const SOURCE_CONFIG = {
   },
   "shenzhen-selection-program": {
     sourceId: "shenzhen-selection-program",
-    label: "中共深圳市委组织部选调优培公告",
-    allowedDomains: ["www.zzb.sz.gov.cn"],
-    allowHttp: true,
-    detailTitleDiscovery: true,
-    dataApiUrl: "http://www.zzb.sz.gov.cn/postmeta/i/29672.json",
-    entries: [{ role: "组织部公告列表", url: "http://www.zzb.sz.gov.cn/notice/announcement/" }],
+    label: "广东省应届选调生公告（选调高校公开发布，深圳岗位）",
+    allowedDomains: ["career.buaa.edu.cn"],
+    buaaSelection: {
+      titlePattern: /广东省.*(?:定向)?选调.*(?:应届)?(?:优秀)?(?:大学|高校)毕业生.*公告/,
+      issuerPattern: /(?:中共)?广东省委组织部/
+    },
+    categoryApiUrl: "https://career.buaa.edu.cn/f/newsCenter/ajax_list",
+    clientConfigUrl: "https://career.buaa.edu.cn/frontpage/buaa/js/init.js",
+    detailApiUrl: "https://career.buaa.edu.cn/f/newsCenter/ajax_view",
+    categoryId: "5453aeeb99e74d78aea0b45fd456ae68",
+    entries: [{ role: "选调高校官方就业网：公务员／选调生", url: "https://career.buaa.edu.cn/frontpage/buaa/html/newsList.html?id=5453aeeb99e74d78aea0b45fd456ae68" }],
     defaultCity: "深圳市"
   }
 };
 
-const NOTICE_PATTERN = /(考试录用.{0,12}公务员|公务员.{0,24}(公告|职位|招考|补充录用|调剂|遴选|选调)|选调优秀大学毕业生|定向选调|公开选调(?:公务员)?|选调生|优培)/;
+const NOTICE_PATTERN = /(考试录用.{0,12}公务员|公务员.{0,24}(公告|职位|招考|补充录用|调剂|遴选|选调)|选调(?:应届)?优秀(?:大学|高校)毕业生|定向选调|公开选调(?:公务员)?|选调生|优培)/;
 const POSITION_ATTACHMENT_PATTERN = /(职位|招考简章|职位查询|附件\s*[一1]|附件1[-—至]?[\d一二三四五六七八九十]*)/;
+const POSITION_TABLE_FILE_PATTERN = /\.(?:xlsx?|csv|zip)(?:$|[?#])/i;
 const FILE_ATTACHMENT_PATTERN = /\.(?:zip|xls|xlsx|csv|pdf|doc|docx)(?:$|[?#])/i;
 
 export class CollectionSafetyError extends Error {
@@ -225,14 +231,15 @@ function isSemanticErrorPage(finalUrl, text) {
   return /\/(?:404|error)(?:[/?#]|$)|页面不存在|访问的页面不存在|not\s+found/i.test(probe);
 }
 
-export async function fetchOfficialText(url, config, fetchImpl = fetch) {
+export async function fetchOfficialText(url, config, fetchImpl = fetch, requestHeaders = {}) {
   const requested = assertOfficialUrl(url, config);
   const response = await fetchImpl(requested, {
     redirect: "follow",
     headers: {
       "user-agent": USER_AGENT,
       accept: "text/html,application/xhtml+xml,application/json;q=0.9,*/*;q=0.8",
-      "accept-language": "zh-CN,zh;q=0.9"
+      "accept-language": "zh-CN,zh;q=0.9",
+      ...requestHeaders
     },
     signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS)
   });
@@ -244,10 +251,33 @@ export async function fetchOfficialText(url, config, fetchImpl = fetch) {
   return { text, finalUrl };
 }
 
-export async function fetchOfficialJson(url, config, fetchImpl = fetch) {
-  const result = await fetchOfficialText(url, config, fetchImpl);
+export async function fetchOfficialJson(url, config, fetchImpl = fetch, requestHeaders = {}) {
+  const result = await fetchOfficialText(url, config, fetchImpl, requestHeaders);
   try { return { ...result, data: JSON.parse(result.text) }; }
   catch { throw new CollectionSafetyError(`官方接口没有返回可解析 JSON：${result.finalUrl}`); }
+}
+
+export async function fetchOfficialFormJson(url, form, config, fetchImpl = fetch) {
+  const requested = assertOfficialUrl(url, config);
+  const response = await fetchImpl(requested, {
+    method: "POST",
+    redirect: "follow",
+    headers: {
+      "user-agent": USER_AGENT,
+      accept: "application/json,text/plain,*/*;q=0.8",
+      "accept-language": "zh-CN,zh;q=0.9",
+      "content-type": "application/x-www-form-urlencoded"
+    },
+    body: new URLSearchParams(form).toString(),
+    signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS)
+  });
+  const text = await response.text();
+  const finalUrl = response.url || requested.toString();
+  assertOfficialUrl(finalUrl, config);
+  if (!response.ok) throw new CollectionSafetyError(`官方请求失败：HTTP ${response.status}（${finalUrl}）`);
+  if (isSemanticErrorPage(finalUrl, text)) throw new CollectionSafetyError(`官方页面为语义错误页（${finalUrl}）`);
+  try { return { text, finalUrl, data: JSON.parse(text) }; }
+  catch { throw new CollectionSafetyError(`官方接口没有返回可解析 JSON：${finalUrl}`); }
 }
 
 export async function fetchOfficialBuffer(url, config, fetchImpl = fetch) {
@@ -319,7 +349,7 @@ function classifyNotice(title = "") {
   if (/拟录用|公示|面试|资格审核|体检|考察|成绩|笔试/.test(title)) return "exam-process-notice";
   if (/职位表|招考简章|职位查询/.test(title)) return "position-table";
   if (/补充录用|调剂/.test(title)) return "supplementary-recruitment";
-  if (/选调优秀大学毕业生|定向选调|公开选调(?:公务员)?|选调生|优培/.test(title)) return "selection-program";
+  if (/选调(?:应届)?优秀(?:大学|高校)毕业生|定向选调|公开选调(?:公务员)?|选调生|优培/.test(title)) return "selection-program";
   if (/考试录用.*公务员公告|公务员.*招考公告/.test(title)) return "recruitment-announcement";
   return "exam-process-notice";
 }
@@ -329,7 +359,7 @@ function isRelevantNotice(title) {
 }
 
 function isPositionAttachment(attachment) {
-  return FILE_ATTACHMENT_PATTERN.test(attachment.officialUrl) && (POSITION_ATTACHMENT_PATTERN.test(attachment.label) || /\.(?:zip|xls|xlsx|csv)(?:$|[?#])/i.test(attachment.officialUrl));
+  return POSITION_TABLE_FILE_PATTERN.test(attachment.officialUrl) && POSITION_ATTACHMENT_PATTERN.test(`${attachment.label || ""} ${attachment.officialUrl}`);
 }
 
 export function extractAttachments(html, baseUrl, config) {
@@ -503,12 +533,98 @@ export async function collectBeijingCivil({ fetchImpl = fetch, maxPages, maxNoti
 export async function collectStaticSelectionProgram({ sourceId, fetchImpl = fetch, maxPages, maxNotices } = {}) {
   const source = SOURCE_CONFIG[sourceId];
   if (!source) throw new CollectionSafetyError(`未知选调优培来源：${sourceId}`);
+  if (source.buaaSelection) return collectBuaaSelectionProgram({ sourceId, fetchImpl, maxPages, maxNotices });
   const result = source.dataApiUrl
     ? await collectOfficialJsonNoticeList({ source, fetchImpl, maxNotices })
     : await collectStaticNoticeList({ source, entry: source.entries[0], fetchImpl, maxPages, maxNotices });
   return collectionResult(source, { ...result, notices: result.notices.filter((notice) => notice.category === "selection-program") }, {
     collectionRoute: source.dataApiUrl ? "官方公告 JSON → 公告详情 → 职位表/附件" : "官方选调优培公告列表 → 公告详情 → 职位表/附件"
   });
+}
+
+const BUAA_SELECTION_EXCLUDED = /(拟录用|名单|公示|资格审核|笔试|面试|体检|考察|成绩|调剂|补录|录用)/;
+
+function isBuaaSelectionAnnouncement(title = "", source) {
+  const text = String(title).replace(/\s+/g, "");
+  return source.buaaSelection.titlePattern.test(text) && !BUAA_SELECTION_EXCLUDED.test(text);
+}
+
+function publicClientToken(script) {
+  const token = String(script).match(/\btoken\s*:\s*["']([^"']+)["']/)?.[1];
+  if (!token) throw new CollectionSafetyError("选调高校公开前端配置未提供详情接口令牌，不能猜测或绕过访问控制。");
+  return token;
+}
+
+function universityDetailAttachments(fileMap, baseUrl, source) {
+  const attachments = [];
+  for (const file of fileMap || []) {
+    if (!file?.fileUrl) continue;
+    try {
+      const officialUrl = new URL(file.fileUrl, baseUrl).toString();
+      assertOfficialUrl(officialUrl, source);
+      attachments.push({ label: file.fileName || decodeURIComponent(new URL(officialUrl).pathname.split("/").pop() || "官方附件"), officialUrl, kind: "file" });
+    } catch { /* Malformed or off-domain attachments are never retained. */ }
+  }
+  return attachments;
+}
+
+export async function collectBuaaSelectionProgram({ sourceId, fetchImpl = fetch, maxPages, maxNotices } = {}) {
+  const source = SOURCE_CONFIG[sourceId];
+  if (!source?.buaaSelection) throw new CollectionSafetyError(`来源未登记北航选调生采集配方：${sourceId}`);
+  const clientConfig = await fetchOfficialText(source.clientConfigUrl, source, fetchImpl);
+  const publicToken = publicClientToken(clientConfig.text);
+  const first = await fetchOfficialFormJson(source.categoryApiUrl, { categoryId: source.categoryId, pageNo: "1", pageSize: "100" }, source, fetchImpl);
+  if (first.data?.state !== 1) throw new CollectionSafetyError("选调高校公开栏目未返回成功状态。");
+  const reportedPages = Number(first.data?.object?.newsPage?.totalPage || 1);
+  if (!Number.isInteger(reportedPages) || reportedPages < 1) throw new CollectionSafetyError("选调高校公开栏目未返回有效分页信息。");
+  const pageLimit = Math.min(reportedPages, maxPages || 12);
+  const pages = [first];
+  for (let pageNo = 2; pageNo <= pageLimit; pageNo += 1) {
+    const page = await fetchOfficialFormJson(source.categoryApiUrl, { categoryId: source.categoryId, pageNo: String(pageNo), pageSize: "100" }, source, fetchImpl);
+    if (page.data?.state !== 1) throw new CollectionSafetyError(`选调高校公开栏目第 ${pageNo} 页未返回成功状态。`);
+    pages.push(page);
+  }
+  const candidates = uniqueByUrl(pages.flatMap((page) => page.data?.object?.newsPage?.list || [])
+    .filter((item) => isBuaaSelectionAnnouncement(item.title || item.name, source))
+    .flatMap((item) => {
+      try {
+        const officialUrl = new URL(item.url, source.entries[0].url).toString();
+        assertOfficialUrl(officialUrl, source);
+        return [normaliseNotice({ sourceId: source.sourceId, title: item.title || item.name, officialUrl, publishedAt: item.releaseDate || item.createDate, entryRole: source.entries[0].role })];
+      } catch { return []; }
+    }));
+  const chosen = limited(candidates, maxNotices);
+  const errors = [];
+  const detailPagesVisited = [];
+  const verified = await Promise.all(chosen.map(async (notice) => {
+    try {
+      const detailId = new URL(notice.officialUrl).searchParams.get("id");
+      if (!detailId) throw new CollectionSafetyError("选调高校公告详情链接缺少文章 ID。");
+      const detailApiUrl = new URL(source.detailApiUrl);
+      detailApiUrl.searchParams.set("id", detailId);
+      const detail = await fetchOfficialJson(detailApiUrl.toString(), source, fetchImpl, { token: publicToken });
+      detailPagesVisited.push(detail.finalUrl);
+      if (detail.data?.state !== 1) throw new CollectionSafetyError("选调高校公开详情接口未返回成功状态。");
+      const payload = detail.data?.object?.article || {};
+      const title = payload.title || payload.name || notice.title;
+      const content = payload.articleData?.content || payload.content || "";
+      const detailText = textFromHtml(content);
+      if (!isBuaaSelectionAnnouncement(title, source)) throw new CollectionSafetyError("公告详情标题不属于本城市的应届选调／优培范围。");
+      if (!source.buaaSelection.issuerPattern.test(detailText)) throw new CollectionSafetyError("公告详情未能确认本城市选调主管机关为发布机关。");
+      if (!/(?:应届.{0,20}(?:大学|高校)?毕业生|(?:大学|高校)?毕业生.{0,20}应届)/.test(detailText)) throw new CollectionSafetyError("公告详情未能确认面向应届毕业生。");
+      return {
+        ...notice,
+        title,
+        publishedAt: payload.releaseDate || payload.createDate || notice.publishedAt,
+        attachments: uniqueAttachments([...extractAttachments(content, notice.officialUrl, source), ...universityDetailAttachments(detail.data?.object?.fileMap, notice.officialUrl, source)]),
+        lifecycle: extractApplicationLifecycle(content, new Date(), { title, publishedAt: payload.releaseDate || payload.createDate || notice.publishedAt })
+      };
+    } catch (error) {
+      errors.push({ noticeId: notice.id, officialUrl: notice.officialUrl, error: error.message });
+      return undefined;
+    }
+  }));
+  return collectionResult(source, { notices: verified.filter(Boolean), errors, pagesVisited: [clientConfig.finalUrl, ...pages.map((page, index) => `${page.finalUrl}#page=${index + 1}`), ...detailPagesVisited], truncated: pageLimit < reportedPages || chosen.length < candidates.length }, { collectionRoute: "北航就业网选调生公开栏目 API → 城市应届选调公告详情/附件" });
 }
 
 export function parseNationalCoreConstants(script) {
