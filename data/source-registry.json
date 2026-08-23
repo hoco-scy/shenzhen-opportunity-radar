@@ -61,6 +61,8 @@
         "hrss.sz.gov.cn"
       ],
       "entryUrl": "https://hrss.sz.gov.cn/gzryzk/index.html",
+      "collectionAccessMode": "official-announcement-discovery",
+      "collectionNote": "脚本读取官方事业单位招聘公告页、同域公告链接和公开正文；公告尚未附具体岗位表时只保留为后续核验对象。",
       "officialSiteConfirmed": true
     },
     {
@@ -138,6 +140,8 @@
         "job.mohrss.gov.cn"
       ],
       "entryUrl": "https://job.mohrss.gov.cn/cjobs/institution/listInstitution",
+      "collectionAccessMode": "official-announcement-discovery",
+      "collectionNote": "脚本读取官方事业单位招聘页及同域公告正文；仅在取得具体岗位条件后再进入资格核验。",
       "alternateEntryUrls": [
         "http://job.mohrss.gov.cn/cjobs/institution/listInstitution"
       ],
@@ -162,6 +166,8 @@
         "sasac.gov.cn"
       ],
       "entryUrl": "https://www.sasac.gov.cn/n2588035/n2588325/n2588350/index.html",
+      "collectionAccessMode": "official-announcement-discovery",
+      "collectionNote": "脚本读取国资委央企招聘栏目、同域招聘链接和公告正文；没有具体岗位字段的公告不会发布为岗位。",
       "alternateEntryUrls": [
         "http://wap.sasac.gov.cn/n2588035/n2588325/n2588350/index.html"
       ],
@@ -186,6 +192,8 @@
         "sasac.gov.cn"
       ],
       "entryUrl": "https://www.sasac.gov.cn/n2588045/n27271785/n27271792/c14159097/content.html",
+      "collectionAccessMode": "official-announcement-discovery",
+      "collectionNote": "脚本刷新官方中央企业名录，用于限定重点单位范围；名录本身不作为招聘岗位。",
       "alternateEntryUrls": [
         "http://wap.sasac.gov.cn/n2588045/n27271785/n27271792/c14159097/content.html"
       ],
@@ -263,8 +271,8 @@
         "sinopharm.com"
       ],
       "entryUrl": "https://www.sinopharm.com/recruitment.html",
-      "collectionAccessMode": "browser-official-page",
-      "collectionNote": "重点补充：从国药集团官方招聘公告和明确招聘专题回溯具体岗位。",
+      "collectionAccessMode": "official-announcement-discovery",
+      "collectionNote": "脚本读取国药集团官方招聘公告、同域招聘链接和公开正文，再回溯具体岗位。",
       "officialSiteConfirmed": true
     },
     {
@@ -281,8 +289,8 @@
         "gt.cn"
       ],
       "entryUrl": "https://www.gt.cn/",
-      "collectionAccessMode": "browser-official-page",
-      "collectionNote": "重点补充：仅跟进医疗健康、医疗器械和生物医药板块的官方招聘公告。",
+      "collectionAccessMode": "official-announcement-discovery",
+      "collectionNote": "脚本读取通用技术官方招聘公告及同域正文，重点跟进医疗健康、医疗器械和生物医药板块。",
       "officialSiteConfirmed": true
     },
     {
@@ -468,8 +476,8 @@
         "sasac.gov.cn"
       ],
       "entryUrl": "http://wap.sasac.gov.cn/n2588035/n2588325/c35503679/content.html",
-      "collectionAccessMode": "browser-antibot",
-      "collectionNote": "重点补充：仅跟进医疗装备、生命健康、仪器电子与明确生物医学工程交叉的院所岗位。",
+      "collectionAccessMode": "official-announcement-discovery",
+      "collectionNote": "脚本读取国务院国资委发布的航天科工官方招聘公告及同域正文；仅跟进医疗装备、生命健康、仪器电子与明确生物医学工程交叉的院所岗位。",
       "accessMode": "semantic-health-check-required",
       "semanticFailureSignals": [
         "/404?errorpath=",
