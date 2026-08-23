@@ -4,7 +4,7 @@
 
 ## 云端 Codex 运行前提
 
-脚本采集必须能在新建、无状态的云端容器中直接运行：不得依赖浏览器 Cookie、个人凭据或本地缓存。最低要求为 Node.js 18；建议云端固定 Node.js 22，并先执行 `npm ci --ignore-scripts`，再运行 `node scripts/verify-collector-runtime.mjs` 和 `npm run test:collectors`。国考和本地市考/省考的公开公告采集器见 [`docs/public-exam-collectors.md`](docs/public-exam-collectors.md)，独立选调优培来源见 [`docs/selection-program-sources.md`](docs/selection-program-sources.md)；北航就业信息网与国聘的公开筛选脚本同样不需要凭据，只产生待回溯线索，不能直接写入岗位数据。
+脚本采集必须能在新建、无状态的云端容器中直接运行：不得依赖浏览器 Cookie、个人凭据或本地缓存。最低要求为 Node.js 18；建议云端固定 Node.js 22，并先执行 `npm ci --ignore-scripts`，再运行 `node scripts/verify-collector-runtime.mjs` 和 `npm run test:collectors`。国考和本地市考/省考的公开公告采集器见 [`docs/public-exam-collectors.md`](docs/public-exam-collectors.md)，独立选调优培来源见 [`docs/selection-program-sources.md`](docs/selection-program-sources.md)；北航就业信息网与国聘的公开筛选脚本同样不需要凭据：无法取得官方原文时写入单列的待用户确认线索，绝不能混入已核验岗位。
 
 Codex 云端的代理阶段默认没有互联网访问。云端定时任务必须在环境设置中显式启用对官方招聘域名的受限或不受限 HTTP/HTTPS 网络访问；没有该权限时，只能运行离线单元测试，不能声称已完成官网采集。浏览器采集源仍必须使用云端浏览器打开已登记的官方入口，不能把搜索结果当作核验。
 
@@ -84,7 +84,7 @@ Codex 云端的代理阶段默认没有互联网访问。云端定时任务必�
 3. 脚本不得绕过登录、验证码、WAF 或其他访问控制；公开接口、筛选器或分页失效时立即切换到配方的浏览器回退路径，并记 `accessible-incomplete`，不能退回到未筛选的全站遍历。
 4. 每条 `sourceChecks.accessEvidence` 要写实际使用的 `browser` 或 `script`、筛选组合/附件路径、分页范围和最终状态。配方的 `availability` 只是本轮开始前的健康证据，运行时仍必须重新核验。
 5. 先执行 `node scripts/run-public-exam-sync.mjs --write`。它处理配方登记为 `primary: script` 的国考、本地公考和独立选调优培来源，采集官方公告、详情和公开附件；只有可证明未过截止日的公告，或官方明确的预公告，才写为匿名待核验，绝不凭标题或公开信息发布具体岗位。
-6. 北航就业信息网与国聘均有零依赖脚本。前者先按城市与单位性质过滤，再读取公开岗位详情；后者先按城市和生物医学相关关键词过滤，再按职位代码去重并排除社招、博士后、明确工作年限要求及纯计算机岗位。二者只提供待回溯线索，绝不凭平台转载直接发布岗位。
+6. 北航就业信息网与国聘均有零依赖脚本。前者先按城市与单位性质过滤，再读取公开岗位详情；后者先按城市和生物医学相关关键词过滤，再按职位代码去重并排除社招、博士后、明确工作年限要求及纯计算机岗位。平台若实际提供直达投递链接，脚本只原样保留该链接；没有可验证官方原文时，二者进入待用户确认清单，绝不凭平台转载作为已核验岗位发布。
 7. 当本轮已为全部登记来源写入真实检查记录后，运行 `node scripts/run-full-workflow.mjs --full-update --write` 汇总全量运行日志。该命令会实际执行公考/选调采集以及北航、国聘的公开筛选，并为其余登记来源记录实际入口访问结果；尚未完成原生筛选、分页/附件和详情核验的来源必须保持 `accessible-incomplete`，整轮状态为 `completed-partial`。不得使用占位状态伪造来源完成，也不得据此发布岗位或声称已完成全量岗位扫描。
 
 ### 步骤 C：高召回发现与官方站内筛选

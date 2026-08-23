@@ -44,7 +44,7 @@ if (awaitingFirstSync) {
 }
 if (!Number.isInteger(data.meta?.lastIncompleteSourceCount) || data.meta.lastIncompleteSourceCount < 0) errors.push("meta.lastIncompleteSourceCount 必须是非负整数");
 if (!Number.isInteger(data.meta?.lastDeferredCandidateCount) || data.meta.lastDeferredCandidateCount < 0) errors.push("meta.lastDeferredCandidateCount 必须是非负整数");
-if (!Array.isArray(data.jobs) || !Array.isArray(data.monitors)) errors.push("jobs 和 monitors 必须是数组");
+if (!Array.isArray(data.jobs) || !Array.isArray(data.monitors) || !Array.isArray(data.candidates ?? [])) errors.push("jobs、monitors 和 candidates 必须是数组");
 
 const ids = new Set();
 for (const [index, job] of (data.jobs || []).entries()) {
@@ -82,6 +82,22 @@ for (const [index, job] of (data.jobs || []).entries()) {
   }
 }
 
+for (const [index, candidate] of (data.candidates || []).entries()) {
+  const label = `candidates[${index}]`;
+  for (const key of ["id", "track", "organization", "title", "location", "education", "majors", "publishedAt", "deadline", "status", "matchLevel", "matchReason", "sourceId", "sourceUrl", "verifiedAt", "manualConfirmationRequired", "manualConfirmationReason", "backtracking"]) {
+    if (candidate[key] === undefined || candidate[key] === null || candidate[key] === "") errors.push(`${label}.${key} 缺失`);
+  }
+  if (ids.has(candidate.id)) errors.push(`${label}.id 与其他公开记录重复: ${candidate.id}`);
+  ids.add(candidate.id);
+  if (candidate.track !== "待确认线索") errors.push(`${label}.track 必须是待确认线索`);
+  if (candidate.status !== "待用户确认") errors.push(`${label}.status 必须是待用户确认`);
+  if (candidate.manualConfirmationRequired !== true) errors.push(`${label}.manualConfirmationRequired 必须为 true`);
+  if (!minuteTimestamp.test(candidate.verifiedAt || "")) errors.push(`${label}.verifiedAt 必须精确到北京时间分钟`);
+  const source = sources.get(candidate.sourceId);
+  if (!source || source.role !== "discovery") errors.push(`${label}.sourceId 未登记为发现来源`);
+  else if (!officialDomain(candidate.sourceUrl, source)) errors.push(`${label}.sourceUrl 不属于登记的平台来源域名`);
+}
+
 for (const [index, monitor] of (data.monitors || []).entries()) {
   for (const key of ["id", "track", "title", "status", "note", "officialUrl", "checkedAt"]) {
     if (!monitor[key]) errors.push(`monitors[${index}].${key} 缺失`);
@@ -93,4 +109,4 @@ if (errors.length) {
   console.error(errors.map((error) => `- ${error}`).join("\n"));
   process.exit(1);
 }
-console.log(`数据门禁通过：${data.jobs.length} 个具体岗位，${data.monitors.length} 个公告监测项。`);
+console.log(`数据门禁通过：${data.jobs.length} 个具体岗位，${(data.candidates || []).length} 条待用户确认线索，${data.monitors.length} 个公告监测项。`);

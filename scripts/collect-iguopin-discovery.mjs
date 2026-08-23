@@ -27,6 +27,8 @@ const CAMPUS_RECRUITMENT = /(校招|校园招聘|应届|管培|毕业生)/i;
 const NON_GRADUATE_RECRUITMENT = /(社招|社会招聘|实习|兼职)/i;
 const REQUIRED_EXPERIENCE = /(?:[1-9]\d*\s*年|[一二三四五六七八九十]年)(?:及以上)?(?:工作|相关|从业)经验/i;
 const ELIGIBLE_MAJOR_EVIDENCE = /(生物医学工程|医学工程|生物工程|生物技术|医疗器械|医学影像|临床工程|仪器科学|仪器类|工学全类|工学门类|理工类|理工科|所有工学)/i;
+const DIRECT_MAJOR_EVIDENCE = /(生物医学工程|医学工程|生物工程|生物技术|医疗器械|医学影像|临床工程|临床医学|基础医学|医学全类|医药卫生|药学)/i;
+const BROAD_ENGINEERING_EVIDENCE = /(工学全类|工学门类|理工类|理工科|所有工学)/i;
 
 export class IGuopinDiscoveryError extends Error {
   constructor(message) { super(message); this.name = "IGuopinDiscoveryError"; }
@@ -45,6 +47,20 @@ function today() {
 function text(value) {
   if (Array.isArray(value)) return value.join("；");
   return String(value || "");
+}
+
+// 国聘的公开接口有时会在投递说明中给出一条外部投递链接；有时则只
+// 给出平台内页。只保留平台已经公开提供的链接，不猜测单位官网、更不
+// 用搜索结果把线索伪装成官方核验。
+function publicApplicationUrl(value) {
+  const match = text(value).match(/https?:\/\/[^\s<>"'）)]+/i);
+  if (!match) return null;
+  try {
+    const url = new URL(match[0]);
+    if (!/^https?:$/.test(url.protocol) || url.username || url.password) return null;
+    if (/^(?:localhost|.+\.local)$/i.test(url.hostname) || /^(?:127\.|0\.0\.0\.0$|::1$)/.test(url.hostname)) return null;
+    return url.toString();
+  } catch { return null; }
 }
 
 function jobBody(job) {
@@ -67,6 +83,7 @@ function classify(job) {
   if (REQUIRED_EXPERIENCE.test(String(job.experience_cn || ""))) return { outcome: "experience-mismatch" };
   if (PURE_COMPUTING.test(roleText) && !DIRECT_BIOMEDICAL_BRIDGE.test(roleText)) return { outcome: "core-profession-mismatch" };
   if (!ELIGIBLE_MAJOR_EVIDENCE.test(qualifications)) return { outcome: "no-eligible-major-evidence" };
+  if (BROAD_ENGINEERING_EVIDENCE.test(qualifications) && !DIRECT_MAJOR_EVIDENCE.test(qualifications) && !DIRECT_BIOMEDICAL_BRIDGE.test(roleText)) return { outcome: "broad-major-without-direct-biomedical-role" };
   if (!DIRECT_BIOMEDICAL_BRIDGE.test(roleText) && !BIOMEDICAL_CONTEXT.test(roleText)) return { outcome: "no-biomedical-context" };
   const locations = (job.district_list || []).map((item) => item.area_cn).filter(Boolean).join("；") || "官方未注明";
   return {
@@ -82,8 +99,9 @@ function classify(job) {
       publishedAt: String(job.start_time || job.update_time || "").slice(0, 10) || "官方未注明",
       deadline: deadline || "官方未注明",
       officialUrl: `${ORIGIN}/job/detail?id=${encodeURIComponent(job.job_id)}`,
-      employerApplyUrl: null,
-      evidence: "国聘公开岗位页的城市和生物医学相关关键词筛选结果；仍须回溯单位或政府官方页面后才可公开发布。"
+      employerApplyUrl: publicApplicationUrl(job.apply_instruction),
+      applicationInstruction: text(job.apply_instruction),
+      evidence: "国聘公开岗位页的城市和生物医学相关关键词筛选结果；平台没有提供可核验的官方原文时，保留为待用户确认线索。"
     }
   };
 }

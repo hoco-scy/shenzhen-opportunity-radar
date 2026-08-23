@@ -61,6 +61,48 @@ function discoverySourceCheck(source, result, checkedAt) {
 
 function incompleteCount(checks) { return checks.filter((check) => ["accessible-incomplete", "temporarily-unavailable", "semantic-404", "failed"].includes(check.status)).length; }
 
+// 聚合平台能先完成站内城市、关键词和资格预筛，但并非每条公开记录都
+// 提供单位官网或独立投递页。不能凭单位名称猜官网，也不应让这类线索
+// 永远卡在“待回溯”。因此：保留平台实际给出的直达链接；没有链接的
+// 直接进入待用户确认清单，绝不混入已核验岗位。
+function candidateFromDiscoveryLead(lead, sourceId, checkedAt) {
+  const directUrl = lead.employerApplyUrl || null;
+  const sourceUrl = lead.officialUrl;
+  const hasDirectLink = Boolean(directUrl);
+  return {
+    id: `candidate-${sourceId}-${lead.id}`,
+    track: "待确认线索",
+    organization: lead.organization,
+    title: lead.title,
+    exactTitle: lead.title,
+    location: lead.location,
+    education: lead.education,
+    majors: lead.majors,
+    recruitmentType: lead.recruitmentType || "官方未注明",
+    publishedAt: lead.publishedAt,
+    deadline: lead.deadline,
+    status: "待用户确认",
+    priority: hasDirectLink ? 68 : 64,
+    matchLevel: "待确认",
+    matchReason: "已通过城市、应届硕士、专业相关性和纯计算机岗位排除的脚本初筛；尚未取得可作为正式发布依据的单位或政府原文。",
+    sourceId,
+    sourceUrl,
+    officialAnnouncementUrl: sourceUrl,
+    officialApplyUrl: directUrl,
+    verifiedAt: checkedAt,
+    manualConfirmationRequired: true,
+    manualConfirmationReason: hasDirectLink
+      ? "平台公开提供了直达投递链接；请打开后核对单位、岗位条件和投递页面，再决定是否收藏或投递。"
+      : "平台未公开提供单位官网或独立投递地址；请先查看平台原页，再自行核对单位官网或投递渠道。",
+    backtracking: {
+      status: hasDirectLink ? "platform-direct-link-provided" : "manual-confirmation-required",
+      automaticResult: hasDirectLink ? "已保留平台提供的直达链接，不把它自动视为官方核验。" : "平台未返回可验证的单位直达链接，脚本不会猜测或搜索拼接官网。"
+    },
+    collectionEvidence: lead.evidence,
+    tags: ["国聘/北航筛选", "应届生", "生物医学相关", hasDirectLink ? "平台提供投递链接" : "需手动确认"]
+  };
+}
+
 async function main() {
   const [registry, recipes, sourcePlan, log, opportunities] = await Promise.all([
     readJson("data/source-registry.json"), readJson("data/filter-recipes.json"), readJson("data/source-plan.json"), readJson("data/review-log.json"), readJson("data/opportunities.json")
@@ -84,6 +126,10 @@ async function main() {
   }));
   const incomplete = incompleteCount(sourceChecks);
   const publicMetrics = publicExamRun.screeningMetrics || {};
+  const discoveryCandidates = [
+    ...buaa.leads.map((lead) => candidateFromDiscoveryLead(lead, "buaa-career-discovery", checkedAt)),
+    ...iguopin.leads.map((lead) => candidateFromDiscoveryLead(lead, "iguopin-discovery", checkedAt))
+  ].sort((left, right) => right.priority - left.priority || left.title.localeCompare(right.title, "zh-CN"));
   const run = {
     id: `run-${checkedAt.slice(0, 10).replaceAll("-", "")}-${checkedAt.slice(11, 16).replace(":", "")}-aggregate-first-full-sync`,
     scope: "full-city-run", checkedAt, trigger: "scheduled-or-manual-full-update", scheduledSourceIds: scheduledIds, policyVersion: 6,
@@ -91,7 +137,7 @@ async function main() {
     coverageStatus: "aggregate-first-collection-and-source-health",
     status: incomplete ? "completed-partial" : "completed",
     outcome: "aggregate-platform-discovery-plus-official-verification",
-    summary: `本轮已实际执行国考、本地公考、选调优培以及北航就业信息网、国聘的城市筛选。北航有 ${buaa.leads.length} 条、国聘有 ${iguopin.leads.length} 条通过初筛的线索，均待回溯单位或政府官方页面；国家大学生就业服务平台和重点官网尚未完成本站筛选的来源仍明确记为未完成，不据此发布岗位。`,
+    summary: `本轮已实际执行国考、本地公考、选调优培以及北航就业信息网、国聘的城市筛选。北航有 ${buaa.leads.length} 条、国聘有 ${iguopin.leads.length} 条通过初筛的线索，已进入“待用户确认”清单；未取得单位或政府官方原文的线索不会混入已核验岗位。国家大学生就业服务平台和重点官网尚未完成本站筛选的来源仍明确记为未完成。`,
     metrics: {
       officialSystemsChecked: sourceChecks.length, officialSystemsSucceeded: sourceChecks.length - incomplete, officialSystemsFailed: incomplete,
       newLeads: (publicExamRun.metrics?.newLeads || 0) + buaa.leads.length + iguopin.leads.length,
@@ -120,6 +166,7 @@ async function main() {
   opportunities.meta.lastRunStatus = run.status;
   opportunities.meta.lastIncompleteSourceCount = incomplete;
   opportunities.meta.lastDeferredCandidateCount = run.screeningMetrics.positionsDeferredByBudget;
+  opportunities.candidates = discoveryCandidates;
   await Promise.all([
     writeFile(new URL("data/review-log.json", root), `${JSON.stringify(log, null, 2)}\n`),
     writeFile(new URL("data/opportunities.json", root), `${JSON.stringify(opportunities, null, 2)}\n`)
