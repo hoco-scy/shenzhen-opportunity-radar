@@ -84,6 +84,7 @@ Codex 云端的代理阶段默认没有互联网访问。云端定时任务必�
 3. 脚本不得绕过登录、验证码、WAF 或其他访问控制；公开接口、筛选器或分页失效时立即切换到配方的浏览器回退路径，并记 `accessible-incomplete`，不能退回到未筛选的全站遍历。
 4. 每条 `sourceChecks.accessEvidence` 要写实际使用的 `browser` 或 `script`、筛选组合/附件路径、分页范围和最终状态。配方的 `availability` 只是本轮开始前的健康证据，运行时仍必须重新核验。
 5. 中国电信已经有零依赖的可执行脚本。云端运行时先执行 `node scripts/run-full-workflow.mjs --review-queue`，它会读官方页面本轮令牌、强制工作地点为本站城市、完成筛选后分页和去重，并输出每批 20—60 个官网详情卡片。脚本只提供事实字段，绝不根据标题或关键词判断是否收录。完成本来源的逐项语义复核后，用 `node scripts/run-full-workflow.mjs --targeted-remediation --write` 写入一条诚实的定向补录记录；它不能替代当轮其他来源的全量检查。
+6. 当本轮已为全部官方来源写入真实检查记录后，运行 `node scripts/run-full-workflow.mjs --full-update --write` 汇总全量运行日志。该命令会重新执行中国电信的官网筛选、分页与逐项复核，并为其余每个登记来源记录实际入口访问结果；尚未完成原生筛选、分页/附件和详情核验的来源必须保持 `accessible-incomplete`，整轮状态为 `completed-partial`。不得使用 `--browser-checked` 或任何占位状态伪造来源完成，也不得据此发布岗位或声称已完成全量岗位扫描。
 
 ### 步骤 C：高召回发现与官方站内筛选
 

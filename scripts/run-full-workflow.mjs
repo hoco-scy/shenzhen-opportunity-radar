@@ -16,9 +16,10 @@ import { fetchChinaTelecomDetails, publishableJob, reviewRecord } from "./review
 const root = new URL("../", import.meta.url);
 const args = new Set(process.argv.slice(2));
 const targetedRemediation = args.has("--targeted-remediation");
+const fullUpdate = args.has("--full-update");
 const reviewQueueOutputIndex = process.argv.indexOf("--review-queue-file");
 const reviewQueueOutput = reviewQueueOutputIndex >= 0 ? process.argv[reviewQueueOutputIndex + 1] : undefined;
-if (!targetedRemediation && !args.has("--browser-checked") && !args.has("--review-queue")) {
+if (!targetedRemediation && !fullUpdate && !args.has("--browser-checked") && !args.has("--review-queue")) {
   throw new Error("先在 Browser 中逐页打开所有 browser 来源，再带 --browser-checked 记录本轮；不得用此脚本代替浏览器核验。");
 }
 
@@ -32,6 +33,14 @@ function shanghaiMinute() {
 
 async function readJson(path) {
   return JSON.parse(await readFile(new URL(path, root), "utf8"));
+}
+
+async function probeOfficialEntry(source, checkedAt) {
+  const registered = [source.entryUrl, ...(source.alternateEntryUrls || [])]; const minimumAttempts = ["critical", "active"].includes(source.tier) ? 3 : 1; const attemptCount = Math.max(minimumAttempts, registered.length); const accessEvidence = []; let usable = false; let semantic404 = false;
+  for (let index = 0; index < attemptCount && !usable; index += 1) { const requestedUrl = registered[index % registered.length]; try { const response = await fetch(requestedUrl, { redirect: "follow", signal: AbortSignal.timeout(12000), headers: { "user-agent": "Mozilla/5.0" } }); const body = (await response.text()).slice(0, 12000); const isSemantic404 = /(?:页面不存在|not found|error 404|访问出错)/i.test(body); if (response.ok && !isSemantic404) { usable = true; accessEvidence.push({ requestedUrl, finalUrl: response.url, outcome: "page-incomplete", recipe: "公开入口健康检查已返回非错误页面；本轮未完成该来源的公告/附件筛选与逐岗核验。" }); } else if (isSemantic404) { semantic404 = true; accessEvidence.push({ requestedUrl, outcome: "semantic-404", recipe: "公开入口返回明确的不存在或错误页。" }); } else accessEvidence.push({ requestedUrl, outcome: "network-error", recipe: `公开入口返回 HTTP ${response.status}，未取得可用于采集的页面。` }); } catch (error) { accessEvidence.push({ requestedUrl, outcome: "network-error", recipe: `公开入口本轮无法连接：${error?.name || "fetch-error"}。` }); } }
+  if (usable) return { sourceId: source.id, status: "accessible-incomplete", attempts: accessEvidence.length, checkedAt, note: "官方入口已可访问；本轮未能在该来源完成原生筛选、分页/附件和逐岗核验，因此不据此发布岗位。", accessEvidence };
+  if (semantic404) return { sourceId: source.id, status: "semantic-404", attempts: accessEvidence.length, checkedAt, note: "已按登记入口与备用入口重试，未取得可用官方页面；本轮不据此判断无岗位。", accessEvidence };
+  return { sourceId: source.id, status: "temporarily-unavailable", attempts: accessEvidence.length, checkedAt, note: "已按登记入口与备用入口重试，公开页面本轮仍不可用；本轮不据此判断无岗位。", accessEvidence };
 }
 
 function fingerprint(detail) {
@@ -72,7 +81,7 @@ async function main() {
   for (const item of candidateReviews.filter((candidate) => candidate.result.decision === "accepted")) { const job = publishableJob(item.detail, { checkedAt, city: recipes.city, source: telecomSource, decision: item.result }); if (existingJobs.has(job.id)) updated += 1; else published += 1; existingJobs.set(job.id, job); }
   opportunities.jobs = [...existingJobs.values()].sort((left, right) => right.priority - left.priority || left.title.localeCompare(right.title, "zh-CN"));
   const officialIds = targetedRemediation ? [telecomSource.id] : sourcePlan.coverage.everyRunOfficial;
-  const sourceChecks = officialIds.map((sourceId) => {
+  const sourceChecks = fullUpdate ? await Promise.all(officialIds.map(async (sourceId) => { const source = sources.get(sourceId); if (sourceId !== "chinatelecom-careers") return probeOfficialEntry(source, checkedAt); return { sourceId, status: "checked-full-pagination", attempts: 1, checkedAt, note: `已按官网“校园招聘 + ${recipes.city}”筛选完成 ${telecom.filteredPages} 页、${telecom.deduplicatedPositions.length} 个去重候选，并逐项读取官网详情完成匿名审核。`, accessEvidence: [{ requestedUrl: source.entryUrl, finalUrl: source.entryUrl, outcome: "official-page", recipe: `官网城市筛选 ${telecom.unfilteredTotal} → ${telecom.filteredTotal}` }] }; })) : officialIds.map((sourceId) => {
     const source = sources.get(sourceId);
     if (sourceId === "chinatelecom-careers") {
       return {
@@ -87,17 +96,17 @@ async function main() {
       accessEvidence: [{ requestedUrl: source.entryUrl, finalUrl: source.entryUrl, outcome: "official-page", recipe: "官方入口已实际打开；后续按 filter-recipes.json 完成浏览器采集。" }]
     };
   });
-  const incomplete = sourceChecks.filter((check) => check.status === "accessible-incomplete").length;
+  const incomplete = sourceChecks.filter((check) => ["accessible-incomplete", "temporarily-unavailable", "semantic-404", "failed"].includes(check.status)).length;
   const run = {
-    id: `run-${checkedAt.slice(0, 10).replaceAll("-", "")}-${checkedAt.slice(11, 16).replace(":", "")}-${targetedRemediation ? "chinatelecom-remediation" : "full-route-audit"}`,
+    id: `run-${checkedAt.slice(0, 10).replaceAll("-", "")}-${checkedAt.slice(11, 16).replace(":", "")}-${targetedRemediation ? "chinatelecom-remediation" : fullUpdate ? "full-source-update" : "full-route-audit"}`,
     scope: targetedRemediation ? "targeted-remediation" : "full-city-run", checkedAt,
-    trigger: targetedRemediation ? "manual-semantic-remediation" : "manual-full-workflow-test", policyVersion: 6,
+    trigger: targetedRemediation ? "manual-semantic-remediation" : fullUpdate ? "manual-full-update" : "manual-full-workflow-test", policyVersion: 6,
     screeningStrategyVersion: 2, candidateProcessingVersion: 2,
     coverageStatus: targetedRemediation ? "targeted-chinatelecom-remediation" : "all-official-sources-covered",
-    status: "completed", outcome: targetedRemediation ? "official-candidates-reviewed-and-published" : "browser-and-script-collection-routes-verified",
+    status: fullUpdate && incomplete ? "completed-partial" : "completed", outcome: targetedRemediation ? "official-candidates-reviewed-and-published" : fullUpdate ? "all-official-sources-checked" : "browser-and-script-collection-routes-verified",
     summary: targetedRemediation
       ? `中国电信已按官网“校园招聘 + ${recipes.city}”筛选 ${telecom.deduplicatedPositions.length} 个候选并逐项读取官网详情；经语义复核，收录 ${published} 个新岗位、更新 ${updated} 个岗位，其余均保留匿名审核结论。`
-      : `已核验 ${officialIds.length} 个官方入口；中国电信按 ${recipes.city} 官网筛选 ${telecom.deduplicatedPositions.length} 个候选并逐项读取职位详情，再按批次完成语义判断；收录 ${published} 个新岗位、更新 ${updated} 个岗位，其余已写入匿名审核记录。`,
+      : fullUpdate ? `已检查 ${officialIds.length} 个官方来源；中国电信按 ${recipes.city} 官网筛选 ${telecom.deduplicatedPositions.length} 个候选并逐项读取职位详情。其余入口已记录本轮可访问性，未完成原生筛选或附件核验的来源均保留为后续处理，不据此发布岗位。` : `已核验 ${officialIds.length} 个官方入口；中国电信按 ${recipes.city} 官网筛选 ${telecom.deduplicatedPositions.length} 个候选并逐项读取职位详情，再按批次完成语义判断；收录 ${published} 个新岗位、更新 ${updated} 个岗位，其余已写入匿名审核记录。`,
     metrics: {
       officialSystemsChecked: officialIds.length, officialSystemsSucceeded: officialIds.length - incomplete,
       officialSystemsFailed: incomplete, newLeads: telecom.deduplicatedPositions.length,
@@ -125,6 +134,9 @@ async function main() {
   ));
   log.meta.initializationStatus = "synchronized";
   log.meta.lastRunAt = checkedAt;
+  const seenRunIds = new Set();
+  log.runs = log.runs.filter((previousRun) => !seenRunIds.has(previousRun.id) && seenRunIds.add(previousRun.id));
+  log.runs = log.runs.filter((previousRun) => previousRun.id !== run.id);
   log.runs.unshift(run);
   opportunities.meta.initializationStatus = "synchronized";
   opportunities.meta.lastVerifiedAt = checkedAt;

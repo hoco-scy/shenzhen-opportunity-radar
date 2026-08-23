@@ -2,9 +2,9 @@
   "meta": {
     "schemaVersion": 1,
     "initializationStatus": "synchronized",
-    "lastVerifiedAt": "2026-08-22T21:46:00+08:00",
-    "lastRunStatus": "completed",
-    "lastIncompleteSourceCount": 0,
+    "lastVerifiedAt": "2026-08-23T13:05:00+08:00",
+    "lastRunStatus": "completed-partial",
+    "lastIncompleteSourceCount": 23,
     "lastDeferredCandidateCount": 0,
     "timezone": "Asia/Shanghai",
     "publicationRule": "仅发布能在官方公告、职位表或官方招聘系统中定位到的具体岗位；公考岗位还必须通过全部个人资格硬条件"
@@ -56,8 +56,8 @@
       "officialAnnouncementUrl": "https://job.chinatelecom.com.cn/wt/TELE/web/index/campus",
       "officialApplyUrl": "https://job.chinatelecom.com.cn/wt/TELE/web/index/webPosition210!getOnePosition?postIdEnc=6ae3e4c43c1ee698&recruitType=1&positionType=0%2F1227%2F132803&columnId=1&brandCode=1&importPost=0",
       "applyInstruction": "打开中国电信官网职位详情后点击“立即申请”。",
-      "verifiedAt": "2026-08-22",
-      "lastSeenAt": "2026-08-22T21:46:00+08:00",
+      "verifiedAt": "2026-08-23",
+      "lastSeenAt": "2026-08-23T13:05:00+08:00",
       "lastSeenStatus": "live",
       "statusEvidence": "本轮已在中国电信官网职位详情核验岗位字段和“立即申请”入口。",
       "verifiedFields": [
@@ -124,8 +124,8 @@
       "officialAnnouncementUrl": "https://job.chinatelecom.com.cn/wt/TELE/web/index/campus",
       "officialApplyUrl": "https://job.chinatelecom.com.cn/wt/TELE/web/index/webPosition210!getOnePosition?postIdEnc=12cfb1860102a4c1&recruitType=1&positionType=0%2F1227%2F132803&columnId=1&brandCode=1&importPost=0",
       "applyInstruction": "打开中国电信官网职位详情后点击“立即申请”。",
-      "verifiedAt": "2026-08-22",
-      "lastSeenAt": "2026-08-22T21:46:00+08:00",
+      "verifiedAt": "2026-08-23",
+      "lastSeenAt": "2026-08-23T13:05:00+08:00",
       "lastSeenStatus": "live",
       "statusEvidence": "本轮已在中国电信官网职位详情核验岗位字段和“立即申请”入口。",
       "verifiedFields": [
@@ -192,8 +192,8 @@
       "officialAnnouncementUrl": "https://job.chinatelecom.com.cn/wt/TELE/web/index/campus",
       "officialApplyUrl": "https://job.chinatelecom.com.cn/wt/TELE/web/index/webPosition210!getOnePosition?postIdEnc=a93504dd32e79cb6&recruitType=1&positionType=0%2F1227%2F132817%2F132893%2F133223&columnId=1&brandCode=1&importPost=0",
       "applyInstruction": "打开中国电信官网职位详情后点击“立即申请”。",
-      "verifiedAt": "2026-08-22",
-      "lastSeenAt": "2026-08-22T21:46:00+08:00",
+      "verifiedAt": "2026-08-23",
+      "lastSeenAt": "2026-08-23T13:05:00+08:00",
       "lastSeenStatus": "live",
       "statusEvidence": "本轮已在中国电信官网职位详情核验岗位字段和“立即申请”入口。",
       "verifiedFields": [
