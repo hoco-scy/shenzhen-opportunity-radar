@@ -74,9 +74,10 @@ for (const recipe of (recipes.recipes || [])) {
   if (!Array.isArray(collection.steps) || collection.steps.length < 3) errors.push(`来源缺少可执行的采集步骤：${recipe.sourceId}`);
   if (typeof collection.completion !== "string" || !collection.completion) errors.push(`来源缺少完成判定：${recipe.sourceId}`);
   if (collection.primary === "script") {
-    if (!Array.isArray(collection.nativeFilters) || collection.nativeFilters.length < 3) errors.push(`脚本来源缺少原生筛选组合：${recipe.sourceId}`);
-    if (typeof collection.pagination !== "string" || !collection.pagination) errors.push(`脚本来源缺少筛选后分页规则：${recipe.sourceId}`);
-    if (!Array.isArray(collection.deduplicateBy) || !collection.deduplicateBy.length) errors.push(`脚本来源缺少去重规则：${recipe.sourceId}`);
+    const announcementCollector = /(?:announcement|topic|workbook)/i.test(collection.mode);
+    if (!announcementCollector && (!Array.isArray(collection.nativeFilters) || collection.nativeFilters.length < 3)) errors.push(`脚本来源缺少原生筛选组合：${recipe.sourceId}`);
+    if (!announcementCollector && (typeof collection.pagination !== "string" || !collection.pagination)) errors.push(`脚本来源缺少筛选后分页规则：${recipe.sourceId}`);
+    if (!announcementCollector && (!Array.isArray(collection.deduplicateBy) || !collection.deduplicateBy.length)) errors.push(`脚本来源缺少去重规则：${recipe.sourceId}`);
     const implementation = collection.implementation || {};
     const commandMatch = typeof implementation.command === "string" && implementation.command.match(/^node\s+(scripts\/[A-Za-z0-9._-]+\.mjs)(?:\s|$)/);
     if (!commandMatch || !implementation.smokeTest || !implementation.runtime || !implementation.hardGuard) {

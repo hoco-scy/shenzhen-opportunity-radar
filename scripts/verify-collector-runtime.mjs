@@ -19,7 +19,12 @@ function commandScript(command) {
 }
 
 export async function inspectCollectorRuntime() {
-  const recipes = JSON.parse(await readFile(new URL("data/filter-recipes.json", root), "utf8"));
+  const [recipesRaw, packageRaw] = await Promise.all([
+    readFile(new URL("data/filter-recipes.json", root), "utf8"),
+    readFile(new URL("package.json", root), "utf8")
+  ]);
+  const recipes = JSON.parse(recipesRaw);
+  const packageManifest = JSON.parse(packageRaw);
   const collectors = [];
   for (const recipe of recipes.recipes.filter((item) => item.collection?.primary === "script")) {
     const script = commandScript(recipe.collection.implementation?.command);
@@ -42,15 +47,19 @@ export async function inspectCollectorRuntime() {
     url: typeof URL === "function",
     abortSignalTimeout: typeof AbortSignal?.timeout === "function"
   };
+  const requiredPackages = ["adm-zip", "xlsx"];
+  const packagesDeclared = requiredPackages.every((name) => packageManifest.dependencies?.[name]);
   return {
     node: process.version,
     minimumNodeMajor: MINIMUM_NODE_MAJOR,
     nodeVersionSupported: nodeMajor() >= MINIMUM_NODE_MAJOR,
-    usesNoExternalPackages: true,
+    usesNoExternalPackages: false,
+    requiredPackages,
+    packagesDeclared,
     requiresCredentials: false,
     webApis,
     collectors,
-    readyForOfflineContractTest: nodeMajor() >= MINIMUM_NODE_MAJOR && Object.values(webApis).every(Boolean) && collectors.length > 0 && collectors.every((item) => item.scriptPresent && item.hardGuard)
+    readyForOfflineContractTest: nodeMajor() >= MINIMUM_NODE_MAJOR && Object.values(webApis).every(Boolean) && packagesDeclared && collectors.length > 0 && collectors.every((item) => item.scriptPresent && item.hardGuard)
   };
 }
 

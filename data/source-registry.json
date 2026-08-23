@@ -36,11 +36,13 @@
         "选调优培"
       ],
       "domains": [
+        "gdzz.gov.cn",
         "ggfw.hrss.gd.gov.cn"
       ],
-      "entryUrl": "https://ggfw.hrss.gd.gov.cn/gwyks/anouns.do",
+      "entryUrl": "https://www.gdzz.gov.cn/gwygz/lypytzgg/index.html",
       "officialSiteConfirmed": true,
       "alternateEntryUrls": [
+        "https://ggfw.hrss.gd.gov.cn/gwyks/anouns.do",
         "https://ggfw.hrss.gd.gov.cn/gwyks/index.do",
         "https://ggfw.hrss.gd.gov.cn/gwyks/agreement.do"
       ]

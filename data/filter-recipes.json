@@ -13,7 +13,7 @@
       "status": "route-verified",
       "observedAt": "2026-08-22",
       "officialEntryUrl": "http://bm.scs.gov.cn/pp/gkweb/core/web/ui/business/home/gkhome.html",
-      "accessMode": "browser-official-page",
+      "accessMode": "script-official-public-api",
       "nativeFilters": [],
       "queryPlan": {
         "everyRun": [
@@ -26,16 +26,21 @@
       },
       "availabilityRule": "入口必须呈现非错误官方页面；可打开但列表、分页或附件未完成时只能记录 accessible-incomplete。",
       "collection": {
-        "primary": "browser",
-        "mode": "browser-announcement-and-official-position-table",
+        "primary": "script",
+        "mode": "official-spa-config-and-json-announcement-collector",
         "steps": [
-          "在浏览器打开官方考试入口及登记的官方备用入口，确认当前考试项目、公告与职位表入口。",
-          "进入本年度或尚未截止的公告详情；不以搜索摘要、转载或首页标题代替公告正文。",
-          "下载官方职位表/附件，在本地结构化解析后按全部公考硬条件组合筛选；模型不逐行阅读完整职位表。",
-          "只将通过全部硬条件的具体职位写入正文；公告无职位表时保留公告级待核验记录。"
+          "运行 node scripts/collect-public-exams.mjs --source national-civil，脚本从官方首页配置发现当期专题，不硬编码年度地址。",
+          "读取主入口与补充录用入口的官方公告 JSON 和详情；附件出现时再结构化解析职位表。",
+          "采集器不写入公开岗位；每个职位仍必须经过私有资格门禁。"
         ],
-        "completion": "公告页和职位表（或官方明确尚未发布的空状态）均已用浏览器确认，并对附件解析结果保留官方链接。",
-        "fallback": "附件无法解析或页面改版时保留待核验记录，下轮从同一官方入口重试。"
+        "completion": "主入口、补充录用入口、官方专题 JSON 和匹配公告详情均有本轮访问证据。",
+        "fallback": "官方 SPA 配置或接口改版时记录 accessible-incomplete，并只用浏览器重新校准公开请求。",
+        "implementation": {
+          "command": "node scripts/collect-public-exams.mjs --source national-civil --parse-position-tables",
+          "smokeTest": "node scripts/collect-public-exams.mjs --source national-civil --max-notices 5 --summary",
+          "runtime": "Node.js 18+；npm ci --ignore-scripts 后运行；只访问国家公务员局登记域名。",
+          "hardGuard": "主入口与补充录用入口必须从当期官方配置发现专题；接口关闭或附件无法解析不得被写成无岗位。"
+        }
       },
       "availability": {
         "state": "available",
@@ -55,8 +60,8 @@
       "sourceId": "shenzhen-civil",
       "status": "route-verified",
       "observedAt": "2026-08-22",
-      "officialEntryUrl": "https://ggfw.hrss.gd.gov.cn/gwyks/anouns.do",
-      "accessMode": "browser-official-page",
+      "officialEntryUrl": "https://www.gdzz.gov.cn/gwygz/lypytzgg/index.html",
+      "accessMode": "script-official-static-list-and-workbook",
       "nativeFilters": [],
       "queryPlan": {
         "everyRun": [
@@ -69,16 +74,21 @@
       },
       "availabilityRule": "入口必须呈现非错误官方页面；可打开但列表、分页或附件未完成时只能记录 accessible-incomplete。",
       "collection": {
-        "primary": "browser",
-        "mode": "browser-announcement-and-official-position-table",
+        "primary": "script",
+        "mode": "official-announcement-and-zip-workbook-collector",
         "steps": [
-          "在浏览器打开官方考试入口及登记的官方备用入口，确认当前考试项目、公告与职位表入口。",
-          "进入本年度或尚未截止的公告详情；不以搜索摘要、转载或首页标题代替公告正文。",
-          "下载官方职位表/附件，在本地结构化解析后按全部公考硬条件组合筛选；模型不逐行阅读完整职位表。",
-          "只将通过全部硬条件的具体职位写入正文；公告无职位表时保留公告级待核验记录。"
+          "运行 node scripts/collect-public-exams.mjs --source shenzhen-civil --parse-position-tables。",
+          "脚本从广东组织工作网读取公告与附件；主列表失效时回退省公务员考试系统公告，再回到广东组织工作网详情。",
+          "脚本只保留 ZIP 内有职位表头的工作簿，并按深圳市筛行；后续仍须逐岗资格核验。"
         ],
-        "completion": "公告页和职位表（或官方明确尚未发布的空状态）均已用浏览器确认，并对附件解析结果保留官方链接。",
-        "fallback": "附件无法解析或页面改版时保留待核验记录，下轮从同一官方入口重试。"
+        "completion": "公告分页、详情和可识别职位工作簿已由脚本处理；解析失败记录为 partial。",
+        "fallback": "ZIP 结构或页面改版时记录 accessible-incomplete，并仅在校准公开结构时使用浏览器。",
+        "implementation": {
+          "command": "node scripts/collect-public-exams.mjs --source shenzhen-civil --parse-position-tables",
+          "smokeTest": "node scripts/collect-public-exams.mjs --source shenzhen-civil --max-notices 8 --summary",
+          "runtime": "Node.js 18+；npm ci --ignore-scripts 后运行；只访问 gdzz.gov.cn 与 ggfw.hrss.gd.gov.cn。",
+          "hardGuard": "ZIP 内必须解析出职位表头，并只输出深圳市行；未解析附件不得被认定为无岗位。"
+        }
       },
       "availability": {
         "state": "available",

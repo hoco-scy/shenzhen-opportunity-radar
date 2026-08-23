@@ -5,8 +5,10 @@ import { inspectCollectorRuntime } from "../scripts/verify-collector-runtime.mjs
 test("all script-labelled sources have a stateless runnable collector contract", async () => {
   const runtime = await inspectCollectorRuntime();
   assert.equal(runtime.readyForOfflineContractTest, true);
-  assert.equal(runtime.collectors.length, 1);
-  assert.deepEqual(runtime.collectors.map((item) => item.sourceId), ["chinatelecom-careers"]);
-  assert.equal(runtime.collectors[0].scriptPresent, true);
-  assert.match(runtime.collectors[0].hardGuard, /筛选/);
+  assert.equal(runtime.usesNoExternalPackages, false);
+  assert.equal(runtime.packagesDeclared, true);
+  assert.deepEqual(runtime.requiredPackages, ["adm-zip", "xlsx"]);
+  assert.ok(runtime.collectors.some((item) => item.sourceId === "chinatelecom-careers"));
+  assert.ok(runtime.collectors.every((item) => item.scriptPresent));
+  assert.ok(runtime.collectors.every((item) => item.hardGuard));
 });

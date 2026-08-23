@@ -1,0 +1,17 @@
+{
+  "name": "shenzhen-opportunity-radar-public",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test:collectors": "node --test tests/collect-chinatelecom.test.mjs tests/collect-public-exams.test.mjs tests/public-exam-workflow.test.mjs tests/verify-collector-runtime.test.mjs",
+    "collect:public-exams": "node scripts/collect-public-exams.mjs",
+    "sync:public-exams": "node scripts/run-public-exam-sync.mjs --write"
+  },
+  "dependencies": {
+    "adm-zip": "0.5.16",
+    "xlsx": "0.18.5"
+  }
+}
