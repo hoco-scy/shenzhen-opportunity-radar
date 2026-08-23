@@ -36,6 +36,12 @@ for (const [index, source] of (registry.sources || []).entries()) {
   if (source.role === "discovery" && source.officialSiteConfirmed !== false) errors.push(`发现来源不得标记为官方证据：${source.id}`);
 }
 
+for (const source of registry.sources || []) {
+  if (source.coverage?.includes("选调优培") && !source.id.endsWith("-selection-program") && source.id !== "buaa-career-discovery") {
+    errors.push(`选调优培标签只能指向实际选调采集来源或北航就业网发现入口：${source.id}`);
+  }
+}
+
 const retry = plan.retryPolicy || {};
 if (retry.criticalMaxAttempts < 3 || retry.activeMaxAttempts < 3) errors.push("critical 与 active 来源必须至少尝试 3 次");
 if (retry.failureOutcome !== "completed-partial") errors.push("来源失败的运行结果必须是 completed-partial");

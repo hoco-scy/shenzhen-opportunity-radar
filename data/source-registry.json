@@ -32,8 +32,7 @@
       "tier": "critical",
       "cadence": "every-run",
       "coverage": [
-        "公务员招录",
-        "选调优培"
+        "公务员招录"
       ],
       "domains": [
         "gdzz.gov.cn",
@@ -56,7 +55,6 @@
       "cadence": "every-run",
       "coverage": [
         "公务员招录",
-        "选调优培",
         "事业单位"
       ],
       "domains": [
