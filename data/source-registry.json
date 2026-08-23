@@ -241,6 +241,8 @@
         "campus.boe.com"
       ],
       "entryUrl": "https://campus.boe.com/jobs?hideMenu=1",
+      "collectionAccessMode": "filterable-paginated-list",
+      "collectionNote": "重点补充：只处理医疗显示、健康科技、医学影像等明确生物医学工程交叉的已筛选岗位。",
       "alternateEntryUrls": [
         "https://campus.boe.com/custom/xzzw?hideMenu=1"
       ],
@@ -260,6 +262,8 @@
         "sinopharm.com"
       ],
       "entryUrl": "https://www.sinopharm.com/recruitment.html",
+      "collectionAccessMode": "browser-official-page",
+      "collectionNote": "重点补充：从国药集团官方招聘公告和明确招聘专题回溯具体岗位。",
       "officialSiteConfirmed": true
     },
     {
@@ -276,6 +280,8 @@
         "gt.cn"
       ],
       "entryUrl": "https://www.gt.cn/",
+      "collectionAccessMode": "browser-official-page",
+      "collectionNote": "重点补充：仅跟进医疗健康、医疗器械和生物医药板块的官方招聘公告。",
       "officialSiteConfirmed": true
     },
     {
