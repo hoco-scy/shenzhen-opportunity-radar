@@ -5,14 +5,18 @@ import { classifyCrcRow } from "../scripts/collect-crc-careers.mjs";
 
 const checkedAt = "2026-08-24T10:00:00+08:00";
 
-test("京东方岗位只按官方专业条件判定，不要求岗位标题出现医疗词", () => {
+test("京东方计算岗位需要明确的生物医学交叉场景", () => {
   const result = classifyBoeRow({
-    JobAdId: "boe-1", JobAdName: "算法研发工程师(J90001)", Org: "京东方技术中心",
+    JobAdId: "boe-1", JobAdName: "医学影像算法研发工程师(J90001)", Org: "京东方技术中心",
     LocNames: ["北京市"], Require: "硕士研究生及以上学历，生物医学工程、电子信息等相关专业。",
-    Duty: "负责算法研发与产品验证。", Category: "校园招聘", PostDate: "2026-08-20"
+    Duty: "负责医疗设备医学影像算法研发与产品验证。", Category: "校园招聘", PostDate: "2026-08-20"
   }, "北京", checkedAt);
   assert.equal(result.outcome, "accepted");
   assert.equal(result.job.verification.eligibility, true);
+  assert.equal(classifyBoeRow({
+    JobAdId: "boe-generic-ai", JobAdName: "人工智能工程师（安全方向）", Org: "京东方技术中心",
+    LocNames: ["北京市"], Require: "硕士研究生及以上学历，生物医学工程专业。", Duty: "通用模型安全研发。"
+  }, "北京", checkedAt).outcome, "pure-computing-role-mismatch");
 });
 
 test("京东方校园分类中的实习岗位不会混入应届岗位", () => {

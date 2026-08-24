@@ -46,6 +46,16 @@ const retry = plan.retryPolicy || {};
 if (retry.criticalMaxAttempts < 3 || retry.activeMaxAttempts < 3) errors.push("critical 与 active 来源必须至少尝试 3 次");
 if (retry.failureOutcome !== "completed-partial") errors.push("来源失败的运行结果必须是 completed-partial");
 if (retry.semanticHealthCheckRequired !== true) errors.push("来源访问必须检查最终地址和页面语义，不能只看 HTTP 状态码");
+const requestPolicy = plan.requestPolicy || {};
+if (requestPolicy.maxConcurrentPerHost !== 1) errors.push("公开采集必须限制为同域名单并发");
+if (!Number.isInteger(requestPolicy.minHostIntervalMs) || requestPolicy.minHostIntervalMs < 500) errors.push("同域名请求间隔不得低于 500ms");
+if (!Array.isArray(requestPolicy.backoffMs) || requestPolicy.backoffMs.length < 3) errors.push("请求重试必须配置至少三档退避");
+if (requestPolicy.honorRetryAfter !== true) errors.push("请求重试必须遵守 Retry-After");
+if (!Number.isInteger(requestPolicy.circuitCooldownMs) || requestPolicy.circuitCooldownMs < 60_000) errors.push("反爬熔断冷却不得低于 60 秒");
+for (const status of [408, 429, 500, 502, 503, 504]) {
+  if (!requestPolicy.retryableStatuses?.includes(status)) errors.push(`缺少可重试 HTTP 状态：${status}`);
+}
+if (requestPolicy.accessControlOutcome !== "accessible-incomplete") errors.push("访问控制触发后必须降级为 accessible-incomplete");
 for (const status of ["checked-native-filtered", "checked-no-active-campaign", "checked-browser-route", "accessible-incomplete", "temporarily-unavailable", "semantic-404"]) {
   if (!plan.sourceOutcomeDefinitions?.[status]) errors.push(`缺少来源结果定义：${status}`);
 }

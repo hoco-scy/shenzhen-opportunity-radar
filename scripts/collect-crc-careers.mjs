@@ -71,7 +71,8 @@ async function postGateway(url, body, fetchImpl) {
 }
 async function gatewayCall(apiId, method, param, fetchImpl, attempts = 3) {
   let lastError;
-  for (let attempt = 1; attempt <= attempts; attempt += 1) {
+  const requestAttempts = fetchImpl.isResilientCollectionFetch ? 1 : attempts;
+  for (let attempt = 1; attempt <= requestAttempts; attempt += 1) {
     try {
       const url = `${GATEWAY}?ssdp=${encodeURIComponent(gatewayHeader(apiId))}`;
       const body = { base64String: Buffer.from(JSON.stringify({ biz: { method, param } })).toString("base64") };
@@ -82,7 +83,7 @@ async function gatewayCall(apiId, method, param, fetchImpl, attempts = 3) {
       return JSON.parse(decoded);
     } catch (error) {
       lastError = error;
-      if (attempt < attempts) await new Promise((resolve) => setTimeout(resolve, attempt * 300));
+      if (attempt < requestAttempts) await new Promise((resolve) => setTimeout(resolve, attempt * 300));
     }
   }
   throw lastError;

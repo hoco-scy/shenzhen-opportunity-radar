@@ -37,7 +37,7 @@ test("北航采集器只用城市和单位性质缩小列表，并在详情中�
   assert.equal(calls.filter((call) => call.url.endsWith("ajax_frontRecruitinfo")).length, 3);
 });
 
-test("国聘采集器使用公开城市关键词分页，并保留专业明确可报的算法岗位", async () => {
+test("国聘采集器使用公开城市关键词分页，并排除无生物医学交叉的通用 AI 岗位", async () => {
   const requestedKeywords = [];
   const result = await collectIGuopinDiscovery({
     city: "北京",
@@ -62,10 +62,11 @@ test("国聘采集器使用公开城市关键词分页，并保留专业明确�
   });
   assert.equal(result.nativeFilterQueries, 11);
   assert.equal(result.deduplicatedCandidates, 2);
-  assert.equal(result.leads.length, 2);
+  assert.equal(result.leads.length, 1);
   assert.equal(result.leads.find((lead) => lead.id === "iguopin-1").employerNature, "国企");
   assert.equal(result.leads.find((lead) => lead.id === "iguopin-1").employerApplyUrl, "https://jobs.example.org/apply?id=1");
-  assert.ok(result.leads.some((lead) => lead.id === "iguopin-cs"));
+  assert.ok(!result.leads.some((lead) => lead.id === "iguopin-cs"));
+  assert.equal(result.detailOutcomes["pure-computing-role-mismatch"], 1);
   assert.equal(new Set(requestedKeywords).size, 11);
 });
 
@@ -103,6 +104,7 @@ test("国聘采集器排除民企，即使岗位专业与工作内容相关", as
   assert.equal(result.leads.length, 0);
   assert.equal(result.detailOutcomes["employer-nature-mismatch"], 1);
 });
+
 test("国家大学生就业服务平台按专业资格保留岗位并继续排除民企", async () => {
   const listRequests = [];
   const result = await collectNCSSDiscovery({
@@ -129,9 +131,10 @@ test("国家大学生就业服务平台按专业资格保留岗位并继续排�
   assert.equal(result.nativeFilterQueries, 11);
   assert.equal(result.deduplicatedCandidates, 3);
   assert.equal(result.detailsChecked, 2);
-  assert.equal(result.leads.length, 2);
+  assert.equal(result.leads.length, 1);
   assert.ok(result.leads.some((lead) => lead.id === "ncss-good"));
-  assert.ok(result.leads.some((lead) => lead.id === "ncss-ai"));
+  assert.ok(!result.leads.some((lead) => lead.id === "ncss-ai"));
+  assert.equal(result.detailOutcomes["pure-computing-role-mismatch"], 1);
   assert.equal(result.detailOutcomes["employer-nature-mismatch"], 1);
   assert.equal(listRequests.length, 11);
 });

@@ -5,10 +5,20 @@
     "criticalMaxAttempts": 3,
     "activeMaxAttempts": 3,
     "priorityMaxAttempts": 2,
-    "backoffSeconds": [0, 90, 300],
+    "backoffSeconds": [0, 1.5, 5],
     "alternateOfficialEndpointBeforeFailure": true,
     "semanticHealthCheckRequired": true,
     "failureOutcome": "completed-partial"
+  },
+  "requestPolicy": {
+    "maxConcurrentPerHost": 1,
+    "minHostIntervalMs": 800,
+    "backoffMs": [0, 1500, 5000],
+    "honorRetryAfter": true,
+    "maxRetryAfterMs": 300000,
+    "circuitCooldownMs": 300000,
+    "retryableStatuses": [408, 425, 429, 500, 502, 503, 504],
+    "accessControlOutcome": "accessible-incomplete"
   },
   "sourceOutcomeDefinitions": {
     "checked-native-filtered": "入口可用，已按登记配方完成站内筛选和候选处理",

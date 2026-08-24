@@ -36,13 +36,14 @@ function retryDelay(attempt) { return new Promise((resolve) => setTimeout(resolv
 
 async function request(url, options, fetchImpl, attempts = 3) {
   let lastError;
-  for (let attempt = 1; attempt <= attempts; attempt += 1) {
+  const requestAttempts = fetchImpl.isResilientCollectionFetch ? 1 : attempts;
+  for (let attempt = 1; attempt <= requestAttempts; attempt += 1) {
     try {
       const response = await fetchImpl(url, { ...options, redirect: "follow", signal: AbortSignal.timeout(30_000), headers: { accept: "application/json,text/html", "user-agent": "Mozilla/5.0", referer: ENTRY_URL, ...(options?.headers || {}) } });
       if (response.url && new URL(response.url).hostname !== "picc.zhiye.com") throw new PiccCampusError("人保公开请求跳转到未登记域名。 ");
       if (!response.ok) throw new PiccCampusError(`人保公开接口返回 HTTP ${response.status}。`);
       return response;
-    } catch (error) { lastError = error; if (attempt < attempts) await retryDelay(attempt); }
+    } catch (error) { lastError = error; if (attempt < requestAttempts) await retryDelay(attempt); }
   }
   throw lastError;
 }

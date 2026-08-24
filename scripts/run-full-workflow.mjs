@@ -14,6 +14,8 @@ import { collectPiccCampus } from "./collect-picc-campus.mjs";
 import { collectBoeCampus } from "./collect-boe-campus.mjs";
 import { collectCrcCareers } from "./collect-crc-careers.mjs";
 import { collectOfficialNoticeFeed } from "./collect-official-notice-feed.mjs";
+import { createCollectionFetch } from "./resilient-fetch.mjs";
+import { mergeDiscoveryCandidates, mergeOfficialMonitors } from "./collection-merge.mjs";
 
 const root = new URL("../", import.meta.url);
 const args = new Set(process.argv.slice(2));
@@ -95,14 +97,15 @@ function officialNoticeSourceCheck(result, checkedAt) {
 
 function discoverySourceCheck(source, result, checkedAt) {
   if (result.collectionError) {
+    const accessControlled = result.collectionCircuitReason === "blocked";
     return {
-      sourceId: source.id, status: "temporarily-unavailable", attempts: 1, checkedAt,
-      note: "该聚合平台的公开采集接口本轮没有完成；其他来源仍继续更新，不据此判断无岗位。",
+      sourceId: source.id, status: accessControlled ? "accessible-incomplete" : "temporarily-unavailable", attempts: 1, checkedAt,
+      note: accessControlled ? "该聚合平台触发访问控制，本轮已停止继续请求并保留上次结果；不尝试绕过，也不据此判断无岗位。" : "该聚合平台的公开采集接口本轮没有完成；其他来源仍继续更新，不据此判断无岗位。",
       collectionMetrics: {
-        state: "unavailable", collected: null, afterFilter: null,
+        state: accessControlled ? "not-completed" : "unavailable", collected: null, afterFilter: null,
         filterDescription: "本轮无法完成该平台的公开筛选接口调用，未生成可比较的候选数量。"
       },
-      accessEvidence: [{ requestedUrl: source.collectionEntryUrl || source.entryUrl, outcome: "network-error", recipe: result.collectionError }]
+      accessEvidence: [{ requestedUrl: source.collectionEntryUrl || source.entryUrl, outcome: accessControlled ? "access-control" : "network-error", recipe: result.collectionError }]
     };
   }
   const candidates = result.detailOutcomes?.candidate || 0;
@@ -122,22 +125,24 @@ function discoverySourceCheck(source, result, checkedAt) {
 function unavailableDiscoveryResult(sourceId, error) {
   return {
     sourceId, collectionError: error?.message || "公开采集接口未返回可用结果。", leads: [], pagesVisited: [],
+    collectionErrorKind: error?.kind || null, collectionCircuitReason: error?.circuitReason || null,
     portalResultsReported: 0, nativeFilterQueries: 0, nativeFilteredResults: 0, deduplicatedCandidates: 0,
     detailsChecked: 0, detailOutcomes: {}, truncated: false
   };
 }
 
 function unavailableStructuredResult(sourceId, error) {
-  return { sourceId, collectionError: error?.message || `${sourceId} 官方结构化采集未完成。`, jobs: [] };
+  return { sourceId, collectionError: error?.message || `${sourceId} 官方结构化采集未完成。`, collectionErrorKind: error?.kind || null, collectionCircuitReason: error?.circuitReason || null, jobs: [] };
 }
 
 function verifiedJobsSourceCheck(source, result, checkedAt) {
   if (result.collectionError) {
+    const accessControlled = result.collectionCircuitReason === "blocked";
     return {
-      sourceId: source.id, status: "temporarily-unavailable", attempts: 3, checkedAt,
-      note: "本轮未能完成该来源的官方结构化采集；已发布的上次核验岗位会保留，不会被临时网络故障清空。",
-      collectionMetrics: { state: "unavailable", collected: null, afterFilter: null, filterDescription: result.collectionError },
-      accessEvidence: [{ requestedUrl: source.collectionEntryUrl || source.entryUrl, outcome: "network-error", recipe: result.collectionError }]
+      sourceId: source.id, status: accessControlled ? "accessible-incomplete" : "temporarily-unavailable", attempts: 3, checkedAt,
+      note: accessControlled ? "该来源触发访问控制，本轮已停止继续请求并保留上次岗位；不尝试绕过访问控制。" : "本轮未能完成该来源的官方结构化采集；已发布的上次核验岗位会保留，不会被临时网络故障清空。",
+      collectionMetrics: { state: accessControlled ? "not-completed" : "unavailable", collected: null, afterFilter: null, filterDescription: result.collectionError },
+      accessEvidence: [{ requestedUrl: source.collectionEntryUrl || source.entryUrl, outcome: accessControlled ? "access-control" : "network-error", recipe: result.collectionError }]
     };
   }
   return {
@@ -261,14 +266,21 @@ async function main() {
   ]);
   const checkedAt = shanghaiMinute();
   const sources = new Map(registry.sources.map((source) => [source.id, source]));
+  const collectionFetch = createCollectionFetch({
+    maxAttempts: Math.max(sourcePlan.retryPolicy?.criticalMaxAttempts || 3, sourcePlan.retryPolicy?.activeMaxAttempts || 3),
+    minHostIntervalMs: sourcePlan.requestPolicy?.minHostIntervalMs || 800,
+    backoffMs: sourcePlan.requestPolicy?.backoffMs || [0, 1_500, 5_000],
+    maxRetryAfterMs: sourcePlan.requestPolicy?.maxRetryAfterMs || 300_000,
+    circuitCooldownMs: sourcePlan.requestPolicy?.circuitCooldownMs || 300_000
+  });
   const [publicExamRun, buaa, iguopin, ncss, picc, boe, crc] = await Promise.all([
-    buildPublicExamRun({ registry, recipes, checkedAt }),
-    collectBuaaDiscovery({ city: recipes.city }).catch((error) => unavailableDiscoveryResult("buaa-career-discovery", error)),
-    collectIGuopinDiscovery({ city: recipes.city }).catch((error) => unavailableDiscoveryResult("iguopin-discovery", error)),
-    collectNCSSDiscovery({ city: recipes.city }).catch((error) => unavailableDiscoveryResult("national-college-employment", error)),
-    collectPiccCampus({ city: recipes.city }).catch((error) => unavailableStructuredResult("picc-campus", error)),
-    collectBoeCampus({ city: recipes.city }).catch((error) => unavailableStructuredResult("boe-campus", error)),
-    collectCrcCareers({ city: recipes.city }).catch((error) => unavailableStructuredResult("crc-careers", error))
+    buildPublicExamRun({ registry, recipes, checkedAt, fetchImpl: collectionFetch }),
+    collectBuaaDiscovery({ city: recipes.city, fetchImpl: collectionFetch }).catch((error) => unavailableDiscoveryResult("buaa-career-discovery", error)),
+    collectIGuopinDiscovery({ city: recipes.city, fetchImpl: collectionFetch }).catch((error) => unavailableDiscoveryResult("iguopin-discovery", error)),
+    collectNCSSDiscovery({ city: recipes.city, fetchImpl: collectionFetch }).catch((error) => unavailableDiscoveryResult("national-college-employment", error)),
+    collectPiccCampus({ city: recipes.city, fetchImpl: collectionFetch }).catch((error) => unavailableStructuredResult("picc-campus", error)),
+    collectBoeCampus({ city: recipes.city, fetchImpl: collectionFetch }).catch((error) => unavailableStructuredResult("boe-campus", error)),
+    collectCrcCareers({ city: recipes.city, fetchImpl: collectionFetch }).catch((error) => unavailableStructuredResult("crc-careers", error))
   ]);
   const structuredResults = new Map([picc, boe, crc].map((result) => [result.sourceId, result]));
   const publicExamChecks = new Map(publicExamRun.sourceChecks.map((check) => [check.sourceId, check]));
@@ -291,7 +303,7 @@ async function main() {
     if (route.collector === "boe-campus") return verifiedJobsSourceCheck(source, boe, checkedAt);
     if (route.collector === "crc-careers") return verifiedJobsSourceCheck(source, crc, checkedAt);
     if (route.collector === "official-notice-feed") {
-      const result = await collectOfficialNoticeFeed({ source });
+      const result = await collectOfficialNoticeFeed({ source, fetchImpl: collectionFetch });
       officialNoticeResults.set(sourceId, result);
       return officialNoticeSourceCheck(result, checkedAt);
     }
@@ -331,6 +343,7 @@ async function main() {
       positionsEscalated: 0, positionsDeferredByBudget: publicMetrics.positionsDeferredByBudget || 0,
       discoverySourcesChecked: 3, discoveryOfficialCandidates: buaa.leads.length + iguopin.leads.length + ncss.leads.length
     },
+    networkPolicy: collectionFetch.stats(),
     sourceChecks, reviews: publicExamRun.reviews
   };
   if (!args.has("--write")) { console.log(JSON.stringify({ dryRun: true, city: recipes.city, run }, null, 2)); return; }
@@ -350,10 +363,8 @@ async function main() {
     ? (opportunities.jobs || []).filter((job) => job.sourceId === result.sourceId)
     : result.jobs);
   opportunities.jobs = [...otherJobs, ...refreshedStructuredJobs];
-  opportunities.candidates = discoveryCandidates;
-  const officialNoticeSourceIds = new Set(officialNoticeResults.keys());
-  const preservedMonitors = (opportunities.monitors || []).filter((monitor) => !officialNoticeSourceIds.has(monitor.sourceId));
-  opportunities.monitors = [...officialNoticeMonitors, ...preservedMonitors];
+  opportunities.candidates = mergeDiscoveryCandidates(opportunities.candidates, discoveryCandidates, [buaa, iguopin, ncss]);
+  opportunities.monitors = mergeOfficialMonitors(opportunities.monitors, officialNoticeMonitors, officialNoticeResults);
   await Promise.all([
     writeFile(new URL("data/review-log.json", root), `${JSON.stringify(log, null, 2)}\n`),
     writeFile(new URL("data/opportunities.json", root), `${JSON.stringify(opportunities, null, 2)}\n`)

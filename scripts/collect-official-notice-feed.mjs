@@ -60,13 +60,6 @@ function extractAnchors(html, baseUrl, domains) {
   return [...links.values()];
 }
 
-function challengeCookie(html) {
-  const values = html.match(/WTKkN:(\d+),bOYDu:(\d+),[\s\S]*?wyeCN:(\d+)/);
-  const session = html.match(/t,(\d+)\);continue;case"4"/)?.[1];
-  if (!values || !session || !html.includes("EO_Bot_Ssid")) return null;
-  return "__tst_status=" + (Number(values[1]) + Number(values[2]) + Number(values[3])) + "#; EO_Bot_Ssid=" + session;
-}
-
 async function curlPage(requestedUrl, headers = {}) {
   const headerArgs = Object.entries(headers).flatMap(([name, value]) => ["-H", name + ": " + value]);
   const marker = "\n__RADAR_META__";
@@ -88,7 +81,7 @@ async function requestPage(requestedUrl, fetchImpl, headers = {}) {
       signal: AbortSignal.timeout(25_000)
     });
   } catch (error) {
-    if (fetchImpl !== globalThis.fetch) throw error;
+    if (error?.kind === "circuit-open" || (fetchImpl !== globalThis.fetch && !fetchImpl.isResilientCollectionFetch)) throw error;
     return curlPage(requestedUrl, headers);
   }
 }
@@ -96,21 +89,11 @@ async function requestPage(requestedUrl, fetchImpl, headers = {}) {
 async function fetchOfficialPage(requestedUrl, domains, fetchImpl, depth = 0) {
   let response = await requestPage(requestedUrl, fetchImpl);
   let html = await response.text();
-  const cookie = challengeCookie(html);
-  if (cookie) {
-    response = await requestPage(requestedUrl, fetchImpl, { cookie });
-    html = await response.text();
-  }
   let finalUrl = response.url || requestedUrl;
   let semantic404 = ERROR_PAGE.test(html) || /(?:\/404|\/error)(?:[/?#]|$)/i.test(finalUrl);
-  if ((!response.ok || semantic404) && fetchImpl === globalThis.fetch && !response.viaCurl) {
+  if ((!response.ok || semantic404) && (fetchImpl === globalThis.fetch || fetchImpl.isResilientCollectionFetch) && !response.viaCurl) {
     response = await curlPage(requestedUrl);
     html = await response.text();
-    const curlCookie = challengeCookie(html);
-    if (curlCookie) {
-      response = await curlPage(requestedUrl, { cookie: curlCookie });
-      html = await response.text();
-    }
     finalUrl = response.url || requestedUrl;
     semantic404 = ERROR_PAGE.test(html) || /(?:\/404|\/error)(?:[/?#]|$)/i.test(finalUrl);
   }
@@ -130,7 +113,11 @@ export async function collectOfficialNoticeFeed({ source, fetchImpl = fetch, det
   if (!source?.id || !source.entryUrl) throw new OfficialNoticeFeedError("官方公告采集缺少来源登记。");
   const domains = officialDomains(source);
   const urls = primaryUrls(source);
-  const attemptsRequired = Math.max(["critical", "active"].includes(source.tier) ? 3 : 1, urls.length);
+  // The shared transport already performs the three transient retries.  Only
+  // visit each registered alternate once here to avoid multiplying them.
+  const attemptsRequired = fetchImpl.isResilientCollectionFetch
+    ? urls.length
+    : Math.max(["critical", "active"].includes(source.tier) ? 3 : 1, urls.length);
   const accessEvidence = [];
   let page;
 
@@ -147,7 +134,8 @@ export async function collectOfficialNoticeFeed({ source, fetchImpl = fetch, det
         accessEvidence.push({ requestedUrl, outcome: "network-error", recipe: "官方入口未返回可用页面。" });
       }
     } catch (error) {
-      accessEvidence.push({ requestedUrl, outcome: "network-error", recipe: `官方入口本轮无法读取：${error?.name || "fetch-error"}。` });
+      const accessControlled = error?.circuitReason === "blocked";
+      accessEvidence.push({ requestedUrl, outcome: accessControlled ? "access-control" : "network-error", recipe: accessControlled ? "官方入口触发访问控制，已停止继续请求且不尝试绕过。" : `官方入口本轮无法读取：${error?.name || "fetch-error"}。` });
     }
   }
 
@@ -156,10 +144,10 @@ export async function collectOfficialNoticeFeed({ source, fetchImpl = fetch, det
       sourceId: source.id,
       collectionMethod: "official-notice-feed",
       collectionRoute: "登记官方公告/招聘页 → 同域招聘链接 → 公告正文",
-      status: accessEvidence.some((item) => item.outcome === "semantic-404") ? "semantic-404" : "temporarily-unavailable",
+      status: accessEvidence.some((item) => item.outcome === "access-control") ? "accessible-incomplete" : accessEvidence.some((item) => item.outcome === "semantic-404") ? "semantic-404" : "temporarily-unavailable",
       accessEvidence, attempts: accessEvidence.length,
       collected: null, afterFilter: null, noticeItems: [],
-      reason: "本轮未取得可读取的官方公告/招聘页，不能据此判断无岗位。"
+      reason: accessEvidence.some((item) => item.outcome === "access-control") ? "官方入口触发访问控制，本轮已停止继续请求并保留上次结果；不尝试绕过，也不据此判断无岗位。" : "本轮未取得可读取的官方公告/招聘页，不能据此判断无岗位。"
     };
   }
 

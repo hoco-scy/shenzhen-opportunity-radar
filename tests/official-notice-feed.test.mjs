@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { collectOfficialNoticeFeed } from "../scripts/collect-official-notice-feed.mjs";
+import { createCollectionFetch } from "../scripts/resilient-fetch.mjs";
 
 function response({ url, html, ok = true, status = 200 }) {
   return { url, html: undefined, ok, status, text: async () => html };
@@ -87,23 +88,44 @@ test("官方列表直链到政府站或公众号时保留公告线索但不冒�
   assert.match(result.noticeItems[0].evidence, /不据此发布具体岗位/);
 });
 
-test("公开政府页面返回计算型 Cookie 挑战时脚本自动完成一次握手", async () => {
+test("直接采集遇到计算型 Cookie 挑战时也不会构造 Cookie 绕过", async () => {
   let entranceCalls = 0;
   const result = await collectOfficialNoticeFeed({
     source,
-    fetchImpl: async (url, options = {}) => {
+    fetchImpl: async (url) => {
       if (String(url).endsWith("recruitment.html")) {
         entranceCalls += 1;
-        if (entranceCalls === 1) return response({
+        return response({
           url: String(url),
           html: `<script>var e={WTKkN:1,bOYDu:2,wyeCN:3};t=a(t,4);continue;case"4";EO_Bot_Ssid</script>`
         });
-        assert.equal(options.headers.cookie, "__tst_status=6#; EO_Bot_Ssid=4");
-        return response({ url: String(url), html: `<a href="/notice.html">事业单位招聘公告</a>` });
       }
       return response({ url: String(url), html: "<div>公开招聘岗位及报名条件</div>" });
     }
   });
-  assert.equal(result.status, "checked-official-notice-feed");
-  assert.equal(entranceCalls, 2);
+  assert.equal(result.status, "accessible-incomplete");
+  assert.equal(entranceCalls, 1);
+});
+
+test("日常工作流遇到验证码/WAF 时停止请求并降级保留旧数据", async () => {
+  let calls = 0;
+  const fetchImpl = createCollectionFetch({
+    fetchImpl: async (url) => {
+      calls += 1;
+      return {
+        ok: true,
+        status: 200,
+        url: String(url),
+        headers: { get: (name) => String(name).toLowerCase() === "content-type" ? "text/html" : null },
+        clone: () => ({ text: async () => "<title>安全验证</title><div>请输入验证码</div>" }),
+        text: async () => "<title>安全验证</title><div>请输入验证码</div>"
+      };
+    },
+    minHostIntervalMs: 0,
+    backoffMs: [0, 0, 0]
+  });
+  const result = await collectOfficialNoticeFeed({ source, fetchImpl });
+  assert.equal(result.status, "accessible-incomplete");
+  assert.equal(result.accessEvidence[0].outcome, "access-control");
+  assert.equal(calls, 1);
 });
