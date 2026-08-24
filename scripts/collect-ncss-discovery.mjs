@@ -9,6 +9,7 @@
  * evidence for a verified job.
  */
 import { pathToFileURL } from "node:url";
+import { evaluateProfessionalEligibility, mastersEducationEligible } from "./professional-eligibility.mjs";
 
 const ORIGIN = "https://www.ncss.cn";
 const LIST_URL = `${ORIGIN}/student/jobs/jobslist/ajax/`;
@@ -18,7 +19,7 @@ const CITY_FILTERS = {
   "广州": "440100",
   "深圳": "440300"
 };
-const KEYWORDS = ["生物医学工程", "生物医学", "医疗器械", "医学影像", "临床工程", "医疗"];
+const KEYWORDS = ["生物医学工程", "医学工程", "生物工程", "医疗器械", "医学影像", "仪器", "电子信息", "自动化", "工程类", "理工类", "专业不限"];
 const PAGE_SIZE = 20;
 const BIOMEDICAL_CONTEXT = /(生物医学|医疗器械|医学影像|临床工程|体外诊断|IVD|生物信号|医疗|健康|生物工程|生命科学)/i;
 const DIRECT_BIOMEDICAL_BRIDGE = /(生物医学工程|医学工程|医疗器械|医学影像|临床工程|体外诊断|IVD|生物信号|放疗|核医学|康复工程)/i;
@@ -103,10 +104,11 @@ function preliminaryOutcome(job) {
   const nature = text(job.recProperty);
   if (!TARGET_EMPLOYER_NATURE.test(nature)) return { outcome: "employer-nature-mismatch" };
   const qualifications = [job.degreeName, job.major].filter(Boolean).join(" ");
-  if (/博士/.test(qualifications) && !/(本科|硕士|研究生)/.test(qualifications)) return { outcome: "academic-degree-mismatch" };
+  if (!mastersEducationEligible(qualifications)) return { outcome: "academic-degree-mismatch" };
   if (/(中专|专科)(?!及以上.*(?:本科|硕士|研究生))/.test(text(job.degreeName))) return { outcome: "academic-degree-mismatch" };
-  if (!ELIGIBLE_MAJOR_EVIDENCE.test(qualifications)) return { outcome: "no-eligible-major-evidence" };
-  return { outcome: "needs-detail" };
+  const professionalEligibility = evaluateProfessionalEligibility(qualifications);
+  if (!professionalEligibility.eligible) return { outcome: "no-eligible-major-evidence" };
+  return { outcome: "needs-detail", professionalEligibility };
 }
 
 function classify(job, detail) {
@@ -115,9 +117,7 @@ function classify(job, detail) {
   const roleText = [job.jobName, job.recName, detail].filter(Boolean).join(" ").replace(/医疗保险|补充医疗|社会保险|五险一金/g, " ");
   if (NON_GRADUATE_RECRUITMENT.test(roleText)) return { outcome: "non-graduate-recruitment" };
   if (REQUIRED_EXPERIENCE.test(roleText)) return { outcome: "experience-mismatch" };
-  if (PURE_COMPUTING.test(roleText) && !DIRECT_BIOMEDICAL_BRIDGE.test(roleText)) return { outcome: "core-profession-mismatch" };
-  if (BROAD_ENGINEERING_EVIDENCE.test(qualifications) && !DIRECT_MAJOR_EVIDENCE.test(qualifications) && !DIRECT_BIOMEDICAL_BRIDGE.test(roleText)) return { outcome: "broad-major-without-direct-biomedical-role" };
-  if (!DIRECT_BIOMEDICAL_BRIDGE.test(roleText) && !BIOMEDICAL_CONTEXT.test(roleText)) return { outcome: "no-biomedical-context" };
+  const professionalEligibility = evaluateProfessionalEligibility(qualifications);
   return {
     outcome: "candidate",
     lead: {
@@ -133,7 +133,8 @@ function classify(job, detail) {
       deadline: "平台未注明",
       officialUrl: detailUrl(job.jobId),
       employerApplyUrl: null,
-      evidence: "国家大学生就业服务平台公开职位列表经城市与生物医学相关关键词筛选；详情页已完成生物医学相关性预筛，仍需用户核对单位官方投递页。"
+      professionalEligibility,
+      evidence: "国家大学生就业服务平台公开职位列表经城市与专业可报关键词筛选；岗位内容只参与排序，仍需用户核对单位官方投递页。"
     }
   };
 }
@@ -202,7 +203,7 @@ export async function collectNCSSDiscovery({ city, fetchImpl = fetch, maxPagesPe
     sourceId: "national-college-employment",
     city,
     collectionMethod: "script",
-    collectionRoute: "国家大学生就业服务平台公开城市＋生物医学相关关键词筛选 → 已筛选分页 → 公开职位详情预筛",
+    collectionRoute: "国家大学生就业服务平台公开城市＋专业可报关键词并集 → 已筛选分页 → 任职条件专业资格预筛",
     portalResultsReported,
     nativeFilterQueries: KEYWORDS.length,
     nativeFilteredResults,

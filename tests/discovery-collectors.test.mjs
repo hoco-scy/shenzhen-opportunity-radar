@@ -37,7 +37,7 @@ test("北航采集器只用城市和单位性质缩小列表，并在详情中�
   assert.equal(calls.filter((call) => call.url.endsWith("ajax_frontRecruitinfo")).length, 3);
 });
 
-test("国聘采集器使用公开城市关键词分页，并拦截纯算法和社招岗位", async () => {
+test("国聘采集器使用公开城市关键词分页，并保留专业明确可报的算法岗位", async () => {
   const requestedKeywords = [];
   const result = await collectIGuopinDiscovery({
     city: "北京",
@@ -51,7 +51,7 @@ test("国聘采集器使用公开城市关键词分页，并拦截纯算法和�
         company_info: { nature_cn: "国企" },
         nature_cn: "校招", education_cn: "硕士", experience_cn: "无经验", major_cn: ["生物医学工程"],
         contents: "面向应届毕业生开展医疗器械研发", apply_instruction: "投递入口：https://jobs.example.org/apply?id=1", start_time: "2099-01-01", end_time: "2099-12-31", district_list: [{ area_cn: "北京" }]
-      } : payload.search.keyword === "医疗" ? {
+      } : payload.search.keyword === "专业不限" ? {
         job_id: "iguopin-cs", status: 1, job_name: "AI算法工程师", company_name: "示例科技公司",
         company_info: { nature_cn: "国企" },
         nature_cn: "校招", education_cn: "硕士", experience_cn: "无经验", major_cn: ["生物医学工程"],
@@ -60,22 +60,21 @@ test("国聘采集器使用公开城市关键词分页，并拦截纯算法和�
       return response({ code: 200, data: { total: job ? 1 : 0, list: job ? [job] : [] } }, String(url));
     }
   });
-  assert.equal(result.nativeFilterQueries, 6);
+  assert.equal(result.nativeFilterQueries, 11);
   assert.equal(result.deduplicatedCandidates, 2);
-  assert.equal(result.leads.length, 1);
-  assert.equal(result.leads[0].id, "iguopin-1");
-  assert.equal(result.leads[0].employerNature, "国企");
-  assert.equal(result.leads[0].employerApplyUrl, "https://jobs.example.org/apply?id=1");
-  assert.equal(result.detailOutcomes["core-profession-mismatch"], 1);
-  assert.equal(new Set(requestedKeywords).size, 6);
+  assert.equal(result.leads.length, 2);
+  assert.equal(result.leads.find((lead) => lead.id === "iguopin-1").employerNature, "国企");
+  assert.equal(result.leads.find((lead) => lead.id === "iguopin-1").employerApplyUrl, "https://jobs.example.org/apply?id=1");
+  assert.ok(result.leads.some((lead) => lead.id === "iguopin-cs"));
+  assert.equal(new Set(requestedKeywords).size, 11);
 });
 
-test("国聘采集器不把宽口径工科和泛医疗文案当作生物医学岗位", async () => {
+test("国聘采集器保留官方明确允许工学门类报名的岗位", async () => {
   const result = await collectIGuopinDiscovery({
     city: "北京",
     fetchImpl: async (url, init = {}) => {
       const keyword = JSON.parse(init.body).search.keyword;
-      const job = keyword === "医疗" ? {
+      const job = keyword === "工程类" ? {
         job_id: "iguopin-broad", status: 1, job_name: "国际市场助理", company_name: "示例公司",
         company_info: { nature_cn: "国企" },
         nature_cn: "校招", education_cn: "本科", experience_cn: "无经验", major_cn: ["工学全类"],
@@ -84,8 +83,8 @@ test("国聘采集器不把宽口径工科和泛医疗文案当作生物医学�
       return response({ code: 200, data: { total: job ? 1 : 0, list: job ? [job] : [] } }, String(url));
     }
   });
-  assert.equal(result.leads.length, 0);
-  assert.equal(result.detailOutcomes["broad-major-without-direct-biomedical-role"], 1);
+  assert.equal(result.leads.length, 1);
+  assert.equal(result.leads[0].professionalEligibility.basis, "broad-engineering");
 });
 
 test("国聘采集器排除民企，即使岗位专业与工作内容相关", async () => {
@@ -104,7 +103,7 @@ test("国聘采集器排除民企，即使岗位专业与工作内容相关", as
   assert.equal(result.leads.length, 0);
   assert.equal(result.detailOutcomes["employer-nature-mismatch"], 1);
 });
-test("国家大学生就业服务平台采集器只读取城市关键词分页，并在详情中排除纯计算机和民企", async () => {
+test("国家大学生就业服务平台按专业资格保留岗位并继续排除民企", async () => {
   const listRequests = [];
   const result = await collectNCSSDiscovery({
     city: "北京",
@@ -127,12 +126,12 @@ test("国家大学生就业服务平台采集器只读取城市关键词分页�
       throw new Error(`unexpected request: ${url}`);
     }
   });
-  assert.equal(result.nativeFilterQueries, 6);
+  assert.equal(result.nativeFilterQueries, 11);
   assert.equal(result.deduplicatedCandidates, 3);
   assert.equal(result.detailsChecked, 2);
-  assert.equal(result.leads.length, 1);
-  assert.equal(result.leads[0].id, "ncss-good");
-  assert.equal(result.detailOutcomes["core-profession-mismatch"], 1);
+  assert.equal(result.leads.length, 2);
+  assert.ok(result.leads.some((lead) => lead.id === "ncss-good"));
+  assert.ok(result.leads.some((lead) => lead.id === "ncss-ai"));
   assert.equal(result.detailOutcomes["employer-nature-mismatch"], 1);
-  assert.equal(listRequests.length, 6);
+  assert.equal(listRequests.length, 11);
 });

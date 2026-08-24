@@ -22,7 +22,9 @@
       "httpOnlyVerifiedAt": "2026-08-22",
       "accessMode": "browser-spa",
       "lastAccessAuditAt": "2026-08-22",
-      "officialSiteConfirmed": true
+      "officialSiteConfirmed": true,
+      "collectionAccessMode": "script-public-exam",
+      "collectionNote": "官方公告与职位表专用采集器"
     },
     {
       "id": "shenzhen-civil",
@@ -44,7 +46,9 @@
         "https://ggfw.hrss.gd.gov.cn/gwyks/anouns.do",
         "https://ggfw.hrss.gd.gov.cn/gwyks/index.do",
         "https://ggfw.hrss.gd.gov.cn/gwyks/agreement.do"
-      ]
+      ],
+      "collectionAccessMode": "script-public-exam",
+      "collectionNote": "本地公务员公告与职位表专用采集器"
     },
     {
       "id": "shenzhen-personnel-exam",
@@ -61,7 +65,7 @@
         "hrss.sz.gov.cn"
       ],
       "entryUrl": "https://hrss.sz.gov.cn/gzryzk/index.html",
-      "collectionAccessMode": "official-announcement-discovery",
+      "collectionAccessMode": "script-official-notice-adapter",
       "collectionNote": "脚本读取官方事业单位招聘公告页、同域公告链接和公开正文；公告尚未附具体岗位表时只保留为后续核验对象。",
       "officialSiteConfirmed": true
     },
@@ -89,9 +93,15 @@
       "collectionEntryUrl": "https://career.buaa.edu.cn/frontpage/buaa/html/newsList.html?id=5453aeeb99e74d78aea0b45fd456ae68",
       "collectionOrganization": "北航就业信息网（公务员／选调生）",
       "collectionType": "高校官方就业信息网",
-      "collectionCoverage": ["选调优培", "应届生", "深圳"],
-      "collectionDomains": ["career.buaa.edu.cn"],
-      "collectionAccessMode": "script-official-university-announcement-api",
+      "collectionCoverage": [
+        "选调优培",
+        "应届生",
+        "深圳"
+      ],
+      "collectionDomains": [
+        "career.buaa.edu.cn"
+      ],
+      "collectionAccessMode": "script-public-exam",
       "collectionNote": "页面继续展示并链接深圳市委组织部原生入口；后台从选调高校公开栏目筛选广东省应届选调公告，职位表再按深圳市处理。"
     },
     {
@@ -108,7 +118,9 @@
         "hrss.sz.gov.cn"
       ],
       "entryUrl": "https://hrss.sz.gov.cn/gzryzk/index.html",
-      "officialSiteConfirmed": true
+      "officialSiteConfirmed": true,
+      "collectionAccessMode": "script-official-notice-adapter",
+      "collectionNote": "本地事业单位公告页适配器"
     },
     {
       "id": "central-institutions",
@@ -124,7 +136,9 @@
         "mohrss.gov.cn"
       ],
       "entryUrl": "https://www.mohrss.gov.cn/SYrlzyhshbzb/fwyd/SYkaoshizhaopin/zyhgjjgsydwgkzp/",
-      "officialSiteConfirmed": true
+      "officialSiteConfirmed": true,
+      "collectionAccessMode": "script-official-notice-adapter",
+      "collectionNote": "中央和国家机关事业单位公告页适配器"
     },
     {
       "id": "china-public-recruitment",
@@ -140,7 +154,7 @@
         "job.mohrss.gov.cn"
       ],
       "entryUrl": "https://job.mohrss.gov.cn/cjobs/institution/listInstitution",
-      "collectionAccessMode": "official-announcement-discovery",
+      "collectionAccessMode": "script-official-notice-adapter",
       "collectionNote": "脚本读取官方事业单位招聘页及同域公告正文；仅在取得具体岗位条件后再进入资格核验。",
       "alternateEntryUrls": [
         "http://job.mohrss.gov.cn/cjobs/institution/listInstitution"
@@ -166,7 +180,7 @@
         "sasac.gov.cn"
       ],
       "entryUrl": "https://www.sasac.gov.cn/n2588035/n2588325/n2588350/index.html",
-      "collectionAccessMode": "official-announcement-discovery",
+      "collectionAccessMode": "script-official-notice-adapter",
       "collectionNote": "脚本读取国资委央企招聘栏目、同域招聘链接和公告正文；没有具体岗位字段的公告不会发布为岗位。",
       "alternateEntryUrls": [
         "http://wap.sasac.gov.cn/n2588035/n2588325/n2588350/index.html"
@@ -192,7 +206,7 @@
         "sasac.gov.cn"
       ],
       "entryUrl": "https://www.sasac.gov.cn/n2588045/n27271785/n27271792/c14159097/content.html",
-      "collectionAccessMode": "official-announcement-discovery",
+      "collectionAccessMode": "script-official-notice-adapter",
       "collectionNote": "脚本刷新官方中央企业名录，用于限定重点单位范围；名录本身不作为招聘岗位。",
       "alternateEntryUrls": [
         "http://wap.sasac.gov.cn/n2588045/n27271785/n27271792/c14159097/content.html"
@@ -214,8 +228,13 @@
       "domains": [
         "gzw.sz.gov.cn"
       ],
-      "entryUrl": "https://gzw.sz.gov.cn/xyzp/index.html",
-      "officialSiteConfirmed": true
+      "entryUrl": "https://gzw.sz.gov.cn/gzrc/xyzp/",
+      "alternateEntryUrls": [
+        "https://gzw.sz.gov.cn/xyzp/index.html"
+      ],
+      "officialSiteConfirmed": true,
+      "collectionAccessMode": "script-official-notice-adapter",
+      "collectionNote": "本地国资招聘公告页适配器"
     },
     {
       "id": "picc-campus",
@@ -231,8 +250,9 @@
         "picc.zhiye.com"
       ],
       "entryUrl": "https://picc.zhiye.com/custom/xiaoyuan?hideAll=true",
-      "collectionAccessMode": "filterable-paginated-list",
-      "collectionNote": "重点补充：仅处理健康保险、医疗健康、医学数据、风险管理等与生物医学工程交叉的已筛选岗位。",
+      "collectionEntryUrl": "https://picc.zhiye.com/custom/campus?hideAll=true",
+      "collectionAccessMode": "script-official-structured-list",
+      "collectionNote": "官方结构化采集：先按校园招聘和本站城市筛选完整分页，再仅依据任职条件判断生物医学工程或相近工学门类是否可报；岗位内容只参与排序。",
       "officialSiteConfirmed": true
     },
     {
@@ -250,8 +270,8 @@
         "campus.boe.com"
       ],
       "entryUrl": "https://campus.boe.com/jobs?hideMenu=1",
-      "collectionAccessMode": "filterable-paginated-list",
-      "collectionNote": "重点补充：只处理医疗显示、健康科技、医学影像等明确生物医学工程交叉的已筛选岗位。",
+      "collectionAccessMode": "script-official-structured-list",
+      "collectionNote": "专用脚本读取官方校园招聘分类和城市筛选后的全部分页；专业可报即保留，岗位内容只影响排序。",
       "alternateEntryUrls": [
         "https://campus.boe.com/custom/xzzw?hideMenu=1"
       ],
@@ -271,7 +291,7 @@
         "sinopharm.com"
       ],
       "entryUrl": "https://www.sinopharm.com/recruitment.html",
-      "collectionAccessMode": "official-announcement-discovery",
+      "collectionAccessMode": "script-official-notice-adapter",
       "collectionNote": "脚本读取国药集团官方招聘公告、同域招聘链接和公开正文，再回溯具体岗位。",
       "officialSiteConfirmed": true
     },
@@ -289,7 +309,11 @@
         "gt.cn"
       ],
       "entryUrl": "https://www.gt.cn/",
-      "collectionAccessMode": "official-announcement-discovery",
+      "collectionEntryUrl": "https://ky.gt.cn/rczp/",
+      "alternateEntryUrls": [
+        "https://genertechealth.gt.cn/jrwm/zpdt/index.html"
+      ],
+      "collectionAccessMode": "script-official-notice-adapter",
       "collectionNote": "脚本读取通用技术官方招聘公告及同域正文，重点跟进医疗健康、医疗器械和生物医药板块。",
       "officialSiteConfirmed": true
     },
@@ -309,8 +333,8 @@
         "crc.wintalent.cn"
       ],
       "entryUrl": "https://runjob.crc.com.cn/#/complex/homepage?id=1769554545615040514",
-      "collectionAccessMode": "browser-spa",
-      "collectionNote": "重点补充：优先回溯华润医药、医疗健康及医疗器械相关板块的官方岗位。",
+      "collectionAccessMode": "script-official-public-gateway",
+      "collectionNote": "专用脚本读取官方职位总量和全部分页，再按校园招聘、城市、学历和官方专业条件筛选；不逐岗浏览。",
       "officialSiteConfirmed": true,
       "alternateEntryUrls": [
         "https://careers.crc.com.cn/index.html"
@@ -476,7 +500,7 @@
         "sasac.gov.cn"
       ],
       "entryUrl": "http://wap.sasac.gov.cn/n2588035/n2588325/c35503679/content.html",
-      "collectionAccessMode": "official-announcement-discovery",
+      "collectionAccessMode": "script-official-notice-adapter",
       "collectionNote": "脚本读取国务院国资委发布的航天科工官方招聘公告及同域正文；仅跟进医疗装备、生命健康、仪器电子与明确生物医学工程交叉的院所岗位。",
       "accessMode": "semantic-health-check-required",
       "semanticFailureSignals": [
@@ -511,7 +535,7 @@
       "alternateEntryUrls": [
         "http://www.spacetalent.com.cn/"
       ],
-      "collectionAccessMode": "browser-antibot",
+      "collectionAccessMode": "script-official-notice-adapter",
       "collectionNote": "重点补充：仅跟进医疗装备、生命健康、仪器电子与明确生物医学工程交叉的院所岗位。",
       "transportSecurity": "official-http-fallback",
       "httpOnlyVerifiedAt": "2026-08-22",
@@ -551,8 +575,14 @@
       "role": "discovery",
       "tier": "priority",
       "cadence": "every-run",
-      "coverage": ["事业单位", "国有企业", "发现线索"],
-      "domains": ["career.buaa.edu.cn"],
+      "coverage": [
+        "事业单位",
+        "国有企业",
+        "发现线索"
+      ],
+      "domains": [
+        "career.buaa.edu.cn"
+      ],
       "entryUrl": "https://career.buaa.edu.cn/frontpage/buaa/html/recruitmentinfoList.html?type=1",
       "accessMode": "public-filterable-list",
       "collectionAccessMode": "script-buaa-public-filtered-discovery",

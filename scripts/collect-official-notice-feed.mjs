@@ -5,10 +5,15 @@
  * than a generic crawler: only registered official domains are followed, and
  * it never treats a notice as a publishable job without a concrete position.
  */
+import { readFile } from "node:fs/promises";
+import { execFile } from "node:child_process";
+import { promisify } from "node:util";
+import { pathToFileURL } from "node:url";
 
 const RECRUITMENT_LINK = /(招聘|招考|招录|人才|校园|校招|应届|毕业生|选调|优培|事业单位|岗位|职位)/;
-const BIOMEDICAL_CONTEXT = /(生物医学|医疗器械|医学影像|临床工程|医疗|健康|生物工程|生命科学|医药|药学|医院)/i;
+const GENERIC_NAVIGATION = /^(招聘|人才招聘|招考招聘|校园招聘|社会招聘|招聘信息|招聘动态|事业单位)$/;
 const ERROR_PAGE = /(?:页面不存在|not found|error 404|访问出错|系统错误)/i;
+const execFileAsync = promisify(execFile);
 
 export class OfficialNoticeFeedError extends Error {
   constructor(message) { super(message); this.name = "OfficialNoticeFeedError"; }
@@ -19,7 +24,7 @@ function normalizeText(value) {
     .replace(/<script[\s\S]*?<\/script>/gi, " ")
     .replace(/<style[\s\S]*?<\/style>/gi, " ")
     .replace(/<[^>]+>/g, " ")
-    .replace(/&nbsp;/gi, " ").replace(/&amp;/gi, "&")
+    .replace(/&nbsp;/gi, " ").replace(/&amp;/gi, "&").replace(/&gt;/gi, ">").replace(/&lt;/gi, "<").replace(/&bull;/gi, "•")
     .replace(/\s+/g, " ").trim();
 }
 
@@ -42,25 +47,79 @@ function extractAnchors(html, baseUrl, domains) {
   let match;
   while ((match = anchor.exec(html))) {
     const title = normalizeText(match[3]);
-    if (!title || !RECRUITMENT_LINK.test(title)) continue;
+    if (!title || GENERIC_NAVIGATION.test(title) || !RECRUITMENT_LINK.test(title)) continue;
+    const checkUrl = match[2].match(/^javascript:checkUrl\((['"])(.*?)\1\)/i)?.[2];
+    if (/^javascript:/i.test(match[2]) && !checkUrl) continue;
     let url;
-    try { url = new URL(match[2], baseUrl).toString(); } catch { continue; }
-    if (!isOfficialUrl(url, domains)) continue;
-    links.set(url, { url, title });
+    try { url = new URL(checkUrl || match[2], baseUrl).toString(); } catch { continue; }
+    const hostname = new URL(url).hostname.toLowerCase();
+    const trustedRelay = hostname.endsWith(".gov.cn") || hostname === "mp.weixin.qq.com";
+    if (!isOfficialUrl(url, domains) && !trustedRelay) continue;
+    links.set(url, { url, title, trustedRelay: !isOfficialUrl(url, domains) });
   }
   return [...links.values()];
 }
 
-async function fetchOfficialPage(requestedUrl, domains, fetchImpl) {
-  const response = await fetchImpl(requestedUrl, {
-    redirect: "follow",
-    headers: { accept: "text/html,application/xhtml+xml", "user-agent": "Mozilla/5.0" },
-    signal: AbortSignal.timeout(25_000)
-  });
-  const html = await response.text();
-  if (!isOfficialUrl(response.url || requestedUrl, domains)) throw new OfficialNoticeFeedError("官方来源请求跳转到未登记域名，已停止采集。");
-  const semantic404 = ERROR_PAGE.test(html) || /(?:\/404|\/error)(?:[/?#]|$)/i.test(response.url || "");
-  return { ok: response.ok && !semantic404, semantic404, finalUrl: response.url || requestedUrl, html };
+function challengeCookie(html) {
+  const values = html.match(/WTKkN:(\d+),bOYDu:(\d+),[\s\S]*?wyeCN:(\d+)/);
+  const session = html.match(/t,(\d+)\);continue;case"4"/)?.[1];
+  if (!values || !session || !html.includes("EO_Bot_Ssid")) return null;
+  return "__tst_status=" + (Number(values[1]) + Number(values[2]) + Number(values[3])) + "#; EO_Bot_Ssid=" + session;
+}
+
+async function curlPage(requestedUrl, headers = {}) {
+  const headerArgs = Object.entries(headers).flatMap(([name, value]) => ["-H", name + ": " + value]);
+  const marker = "\n__RADAR_META__";
+  const { stdout } = await execFileAsync("curl", [
+    "-sS", "-L", "--max-time", "30", "--max-redirs", "5", "-A", "Mozilla/5.0", ...headerArgs,
+    "-w", marker + "%{http_code}\t%{url_effective}", requestedUrl
+  ], { encoding: "utf8", maxBuffer: 12_000_000 });
+  const index = stdout.lastIndexOf(marker);
+  if (index < 0) throw new OfficialNoticeFeedError("系统 HTTP 客户端未返回状态元数据。");
+  const [status, finalUrl] = stdout.slice(index + marker.length).split("\t");
+  return { ok: Number(status) >= 200 && Number(status) < 400, status: Number(status), url: finalUrl || requestedUrl, viaCurl: true, text: async () => stdout.slice(0, index) };
+}
+
+async function requestPage(requestedUrl, fetchImpl, headers = {}) {
+  try {
+    return await fetchImpl(requestedUrl, {
+      redirect: "follow",
+      headers: { accept: "text/html,application/xhtml+xml", "user-agent": "Mozilla/5.0", ...headers },
+      signal: AbortSignal.timeout(25_000)
+    });
+  } catch (error) {
+    if (fetchImpl !== globalThis.fetch) throw error;
+    return curlPage(requestedUrl, headers);
+  }
+}
+
+async function fetchOfficialPage(requestedUrl, domains, fetchImpl, depth = 0) {
+  let response = await requestPage(requestedUrl, fetchImpl);
+  let html = await response.text();
+  const cookie = challengeCookie(html);
+  if (cookie) {
+    response = await requestPage(requestedUrl, fetchImpl, { cookie });
+    html = await response.text();
+  }
+  let finalUrl = response.url || requestedUrl;
+  let semantic404 = ERROR_PAGE.test(html) || /(?:\/404|\/error)(?:[/?#]|$)/i.test(finalUrl);
+  if ((!response.ok || semantic404) && fetchImpl === globalThis.fetch && !response.viaCurl) {
+    response = await curlPage(requestedUrl);
+    html = await response.text();
+    const curlCookie = challengeCookie(html);
+    if (curlCookie) {
+      response = await curlPage(requestedUrl, { cookie: curlCookie });
+      html = await response.text();
+    }
+    finalUrl = response.url || requestedUrl;
+    semantic404 = ERROR_PAGE.test(html) || /(?:\/404|\/error)(?:[/?#]|$)/i.test(finalUrl);
+  }
+  if (!isOfficialUrl(finalUrl, domains)) throw new OfficialNoticeFeedError("官方来源请求跳转到未登记域名，已停止采集。");
+  if (depth < 2 && html.length < 5_000) {
+    const scriptTarget = html.match(/window\.location(?:\.href)?\s*=\s*["']([^"']+)["']/i)?.[1];
+    if (scriptTarget) return fetchOfficialPage(new URL(scriptTarget, finalUrl).toString(), domains, fetchImpl, depth + 1);
+  }
+  return { ok: response.ok && !semantic404, semantic404, finalUrl, html };
 }
 
 function primaryUrls(source) {
@@ -123,13 +182,21 @@ export async function collectOfficialNoticeFeed({ source, fetchImpl = fetch, det
       collectionRoute: "登记官方公告/招聘页 → 同域招聘链接 → 公告正文",
       status: "accessible-incomplete", accessEvidence, attempts: accessEvidence.length,
       collected: null, afterFilter: null, noticeItems: [],
-      reason: "已读取官方入口，但没有在静态正文中找到可安全跟进的同域招聘列表；该来源需要按登记的浏览器路线继续处理，不能按 0 条理解。"
+      reason: "已读取官方入口，但专用脚本尚未从当前页面结构中解析出可安全跟进的招聘列表；该来源需要继续适配，不能按 0 条理解。"
     };
   }
 
   const selected = anchors.slice(0, detailLimit);
   const noticeItems = [];
   for (const anchor of selected) {
+    if (anchor.trustedRelay) {
+      noticeItems.push({
+        title: anchor.title,
+        url: anchor.url,
+        evidence: "该链接由已登记的政府官方公告列表直接给出；仅记录公告线索，不据此发布具体岗位。"
+      });
+      continue;
+    }
     try {
       const detail = await fetchOfficialPage(anchor.url, domains, fetchImpl);
       if (!detail.ok) continue;
@@ -137,7 +204,7 @@ export async function collectOfficialNoticeFeed({ source, fetchImpl = fetch, det
       // This is a notice-level relevance filter.  It deliberately remains
       // broad: a selected notice can still contain a later position table.
       if (RECRUITMENT_LINK.test(detailText)) {
-        noticeItems.push({ title: anchor.title, url: detail.finalUrl, biomedicalRelated: BIOMEDICAL_CONTEXT.test(`${anchor.title} ${detailText}`) });
+        noticeItems.push({ title: anchor.title, url: detail.finalUrl });
       }
     } catch { /* a single detail failure does not erase other public notices */ }
   }
@@ -147,16 +214,29 @@ export async function collectOfficialNoticeFeed({ source, fetchImpl = fetch, det
       collectionRoute: "登记官方公告/招聘页 → 同域招聘链接 → 公告正文",
       status: "accessible-incomplete", accessEvidence, attempts: accessEvidence.length,
       collected: null, afterFilter: null, noticeItems: [],
-      reason: "已发现招聘导航或链接，但没有取得可核验的同域招聘公告正文；可能跳转到独立招聘系统或动态列表，需要按登记的浏览器路线继续处理，不能按 0 条理解。"
+      reason: "已发现招聘导航或链接，但专用脚本没有取得可核验的公告正文；可能跳转到独立招聘系统或动态列表，需要继续适配，不能按 0 条理解。"
     };
   }
-  const relevant = noticeItems.filter((item) => item.biomedicalRelated).length;
   return {
     sourceId: source.id,
     collectionMethod: "official-notice-feed",
     collectionRoute: "登记官方公告/招聘页 → 同域招聘链接 → 公告正文",
     status: "checked-official-notice-feed", accessEvidence, attempts: accessEvidence.length,
-    collected: noticeItems.length, afterFilter: relevant, noticeItems,
-    reason: `已读取 ${noticeItems.length} 条同域招聘/公告正文，其中 ${relevant} 条出现生物医学、医疗健康或医药器械相关公开上下文；公告尚未具备具体岗位字段时不发布为岗位。`
+    collected: noticeItems.length, afterFilter: noticeItems.length, noticeItems,
+    reason: `已读取 ${noticeItems.length} 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。`
   };
+}
+
+async function main() {
+  const sourceIndex = process.argv.indexOf("--source");
+  const sourceId = sourceIndex >= 0 ? process.argv[sourceIndex + 1] : null;
+  if (!sourceId) throw new OfficialNoticeFeedError("请使用 --source <source-id> 指定已登记来源。");
+  const registry = JSON.parse(await readFile(new URL("../data/source-registry.json", import.meta.url), "utf8"));
+  const source = registry.sources.find((item) => item.id === sourceId);
+  if (!source) throw new OfficialNoticeFeedError(`未找到来源：${sourceId}`);
+  console.log(JSON.stringify(await collectOfficialNoticeFeed({ source }), null, 2));
+}
+
+if (import.meta.url === pathToFileURL(process.argv[1]).href) {
+  main().catch((error) => { console.error(error.message); process.exitCode = 1; });
 }

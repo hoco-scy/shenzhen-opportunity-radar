@@ -2,11 +2,4599 @@
   "meta": {
     "schemaVersion": 1,
     "initializationStatus": "synchronized",
-    "lastRunAt": "2026-08-24T01:39:00+08:00",
+    "lastRunAt": "2026-08-24T12:18:00+08:00",
     "timezone": "Asia/Shanghai",
     "privacyRule": "只记录公开招聘事实、匿名审核结论和公开安全原因；不记录或反推任何私人资格字段"
   },
   "runs": [
+    {
+      "id": "run-20260824-1218-aggregate-first-full-sync",
+      "scope": "full-city-run",
+      "checkedAt": "2026-08-24T12:18:00+08:00",
+      "trigger": "scheduled-or-manual-full-update",
+      "scheduledSourceIds": [
+        "national-civil",
+        "shenzhen-civil",
+        "shenzhen-personnel-exam",
+        "shenzhen-selection-program",
+        "shenzhen-institutions",
+        "central-institutions",
+        "china-public-recruitment",
+        "central-sasac-recruitment",
+        "central-enterprise-roster",
+        "shenzhen-state-assets",
+        "picc-campus",
+        "boe-campus",
+        "sinopharm-careers",
+        "genertec-official",
+        "crc-careers",
+        "casic-careers",
+        "spacechina-careers",
+        "buaa-career-discovery",
+        "national-college-employment",
+        "iguopin-discovery"
+      ],
+      "policyVersion": 7,
+      "screeningStrategyVersion": 2,
+      "candidateProcessingVersion": 4,
+      "coverageStatus": "aggregate-first-collection-and-source-health",
+      "status": "completed-partial",
+      "outcome": "aggregate-platform-discovery-plus-official-verification",
+      "summary": "本轮已执行公考、选调优培、三类聚合平台和重点单位的公开采集。北航就业信息网初筛 0 条，国聘初筛 28 条，国家大学生就业服务平台初筛 0 条；重点官网具体岗位：中国人保 10 条、京东方 0 条、华润 20 条；官方公告页保留 43 条待拆分公告。",
+      "metrics": {
+        "officialSystemsChecked": 20,
+        "officialSystemsSucceeded": 19,
+        "officialSystemsFailed": 1,
+        "newLeads": 180,
+        "reviewedItems": 0,
+        "accepted": 0,
+        "rejected": 0,
+        "deferred": 0,
+        "published": 30,
+        "updated": 0,
+        "closed": 0
+      },
+      "screeningMetrics": {
+        "portalResultsReported": 3233,
+        "nativeFilterQueries": 28,
+        "nativeFilteredResults": 3233,
+        "deduplicatedCandidates": 633,
+        "positionsBatchReviewed": 333,
+        "positionsOfficiallyVerified": 30,
+        "positionsEscalated": 0,
+        "positionsDeferredByBudget": 0,
+        "discoverySourcesChecked": 3,
+        "discoveryOfficialCandidates": 28
+      },
+      "sourceChecks": [
+        {
+          "sourceId": "national-civil",
+          "status": "checked-no-active-campaign",
+          "attempts": 2,
+          "note": "官方公告、详情和可见附件已完成脚本检查；本轮未发现报名截止日未过且可进入资格判断的公务员/选调公告；另有 4 条缺少可解析报名期限的历史/归档公告，未作为在招处理。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 29,
+            "afterFilter": 0,
+            "filterDescription": "官方公告与附件 → 仍在有效期内、可继续资格判断的公告"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "http://bm.scs.gov.cn/pp/gkweb/core/web/ui/business/home/gkhome.html",
+              "finalUrl": "http://bm.scs.gov.cn/pp/gkweb/core/web/ui/business/home/gkhome.html",
+              "outcome": "official-page",
+              "recipe": "官方 SPA 配置 → 官方 JSON 专题 → 公告详情/附件"
+            }
+          ],
+          "checkedAt": "2026-08-24T12:18:00+08:00"
+        },
+        {
+          "sourceId": "shenzhen-civil",
+          "status": "checked-no-active-campaign",
+          "attempts": 2,
+          "note": "官方公告、详情和可见附件已完成脚本检查；本轮未发现报名截止日未过且可进入资格判断的公务员/选调公告。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 49,
+            "afterFilter": 0,
+            "filterDescription": "官方公告与附件 → 仍在有效期内、可继续资格判断的公告"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.gdzz.gov.cn/gwygz/lypytzgg/index.html",
+              "finalUrl": "https://www.gdzz.gov.cn/gwygz/lypytzgg/index.html",
+              "outcome": "official-page",
+              "recipe": "广东组织工作网公告列表 → 公告详情 → 官方附件/压缩包"
+            }
+          ],
+          "checkedAt": "2026-08-24T12:18:00+08:00"
+        },
+        {
+          "sourceId": "shenzhen-personnel-exam",
+          "status": "checked-official-notice-feed",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T12:18:00+08:00",
+          "note": "已读取 8 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 8,
+            "afterFilter": 8,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://hrss.sz.gov.cn/gzryzk/index.html",
+              "finalUrl": "https://hrss.sz.gov.cn/gzryzk/index.html",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "shenzhen-selection-program",
+          "status": "checked-no-active-campaign",
+          "attempts": 1,
+          "note": "官方公告、详情和可见附件已完成脚本检查；本轮未发现报名截止日未过且可进入资格判断的公务员/选调公告。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 1,
+            "afterFilter": 0,
+            "filterDescription": "官方公告与附件 → 仍在有效期内、可继续资格判断的公告"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://career.buaa.edu.cn/frontpage/buaa/html/newsList.html?id=5453aeeb99e74d78aea0b45fd456ae68",
+              "finalUrl": "https://career.buaa.edu.cn/frontpage/buaa/js/init.js",
+              "outcome": "official-page",
+              "recipe": "北航就业网选调生公开栏目 API → 城市应届选调公告详情/附件"
+            }
+          ],
+          "checkedAt": "2026-08-24T12:18:00+08:00"
+        },
+        {
+          "sourceId": "shenzhen-institutions",
+          "status": "checked-official-notice-feed",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T12:18:00+08:00",
+          "note": "已读取 8 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 8,
+            "afterFilter": 8,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://hrss.sz.gov.cn/gzryzk/index.html",
+              "finalUrl": "https://hrss.sz.gov.cn/gzryzk/index.html",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "central-institutions",
+          "status": "checked-official-notice-feed",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T12:18:00+08:00",
+          "note": "已读取 19 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 19,
+            "afterFilter": 19,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.mohrss.gov.cn/SYrlzyhshbzb/fwyd/SYkaoshizhaopin/zyhgjjgsydwgkzp/",
+              "finalUrl": "https://www.mohrss.gov.cn/SYrlzyhshbzb/fwyd/SYkaoshizhaopin/zyhgjjgsydwgkzp/",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "china-public-recruitment",
+          "status": "checked-official-notice-feed",
+          "attempts": 2,
+          "checkedAt": "2026-08-24T12:18:00+08:00",
+          "note": "已读取 23 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 23,
+            "afterFilter": 23,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://job.mohrss.gov.cn/cjobs/institution/listInstitution",
+              "outcome": "network-error",
+              "recipe": "官方入口本轮无法读取：Error。"
+            },
+            {
+              "requestedUrl": "http://job.mohrss.gov.cn/cjobs/institution/listInstitution",
+              "finalUrl": "http://job.mohrss.gov.cn/cjobs/institution/listInstitution",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "central-sasac-recruitment",
+          "status": "checked-official-notice-feed",
+          "attempts": 2,
+          "checkedAt": "2026-08-24T12:18:00+08:00",
+          "note": "已读取 16 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 16,
+            "afterFilter": 16,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.sasac.gov.cn/n2588035/n2588325/n2588350/index.html",
+              "outcome": "network-error",
+              "recipe": "官方入口本轮无法读取：Error。"
+            },
+            {
+              "requestedUrl": "http://wap.sasac.gov.cn/n2588035/n2588325/n2588350/index.html",
+              "finalUrl": "http://wap.sasac.gov.cn/n2588035/n2588325/n2588350/index.html",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "central-enterprise-roster",
+          "status": "checked-roster-current",
+          "attempts": 2,
+          "checkedAt": "2026-08-24T12:18:00+08:00",
+          "note": "已读取官方中央企业名录页；名录用于限定重点单位范围，不把名录本身当作招聘岗位。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 1,
+            "afterFilter": 0,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.sasac.gov.cn/n2588045/n27271785/n27271792/c14159097/content.html",
+              "outcome": "network-error",
+              "recipe": "官方入口本轮无法读取：Error。"
+            },
+            {
+              "requestedUrl": "http://wap.sasac.gov.cn/n2588045/n27271785/n27271792/c14159097/content.html",
+              "finalUrl": "http://wap.sasac.gov.cn/n2588045/n27271785/n27271792/c14159097/content.html",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "shenzhen-state-assets",
+          "status": "checked-official-notice-feed",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T12:18:00+08:00",
+          "note": "已读取 27 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 27,
+            "afterFilter": 27,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://gzw.sz.gov.cn/gzrc/xyzp/",
+              "finalUrl": "https://gzw.sz.gov.cn/gzrc/xyzp/",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "picc-campus",
+          "status": "checked-native-filtered",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T12:18:00+08:00",
+          "note": "已用本站公开结构化接口完成城市、招聘类型、全部分页和任职条件筛选：采集 24 条，专业可报 10 条。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 24,
+            "afterFilter": 10,
+            "filterDescription": "是否收录只按官方任职条件判断；岗位内容仅用于排序。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://picc.zhiye.com/custom/campus?hideAll=true",
+              "outcome": "official-structured-data",
+              "recipe": "人保官方校园招聘 API → 招聘类型=校园招聘 → 官方地点筛选 → 全部分页 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://picc.zhiye.com/api/Jobad/SearchAreasTreeConditions?PortalId=20e42367-7ff6-422b-8dd9-92f72842818a&categoryId=2",
+              "outcome": "official-structured-data",
+              "recipe": "人保官方校园招聘 API → 招聘类型=校园招聘 → 官方地点筛选 → 全部分页 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://picc.zhiye.com/api/Jobad/GetJobAdPageList#city=4403&category=2&page=0",
+              "outcome": "official-structured-data",
+              "recipe": "人保官方校园招聘 API → 招聘类型=校园招聘 → 官方地点筛选 → 全部分页 → 任职条件专业资格门禁"
+            }
+          ]
+        },
+        {
+          "sourceId": "boe-campus",
+          "status": "checked-native-filtered",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T12:18:00+08:00",
+          "note": "已用本站公开结构化接口完成城市、招聘类型、全部分页和任职条件筛选：采集 0 条，专业可报 0 条。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 0,
+            "afterFilter": 0,
+            "filterDescription": "是否收录只按官方任职条件判断；岗位内容仅用于排序。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://campus.boe.com/jobs?hideMenu=1",
+              "outcome": "official-structured-data",
+              "recipe": "京东方官方校园招聘 API → 校园招聘分类 → 官方地点选项"
+            },
+            {
+              "requestedUrl": "https://campus.boe.com/api/Jobad/SearchAreasTreeConditions?PortalId=e71a8ad7-a321-4305-80db-73f2f18f8d22&categoryId=15",
+              "outcome": "official-structured-data",
+              "recipe": "京东方官方校园招聘 API → 校园招聘分类 → 官方地点选项"
+            }
+          ]
+        },
+        {
+          "sourceId": "sinopharm-careers",
+          "status": "checked-official-notice-feed",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T12:18:00+08:00",
+          "note": "已读取 8 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 8,
+            "afterFilter": 8,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.sinopharm.com/recruitment.html",
+              "finalUrl": "https://www.sinopharm.com/recruitment.html",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "genertec-official",
+          "status": "checked-official-notice-feed",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T12:18:00+08:00",
+          "note": "已读取 13 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 13,
+            "afterFilter": 13,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://ky.gt.cn/rczp/",
+              "finalUrl": "https://ky.gt.cn/rczp/",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "crc-careers",
+          "status": "checked-native-filtered",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T12:18:00+08:00",
+          "note": "已用本站公开结构化接口完成城市、招聘类型、全部分页和任职条件筛选：采集 4128 条，专业可报 20 条。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 4128,
+            "afterFilter": 20,
+            "filterDescription": "是否收录只按官方任职条件判断；岗位内容仅用于排序。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://runjob.crc.com.cn/#/complex/homepage?id=1769554545615040514",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=1&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=2&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=3&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=4&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=5&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=6&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=7&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=8&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=9&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=10&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=11&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=12&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=13&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=14&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            }
+          ]
+        },
+        {
+          "sourceId": "casic-careers",
+          "status": "checked-official-notice-feed",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T12:18:00+08:00",
+          "note": "已读取 1 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 1,
+            "afterFilter": 1,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "http://wap.sasac.gov.cn/n2588035/n2588325/c35503679/content.html",
+              "finalUrl": "http://wap.sasac.gov.cn/n2588035/n2588325/c35503679/content.html",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "spacechina-careers",
+          "status": "checked-official-notice-feed",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T12:18:00+08:00",
+          "note": "已读取 1 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 1,
+            "afterFilter": 1,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://m.spacechina.com/index.html",
+              "finalUrl": "https://m.spacechina.com/index.html",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "buaa-career-discovery",
+          "status": "checked-native-filtered",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T12:18:00+08:00",
+          "note": "已完成 3 组本站筛选并读取 3 条去重候选。0 条通过应届硕士与专业相关性的初筛，进入官方回溯；3 条未进入回溯。已读取本轮全部已筛选分页。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 3,
+            "afterFilter": 0,
+            "filterDescription": "已使用本站城市、单位性质/关键词、应届硕士和生物医学相关性等条件完成预筛。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://career.buaa.edu.cn/frontpage/buaa/html/recruitmentinfoList.html?type=1",
+              "finalUrl": "https://career.buaa.edu.cn/frontpage/buaa/js/init.js",
+              "outcome": "official-page",
+              "recipe": "北航就业信息网公开城市＋单位性质筛选 → 已筛选分页 → 公开岗位详情 → 任职条件专业资格预筛"
+            }
+          ]
+        },
+        {
+          "sourceId": "national-college-employment",
+          "status": "accessible-incomplete",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T12:18:00+08:00",
+          "note": "已完成 11 组本站筛选并读取 300 条去重候选。0 条通过应届硕士与专业相关性的初筛，进入官方回溯；300 条未进入回溯。公开访问在已读取分页后受限：国家大学生就业服务平台在第 6 页要求登录，公开采集在此前分页停止。；未把未读取部分当作无岗位。",
+          "collectionMetrics": {
+            "state": "partial",
+            "collected": 300,
+            "afterFilter": 0,
+            "filterDescription": "已记录公开可读取分页的采集和筛选数量；后续分页要求登录或未能公开读取，不能把本轮结果理解为完整平台全集。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.ncss.cn/",
+              "finalUrl": "https://www.ncss.cn/student/jobs/jobslist/ajax/?areaCode=440300&jobName=%E7%94%9F%E7%89%A9%E5%8C%BB%E5%AD%A6%E5%B7%A5%E7%A8%8B&offset=1&limit=20",
+              "outcome": "official-page",
+              "recipe": "国家大学生就业服务平台公开城市＋专业可报关键词并集 → 已筛选分页 → 任职条件专业资格预筛"
+            }
+          ]
+        },
+        {
+          "sourceId": "iguopin-discovery",
+          "status": "checked-native-filtered",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T12:18:00+08:00",
+          "note": "已完成 11 组本站筛选并读取 330 条去重候选。28 条通过应届硕士与专业相关性的初筛，进入官方回溯；302 条未进入回溯。已读取本轮全部已筛选分页。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 330,
+            "afterFilter": 28,
+            "filterDescription": "已使用本站城市、单位性质/关键词、应届硕士和生物医学相关性等条件完成预筛。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.iguopin.com/",
+              "finalUrl": "https://www.iguopin.com/job/list?keyword=%E7%94%9F%E7%89%A9%E5%8C%BB%E5%AD%A6%E5%B7%A5%E7%A8%8B#district=000000.440000.440300&page=1",
+              "outcome": "official-page",
+              "recipe": "国聘公开城市＋专业可报关键词并集 → 已筛选分页 → 任职条件专业资格预筛"
+            }
+          ]
+        }
+      ],
+      "reviews": []
+    },
+    {
+      "id": "run-20260824-1216-aggregate-first-full-sync",
+      "scope": "full-city-run",
+      "checkedAt": "2026-08-24T12:16:00+08:00",
+      "trigger": "scheduled-or-manual-full-update",
+      "scheduledSourceIds": [
+        "national-civil",
+        "shenzhen-civil",
+        "shenzhen-personnel-exam",
+        "shenzhen-selection-program",
+        "shenzhen-institutions",
+        "central-institutions",
+        "china-public-recruitment",
+        "central-sasac-recruitment",
+        "central-enterprise-roster",
+        "shenzhen-state-assets",
+        "picc-campus",
+        "boe-campus",
+        "sinopharm-careers",
+        "genertec-official",
+        "crc-careers",
+        "casic-careers",
+        "spacechina-careers",
+        "buaa-career-discovery",
+        "national-college-employment",
+        "iguopin-discovery"
+      ],
+      "policyVersion": 7,
+      "screeningStrategyVersion": 2,
+      "candidateProcessingVersion": 4,
+      "coverageStatus": "aggregate-first-collection-and-source-health",
+      "status": "completed-partial",
+      "outcome": "aggregate-platform-discovery-plus-official-verification",
+      "summary": "本轮已执行公考、选调优培、三类聚合平台和重点单位的公开采集。北航就业信息网初筛 0 条，国聘初筛 28 条，国家大学生就业服务平台初筛 0 条；重点官网具体岗位：中国人保 10 条、京东方 0 条、华润 20 条；官方公告页保留 62 条待拆分公告。",
+      "metrics": {
+        "officialSystemsChecked": 20,
+        "officialSystemsSucceeded": 19,
+        "officialSystemsFailed": 1,
+        "newLeads": 199,
+        "reviewedItems": 0,
+        "accepted": 0,
+        "rejected": 0,
+        "deferred": 0,
+        "published": 30,
+        "updated": 0,
+        "closed": 0
+      },
+      "screeningMetrics": {
+        "portalResultsReported": 3233,
+        "nativeFilterQueries": 28,
+        "nativeFilteredResults": 3233,
+        "deduplicatedCandidates": 636,
+        "positionsBatchReviewed": 336,
+        "positionsOfficiallyVerified": 30,
+        "positionsEscalated": 0,
+        "positionsDeferredByBudget": 0,
+        "discoverySourcesChecked": 3,
+        "discoveryOfficialCandidates": 28
+      },
+      "sourceChecks": [
+        {
+          "sourceId": "national-civil",
+          "status": "checked-no-active-campaign",
+          "attempts": 2,
+          "note": "官方公告、详情和可见附件已完成脚本检查；本轮未发现报名截止日未过且可进入资格判断的公务员/选调公告；另有 4 条缺少可解析报名期限的历史/归档公告，未作为在招处理。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 29,
+            "afterFilter": 0,
+            "filterDescription": "官方公告与附件 → 仍在有效期内、可继续资格判断的公告"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "http://bm.scs.gov.cn/pp/gkweb/core/web/ui/business/home/gkhome.html",
+              "finalUrl": "http://bm.scs.gov.cn/pp/gkweb/core/web/ui/business/home/gkhome.html",
+              "outcome": "official-page",
+              "recipe": "官方 SPA 配置 → 官方 JSON 专题 → 公告详情/附件"
+            }
+          ],
+          "checkedAt": "2026-08-24T12:16:00+08:00"
+        },
+        {
+          "sourceId": "shenzhen-civil",
+          "status": "checked-no-active-campaign",
+          "attempts": 2,
+          "note": "官方公告、详情和可见附件已完成脚本检查；本轮未发现报名截止日未过且可进入资格判断的公务员/选调公告。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 49,
+            "afterFilter": 0,
+            "filterDescription": "官方公告与附件 → 仍在有效期内、可继续资格判断的公告"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.gdzz.gov.cn/gwygz/lypytzgg/index.html",
+              "finalUrl": "https://www.gdzz.gov.cn/gwygz/lypytzgg/index.html",
+              "outcome": "official-page",
+              "recipe": "广东组织工作网公告列表 → 公告详情 → 官方附件/压缩包"
+            }
+          ],
+          "checkedAt": "2026-08-24T12:16:00+08:00"
+        },
+        {
+          "sourceId": "shenzhen-personnel-exam",
+          "status": "checked-official-notice-feed",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T12:16:00+08:00",
+          "note": "已读取 8 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 8,
+            "afterFilter": 8,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://hrss.sz.gov.cn/gzryzk/index.html",
+              "finalUrl": "https://hrss.sz.gov.cn/gzryzk/index.html",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "shenzhen-selection-program",
+          "status": "checked-no-active-campaign",
+          "attempts": 1,
+          "note": "官方公告、详情和可见附件已完成脚本检查；本轮未发现报名截止日未过且可进入资格判断的公务员/选调公告。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 1,
+            "afterFilter": 0,
+            "filterDescription": "官方公告与附件 → 仍在有效期内、可继续资格判断的公告"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://career.buaa.edu.cn/frontpage/buaa/html/newsList.html?id=5453aeeb99e74d78aea0b45fd456ae68",
+              "finalUrl": "https://career.buaa.edu.cn/frontpage/buaa/js/init.js",
+              "outcome": "official-page",
+              "recipe": "北航就业网选调生公开栏目 API → 城市应届选调公告详情/附件"
+            }
+          ],
+          "checkedAt": "2026-08-24T12:16:00+08:00"
+        },
+        {
+          "sourceId": "shenzhen-institutions",
+          "status": "checked-official-notice-feed",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T12:16:00+08:00",
+          "note": "已读取 8 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 8,
+            "afterFilter": 8,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://hrss.sz.gov.cn/gzryzk/index.html",
+              "finalUrl": "https://hrss.sz.gov.cn/gzryzk/index.html",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "central-institutions",
+          "status": "checked-official-notice-feed",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T12:16:00+08:00",
+          "note": "已读取 19 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 19,
+            "afterFilter": 19,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.mohrss.gov.cn/SYrlzyhshbzb/fwyd/SYkaoshizhaopin/zyhgjjgsydwgkzp/",
+              "finalUrl": "https://www.mohrss.gov.cn/SYrlzyhshbzb/fwyd/SYkaoshizhaopin/zyhgjjgsydwgkzp/",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "china-public-recruitment",
+          "status": "checked-official-notice-feed",
+          "attempts": 2,
+          "checkedAt": "2026-08-24T12:16:00+08:00",
+          "note": "已读取 23 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 23,
+            "afterFilter": 23,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://job.mohrss.gov.cn/cjobs/institution/listInstitution",
+              "outcome": "network-error",
+              "recipe": "官方入口本轮无法读取：Error。"
+            },
+            {
+              "requestedUrl": "http://job.mohrss.gov.cn/cjobs/institution/listInstitution",
+              "finalUrl": "http://job.mohrss.gov.cn/cjobs/institution/listInstitution",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "central-sasac-recruitment",
+          "status": "checked-official-notice-feed",
+          "attempts": 2,
+          "checkedAt": "2026-08-24T12:16:00+08:00",
+          "note": "已读取 16 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 16,
+            "afterFilter": 16,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.sasac.gov.cn/n2588035/n2588325/n2588350/index.html",
+              "outcome": "network-error",
+              "recipe": "官方入口本轮无法读取：Error。"
+            },
+            {
+              "requestedUrl": "http://wap.sasac.gov.cn/n2588035/n2588325/n2588350/index.html",
+              "finalUrl": "http://wap.sasac.gov.cn/n2588035/n2588325/n2588350/index.html",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "central-enterprise-roster",
+          "status": "checked-roster-current",
+          "attempts": 2,
+          "checkedAt": "2026-08-24T12:16:00+08:00",
+          "note": "已读取官方中央企业名录页；名录用于限定重点单位范围，不把名录本身当作招聘岗位。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 1,
+            "afterFilter": 0,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.sasac.gov.cn/n2588045/n27271785/n27271792/c14159097/content.html",
+              "outcome": "network-error",
+              "recipe": "官方入口本轮无法读取：Error。"
+            },
+            {
+              "requestedUrl": "http://wap.sasac.gov.cn/n2588045/n27271785/n27271792/c14159097/content.html",
+              "finalUrl": "http://wap.sasac.gov.cn/n2588045/n27271785/n27271792/c14159097/content.html",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "shenzhen-state-assets",
+          "status": "checked-official-notice-feed",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T12:16:00+08:00",
+          "note": "已读取 27 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 27,
+            "afterFilter": 27,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://gzw.sz.gov.cn/gzrc/xyzp/",
+              "finalUrl": "https://gzw.sz.gov.cn/gzrc/xyzp/",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "picc-campus",
+          "status": "checked-native-filtered",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T12:16:00+08:00",
+          "note": "已用本站公开结构化接口完成城市、招聘类型、全部分页和任职条件筛选：采集 24 条，专业可报 10 条。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 24,
+            "afterFilter": 10,
+            "filterDescription": "是否收录只按官方任职条件判断；岗位内容仅用于排序。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://picc.zhiye.com/custom/campus?hideAll=true",
+              "outcome": "official-structured-data",
+              "recipe": "人保官方校园招聘 API → 招聘类型=校园招聘 → 官方地点筛选 → 全部分页 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://picc.zhiye.com/api/Jobad/SearchAreasTreeConditions?PortalId=20e42367-7ff6-422b-8dd9-92f72842818a&categoryId=2",
+              "outcome": "official-structured-data",
+              "recipe": "人保官方校园招聘 API → 招聘类型=校园招聘 → 官方地点筛选 → 全部分页 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://picc.zhiye.com/api/Jobad/GetJobAdPageList#city=4403&category=2&page=0",
+              "outcome": "official-structured-data",
+              "recipe": "人保官方校园招聘 API → 招聘类型=校园招聘 → 官方地点筛选 → 全部分页 → 任职条件专业资格门禁"
+            }
+          ]
+        },
+        {
+          "sourceId": "boe-campus",
+          "status": "checked-native-filtered",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T12:16:00+08:00",
+          "note": "已用本站公开结构化接口完成城市、招聘类型、全部分页和任职条件筛选：采集 0 条，专业可报 0 条。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 0,
+            "afterFilter": 0,
+            "filterDescription": "是否收录只按官方任职条件判断；岗位内容仅用于排序。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://campus.boe.com/jobs?hideMenu=1",
+              "outcome": "official-structured-data",
+              "recipe": "京东方官方校园招聘 API → 校园招聘分类 → 官方地点选项"
+            },
+            {
+              "requestedUrl": "https://campus.boe.com/api/Jobad/SearchAreasTreeConditions?PortalId=e71a8ad7-a321-4305-80db-73f2f18f8d22&categoryId=15",
+              "outcome": "official-structured-data",
+              "recipe": "京东方官方校园招聘 API → 校园招聘分类 → 官方地点选项"
+            }
+          ]
+        },
+        {
+          "sourceId": "sinopharm-careers",
+          "status": "checked-official-notice-feed",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T12:16:00+08:00",
+          "note": "已读取 8 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 8,
+            "afterFilter": 8,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.sinopharm.com/recruitment.html",
+              "finalUrl": "https://www.sinopharm.com/recruitment.html",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "genertec-official",
+          "status": "checked-official-notice-feed",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T12:16:00+08:00",
+          "note": "已读取 13 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 13,
+            "afterFilter": 13,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://ky.gt.cn/rczp/",
+              "finalUrl": "https://ky.gt.cn/rczp/",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "crc-careers",
+          "status": "checked-native-filtered",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T12:16:00+08:00",
+          "note": "已用本站公开结构化接口完成城市、招聘类型、全部分页和任职条件筛选：采集 4128 条，专业可报 20 条。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 4128,
+            "afterFilter": 20,
+            "filterDescription": "是否收录只按官方任职条件判断；岗位内容仅用于排序。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://runjob.crc.com.cn/#/complex/homepage?id=1769554545615040514",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=1&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=2&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=3&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=4&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=5&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=6&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=7&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=8&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=9&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=10&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=11&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=12&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=13&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=14&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            }
+          ]
+        },
+        {
+          "sourceId": "casic-careers",
+          "status": "checked-official-notice-feed",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T12:16:00+08:00",
+          "note": "已读取 1 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 1,
+            "afterFilter": 1,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "http://wap.sasac.gov.cn/n2588035/n2588325/c35503679/content.html",
+              "finalUrl": "http://wap.sasac.gov.cn/n2588035/n2588325/c35503679/content.html",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "spacechina-careers",
+          "status": "checked-official-notice-feed",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T12:16:00+08:00",
+          "note": "已读取 1 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 1,
+            "afterFilter": 1,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://m.spacechina.com/index.html",
+              "finalUrl": "https://m.spacechina.com/index.html",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "buaa-career-discovery",
+          "status": "checked-native-filtered",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T12:16:00+08:00",
+          "note": "已完成 3 组本站筛选并读取 3 条去重候选。0 条通过应届硕士与专业相关性的初筛，进入官方回溯；3 条未进入回溯。已读取本轮全部已筛选分页。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 3,
+            "afterFilter": 0,
+            "filterDescription": "已使用本站城市、单位性质/关键词、应届硕士和生物医学相关性等条件完成预筛。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://career.buaa.edu.cn/frontpage/buaa/html/recruitmentinfoList.html?type=1",
+              "finalUrl": "https://career.buaa.edu.cn/frontpage/buaa/js/init.js",
+              "outcome": "official-page",
+              "recipe": "北航就业信息网公开城市＋单位性质筛选 → 已筛选分页 → 公开岗位详情 → 任职条件专业资格预筛"
+            }
+          ]
+        },
+        {
+          "sourceId": "national-college-employment",
+          "status": "accessible-incomplete",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T12:16:00+08:00",
+          "note": "已完成 11 组本站筛选并读取 300 条去重候选。0 条通过应届硕士与专业相关性的初筛，进入官方回溯；300 条未进入回溯。公开访问在已读取分页后受限：国家大学生就业服务平台在第 6 页要求登录，公开采集在此前分页停止。；未把未读取部分当作无岗位。",
+          "collectionMetrics": {
+            "state": "partial",
+            "collected": 300,
+            "afterFilter": 0,
+            "filterDescription": "已记录公开可读取分页的采集和筛选数量；后续分页要求登录或未能公开读取，不能把本轮结果理解为完整平台全集。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.ncss.cn/",
+              "finalUrl": "https://www.ncss.cn/student/jobs/jobslist/ajax/?areaCode=440300&jobName=%E7%94%9F%E7%89%A9%E5%8C%BB%E5%AD%A6%E5%B7%A5%E7%A8%8B&offset=1&limit=20",
+              "outcome": "official-page",
+              "recipe": "国家大学生就业服务平台公开城市＋专业可报关键词并集 → 已筛选分页 → 任职条件专业资格预筛"
+            }
+          ]
+        },
+        {
+          "sourceId": "iguopin-discovery",
+          "status": "checked-native-filtered",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T12:16:00+08:00",
+          "note": "已完成 11 组本站筛选并读取 333 条去重候选。28 条通过应届硕士与专业相关性的初筛，进入官方回溯；305 条未进入回溯。已读取本轮全部已筛选分页。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 333,
+            "afterFilter": 28,
+            "filterDescription": "已使用本站城市、单位性质/关键词、应届硕士和生物医学相关性等条件完成预筛。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.iguopin.com/",
+              "finalUrl": "https://www.iguopin.com/job/list?keyword=%E7%94%9F%E7%89%A9%E5%8C%BB%E5%AD%A6%E5%B7%A5%E7%A8%8B#district=000000.440000.440300&page=1",
+              "outcome": "official-page",
+              "recipe": "国聘公开城市＋专业可报关键词并集 → 已筛选分页 → 任职条件专业资格预筛"
+            }
+          ]
+        }
+      ],
+      "reviews": []
+    },
+    {
+      "id": "run-20260824-1212-aggregate-first-full-sync",
+      "scope": "full-city-run",
+      "checkedAt": "2026-08-24T12:12:00+08:00",
+      "trigger": "scheduled-or-manual-full-update",
+      "scheduledSourceIds": [
+        "national-civil",
+        "shenzhen-civil",
+        "shenzhen-personnel-exam",
+        "shenzhen-selection-program",
+        "shenzhen-institutions",
+        "central-institutions",
+        "china-public-recruitment",
+        "central-sasac-recruitment",
+        "central-enterprise-roster",
+        "shenzhen-state-assets",
+        "picc-campus",
+        "boe-campus",
+        "sinopharm-careers",
+        "genertec-official",
+        "crc-careers",
+        "casic-careers",
+        "spacechina-careers",
+        "buaa-career-discovery",
+        "national-college-employment",
+        "iguopin-discovery"
+      ],
+      "policyVersion": 7,
+      "screeningStrategyVersion": 2,
+      "candidateProcessingVersion": 4,
+      "coverageStatus": "aggregate-first-collection-and-source-health",
+      "status": "completed-partial",
+      "outcome": "aggregate-platform-discovery-plus-official-verification",
+      "summary": "本轮已执行公考、选调优培、三类聚合平台和重点单位的公开采集。北航就业信息网初筛 0 条，国聘初筛 28 条，国家大学生就业服务平台初筛 0 条；重点官网具体岗位：中国人保 10 条、京东方 0 条、华润 20 条；官方公告页保留 43 条待拆分公告。",
+      "metrics": {
+        "officialSystemsChecked": 20,
+        "officialSystemsSucceeded": 18,
+        "officialSystemsFailed": 2,
+        "newLeads": 180,
+        "reviewedItems": 0,
+        "accepted": 0,
+        "rejected": 0,
+        "deferred": 0,
+        "published": 30,
+        "updated": 0,
+        "closed": 0
+      },
+      "screeningMetrics": {
+        "portalResultsReported": 3233,
+        "nativeFilterQueries": 28,
+        "nativeFilteredResults": 3233,
+        "deduplicatedCandidates": 632,
+        "positionsBatchReviewed": 332,
+        "positionsOfficiallyVerified": 30,
+        "positionsEscalated": 0,
+        "positionsDeferredByBudget": 0,
+        "discoverySourcesChecked": 3,
+        "discoveryOfficialCandidates": 28
+      },
+      "sourceChecks": [
+        {
+          "sourceId": "national-civil",
+          "status": "checked-no-active-campaign",
+          "attempts": 2,
+          "note": "官方公告、详情和可见附件已完成脚本检查；本轮未发现报名截止日未过且可进入资格判断的公务员/选调公告；另有 4 条缺少可解析报名期限的历史/归档公告，未作为在招处理。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 29,
+            "afterFilter": 0,
+            "filterDescription": "官方公告与附件 → 仍在有效期内、可继续资格判断的公告"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "http://bm.scs.gov.cn/pp/gkweb/core/web/ui/business/home/gkhome.html",
+              "finalUrl": "http://bm.scs.gov.cn/pp/gkweb/core/web/ui/business/home/gkhome.html",
+              "outcome": "official-page",
+              "recipe": "官方 SPA 配置 → 官方 JSON 专题 → 公告详情/附件"
+            }
+          ],
+          "checkedAt": "2026-08-24T12:12:00+08:00"
+        },
+        {
+          "sourceId": "shenzhen-civil",
+          "status": "checked-no-active-campaign",
+          "attempts": 2,
+          "note": "官方公告、详情和可见附件已完成脚本检查；本轮未发现报名截止日未过且可进入资格判断的公务员/选调公告。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 49,
+            "afterFilter": 0,
+            "filterDescription": "官方公告与附件 → 仍在有效期内、可继续资格判断的公告"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.gdzz.gov.cn/gwygz/lypytzgg/index.html",
+              "finalUrl": "https://www.gdzz.gov.cn/gwygz/lypytzgg/index.html",
+              "outcome": "official-page",
+              "recipe": "广东组织工作网公告列表 → 公告详情 → 官方附件/压缩包"
+            }
+          ],
+          "checkedAt": "2026-08-24T12:12:00+08:00"
+        },
+        {
+          "sourceId": "shenzhen-personnel-exam",
+          "status": "checked-official-notice-feed",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T12:12:00+08:00",
+          "note": "已读取 8 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 8,
+            "afterFilter": 8,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://hrss.sz.gov.cn/gzryzk/index.html",
+              "finalUrl": "https://hrss.sz.gov.cn/gzryzk/index.html",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "shenzhen-selection-program",
+          "status": "checked-no-active-campaign",
+          "attempts": 1,
+          "note": "官方公告、详情和可见附件已完成脚本检查；本轮未发现报名截止日未过且可进入资格判断的公务员/选调公告。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 1,
+            "afterFilter": 0,
+            "filterDescription": "官方公告与附件 → 仍在有效期内、可继续资格判断的公告"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://career.buaa.edu.cn/frontpage/buaa/html/newsList.html?id=5453aeeb99e74d78aea0b45fd456ae68",
+              "finalUrl": "https://career.buaa.edu.cn/frontpage/buaa/js/init.js",
+              "outcome": "official-page",
+              "recipe": "北航就业网选调生公开栏目 API → 城市应届选调公告详情/附件"
+            }
+          ],
+          "checkedAt": "2026-08-24T12:12:00+08:00"
+        },
+        {
+          "sourceId": "shenzhen-institutions",
+          "status": "checked-official-notice-feed",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T12:12:00+08:00",
+          "note": "已读取 8 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 8,
+            "afterFilter": 8,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://hrss.sz.gov.cn/gzryzk/index.html",
+              "finalUrl": "https://hrss.sz.gov.cn/gzryzk/index.html",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "central-institutions",
+          "status": "checked-official-notice-feed",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T12:12:00+08:00",
+          "note": "已读取 19 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 19,
+            "afterFilter": 19,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.mohrss.gov.cn/SYrlzyhshbzb/fwyd/SYkaoshizhaopin/zyhgjjgsydwgkzp/",
+              "finalUrl": "https://www.mohrss.gov.cn/SYrlzyhshbzb/fwyd/SYkaoshizhaopin/zyhgjjgsydwgkzp/",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "china-public-recruitment",
+          "status": "checked-official-notice-feed",
+          "attempts": 2,
+          "checkedAt": "2026-08-24T12:12:00+08:00",
+          "note": "已读取 23 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 23,
+            "afterFilter": 23,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://job.mohrss.gov.cn/cjobs/institution/listInstitution",
+              "outcome": "network-error",
+              "recipe": "官方入口本轮无法读取：Error。"
+            },
+            {
+              "requestedUrl": "http://job.mohrss.gov.cn/cjobs/institution/listInstitution",
+              "finalUrl": "http://job.mohrss.gov.cn/cjobs/institution/listInstitution",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "central-sasac-recruitment",
+          "status": "checked-official-notice-feed",
+          "attempts": 2,
+          "checkedAt": "2026-08-24T12:12:00+08:00",
+          "note": "已读取 16 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 16,
+            "afterFilter": 16,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.sasac.gov.cn/n2588035/n2588325/n2588350/index.html",
+              "outcome": "network-error",
+              "recipe": "官方入口本轮无法读取：Error。"
+            },
+            {
+              "requestedUrl": "http://wap.sasac.gov.cn/n2588035/n2588325/n2588350/index.html",
+              "finalUrl": "http://wap.sasac.gov.cn/n2588035/n2588325/n2588350/index.html",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "central-enterprise-roster",
+          "status": "checked-roster-current",
+          "attempts": 2,
+          "checkedAt": "2026-08-24T12:12:00+08:00",
+          "note": "已读取官方中央企业名录页；名录用于限定重点单位范围，不把名录本身当作招聘岗位。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 1,
+            "afterFilter": 0,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.sasac.gov.cn/n2588045/n27271785/n27271792/c14159097/content.html",
+              "outcome": "network-error",
+              "recipe": "官方入口本轮无法读取：Error。"
+            },
+            {
+              "requestedUrl": "http://wap.sasac.gov.cn/n2588045/n27271785/n27271792/c14159097/content.html",
+              "finalUrl": "http://wap.sasac.gov.cn/n2588045/n27271785/n27271792/c14159097/content.html",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "shenzhen-state-assets",
+          "status": "temporarily-unavailable",
+          "attempts": 3,
+          "checkedAt": "2026-08-24T12:12:00+08:00",
+          "note": "本轮未取得可读取的官方公告/招聘页，不能据此判断无岗位。",
+          "collectionMetrics": {
+            "state": "unavailable",
+            "collected": null,
+            "afterFilter": null,
+            "filterDescription": "本轮未能完成该官方来源的公告列表、详情或站内筛选，不能把结果理解为 0 条。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://gzw.sz.gov.cn/xyzp/index.html",
+              "outcome": "network-error",
+              "recipe": "官方入口本轮无法读取：Error。"
+            },
+            {
+              "requestedUrl": "https://gzw.sz.gov.cn/xyzp/index.html",
+              "outcome": "network-error",
+              "recipe": "官方入口本轮无法读取：Error。"
+            },
+            {
+              "requestedUrl": "https://gzw.sz.gov.cn/xyzp/index.html",
+              "outcome": "network-error",
+              "recipe": "官方入口本轮无法读取：Error。"
+            }
+          ]
+        },
+        {
+          "sourceId": "picc-campus",
+          "status": "checked-native-filtered",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T12:12:00+08:00",
+          "note": "已用本站公开结构化接口完成城市、招聘类型、全部分页和任职条件筛选：采集 24 条，专业可报 10 条。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 24,
+            "afterFilter": 10,
+            "filterDescription": "是否收录只按官方任职条件判断；岗位内容仅用于排序。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://picc.zhiye.com/custom/campus?hideAll=true",
+              "outcome": "official-structured-data",
+              "recipe": "人保官方校园招聘 API → 招聘类型=校园招聘 → 官方地点筛选 → 全部分页 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://picc.zhiye.com/api/Jobad/SearchAreasTreeConditions?PortalId=20e42367-7ff6-422b-8dd9-92f72842818a&categoryId=2",
+              "outcome": "official-structured-data",
+              "recipe": "人保官方校园招聘 API → 招聘类型=校园招聘 → 官方地点筛选 → 全部分页 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://picc.zhiye.com/api/Jobad/GetJobAdPageList#city=4403&category=2&page=0",
+              "outcome": "official-structured-data",
+              "recipe": "人保官方校园招聘 API → 招聘类型=校园招聘 → 官方地点筛选 → 全部分页 → 任职条件专业资格门禁"
+            }
+          ]
+        },
+        {
+          "sourceId": "boe-campus",
+          "status": "checked-native-filtered",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T12:12:00+08:00",
+          "note": "已用本站公开结构化接口完成城市、招聘类型、全部分页和任职条件筛选：采集 0 条，专业可报 0 条。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 0,
+            "afterFilter": 0,
+            "filterDescription": "是否收录只按官方任职条件判断；岗位内容仅用于排序。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://campus.boe.com/jobs?hideMenu=1",
+              "outcome": "official-structured-data",
+              "recipe": "京东方官方校园招聘 API → 校园招聘分类 → 官方地点选项"
+            },
+            {
+              "requestedUrl": "https://campus.boe.com/api/Jobad/SearchAreasTreeConditions?PortalId=e71a8ad7-a321-4305-80db-73f2f18f8d22&categoryId=15",
+              "outcome": "official-structured-data",
+              "recipe": "京东方官方校园招聘 API → 校园招聘分类 → 官方地点选项"
+            }
+          ]
+        },
+        {
+          "sourceId": "sinopharm-careers",
+          "status": "checked-official-notice-feed",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T12:12:00+08:00",
+          "note": "已读取 8 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 8,
+            "afterFilter": 8,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.sinopharm.com/recruitment.html",
+              "finalUrl": "https://www.sinopharm.com/recruitment.html",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "genertec-official",
+          "status": "checked-official-notice-feed",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T12:12:00+08:00",
+          "note": "已读取 13 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 13,
+            "afterFilter": 13,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://ky.gt.cn/rczp/",
+              "finalUrl": "https://ky.gt.cn/rczp/",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "crc-careers",
+          "status": "checked-native-filtered",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T12:12:00+08:00",
+          "note": "已用本站公开结构化接口完成城市、招聘类型、全部分页和任职条件筛选：采集 4128 条，专业可报 20 条。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 4128,
+            "afterFilter": 20,
+            "filterDescription": "是否收录只按官方任职条件判断；岗位内容仅用于排序。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://runjob.crc.com.cn/#/complex/homepage?id=1769554545615040514",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=1&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=2&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=3&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=4&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=5&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=6&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=7&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=8&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=9&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=10&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=11&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=12&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=13&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=14&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            }
+          ]
+        },
+        {
+          "sourceId": "casic-careers",
+          "status": "checked-official-notice-feed",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T12:12:00+08:00",
+          "note": "已读取 1 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 1,
+            "afterFilter": 1,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "http://wap.sasac.gov.cn/n2588035/n2588325/c35503679/content.html",
+              "finalUrl": "http://wap.sasac.gov.cn/n2588035/n2588325/c35503679/content.html",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "spacechina-careers",
+          "status": "checked-official-notice-feed",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T12:12:00+08:00",
+          "note": "已读取 1 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 1,
+            "afterFilter": 1,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://m.spacechina.com/index.html",
+              "finalUrl": "https://m.spacechina.com/index.html",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "buaa-career-discovery",
+          "status": "checked-native-filtered",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T12:12:00+08:00",
+          "note": "已完成 3 组本站筛选并读取 3 条去重候选。0 条通过应届硕士与专业相关性的初筛，进入官方回溯；3 条未进入回溯。已读取本轮全部已筛选分页。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 3,
+            "afterFilter": 0,
+            "filterDescription": "已使用本站城市、单位性质/关键词、应届硕士和生物医学相关性等条件完成预筛。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://career.buaa.edu.cn/frontpage/buaa/html/recruitmentinfoList.html?type=1",
+              "finalUrl": "https://career.buaa.edu.cn/frontpage/buaa/js/init.js",
+              "outcome": "official-page",
+              "recipe": "北航就业信息网公开城市＋单位性质筛选 → 已筛选分页 → 公开岗位详情 → 任职条件专业资格预筛"
+            }
+          ]
+        },
+        {
+          "sourceId": "national-college-employment",
+          "status": "accessible-incomplete",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T12:12:00+08:00",
+          "note": "已完成 11 组本站筛选并读取 300 条去重候选。0 条通过应届硕士与专业相关性的初筛，进入官方回溯；300 条未进入回溯。公开访问在已读取分页后受限：国家大学生就业服务平台在第 6 页要求登录，公开采集在此前分页停止。；未把未读取部分当作无岗位。",
+          "collectionMetrics": {
+            "state": "partial",
+            "collected": 300,
+            "afterFilter": 0,
+            "filterDescription": "已记录公开可读取分页的采集和筛选数量；后续分页要求登录或未能公开读取，不能把本轮结果理解为完整平台全集。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.ncss.cn/",
+              "finalUrl": "https://www.ncss.cn/student/jobs/jobslist/ajax/?areaCode=440300&jobName=%E7%94%9F%E7%89%A9%E5%8C%BB%E5%AD%A6%E5%B7%A5%E7%A8%8B&offset=1&limit=20",
+              "outcome": "official-page",
+              "recipe": "国家大学生就业服务平台公开城市＋专业可报关键词并集 → 已筛选分页 → 任职条件专业资格预筛"
+            }
+          ]
+        },
+        {
+          "sourceId": "iguopin-discovery",
+          "status": "checked-native-filtered",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T12:12:00+08:00",
+          "note": "已完成 11 组本站筛选并读取 329 条去重候选。28 条通过应届硕士与专业相关性的初筛，进入官方回溯；301 条未进入回溯。已读取本轮全部已筛选分页。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 329,
+            "afterFilter": 28,
+            "filterDescription": "已使用本站城市、单位性质/关键词、应届硕士和生物医学相关性等条件完成预筛。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.iguopin.com/",
+              "finalUrl": "https://www.iguopin.com/job/list?keyword=%E7%94%9F%E7%89%A9%E5%8C%BB%E5%AD%A6%E5%B7%A5%E7%A8%8B#district=000000.440000.440300&page=1",
+              "outcome": "official-page",
+              "recipe": "国聘公开城市＋专业可报关键词并集 → 已筛选分页 → 任职条件专业资格预筛"
+            }
+          ]
+        }
+      ],
+      "reviews": []
+    },
+    {
+      "id": "run-20260824-1204-aggregate-first-full-sync",
+      "scope": "full-city-run",
+      "checkedAt": "2026-08-24T12:04:00+08:00",
+      "trigger": "scheduled-or-manual-full-update",
+      "scheduledSourceIds": [
+        "national-civil",
+        "shenzhen-civil",
+        "shenzhen-personnel-exam",
+        "shenzhen-selection-program",
+        "shenzhen-institutions",
+        "central-institutions",
+        "china-public-recruitment",
+        "central-sasac-recruitment",
+        "central-enterprise-roster",
+        "shenzhen-state-assets",
+        "picc-campus",
+        "boe-campus",
+        "sinopharm-careers",
+        "genertec-official",
+        "crc-careers",
+        "casic-careers",
+        "spacechina-careers",
+        "buaa-career-discovery",
+        "national-college-employment",
+        "iguopin-discovery"
+      ],
+      "policyVersion": 7,
+      "screeningStrategyVersion": 2,
+      "candidateProcessingVersion": 4,
+      "coverageStatus": "aggregate-first-collection-and-source-health",
+      "status": "completed-partial",
+      "outcome": "aggregate-platform-discovery-plus-official-verification",
+      "summary": "本轮已执行公考、选调优培、三类聚合平台和重点单位的公开采集。北航就业信息网初筛 0 条，国聘初筛 28 条，国家大学生就业服务平台初筛 0 条；重点官网具体岗位：中国人保 10 条、京东方 0 条、华润 20 条；官方公告页保留 49 条待拆分公告。",
+      "metrics": {
+        "officialSystemsChecked": 20,
+        "officialSystemsSucceeded": 19,
+        "officialSystemsFailed": 1,
+        "newLeads": 186,
+        "reviewedItems": 0,
+        "accepted": 0,
+        "rejected": 0,
+        "deferred": 0,
+        "published": 30,
+        "updated": 0,
+        "closed": 0
+      },
+      "screeningMetrics": {
+        "portalResultsReported": 3233,
+        "nativeFilterQueries": 28,
+        "nativeFilteredResults": 3233,
+        "deduplicatedCandidates": 634,
+        "positionsBatchReviewed": 334,
+        "positionsOfficiallyVerified": 30,
+        "positionsEscalated": 0,
+        "positionsDeferredByBudget": 0,
+        "discoverySourcesChecked": 3,
+        "discoveryOfficialCandidates": 28
+      },
+      "sourceChecks": [
+        {
+          "sourceId": "national-civil",
+          "status": "checked-no-active-campaign",
+          "attempts": 2,
+          "note": "官方公告、详情和可见附件已完成脚本检查；本轮未发现报名截止日未过且可进入资格判断的公务员/选调公告；另有 4 条缺少可解析报名期限的历史/归档公告，未作为在招处理。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 29,
+            "afterFilter": 0,
+            "filterDescription": "官方公告与附件 → 仍在有效期内、可继续资格判断的公告"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "http://bm.scs.gov.cn/pp/gkweb/core/web/ui/business/home/gkhome.html",
+              "finalUrl": "http://bm.scs.gov.cn/pp/gkweb/core/web/ui/business/home/gkhome.html",
+              "outcome": "official-page",
+              "recipe": "官方 SPA 配置 → 官方 JSON 专题 → 公告详情/附件"
+            }
+          ],
+          "checkedAt": "2026-08-24T12:04:00+08:00"
+        },
+        {
+          "sourceId": "shenzhen-civil",
+          "status": "checked-no-active-campaign",
+          "attempts": 2,
+          "note": "官方公告、详情和可见附件已完成脚本检查；本轮未发现报名截止日未过且可进入资格判断的公务员/选调公告。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 49,
+            "afterFilter": 0,
+            "filterDescription": "官方公告与附件 → 仍在有效期内、可继续资格判断的公告"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.gdzz.gov.cn/gwygz/lypytzgg/index.html",
+              "finalUrl": "https://www.gdzz.gov.cn/gwygz/lypytzgg/index.html",
+              "outcome": "official-page",
+              "recipe": "广东组织工作网公告列表 → 公告详情 → 官方附件/压缩包"
+            }
+          ],
+          "checkedAt": "2026-08-24T12:04:00+08:00"
+        },
+        {
+          "sourceId": "shenzhen-personnel-exam",
+          "status": "checked-official-notice-feed",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T12:04:00+08:00",
+          "note": "已读取 8 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 8,
+            "afterFilter": 8,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://hrss.sz.gov.cn/gzryzk/index.html",
+              "finalUrl": "https://hrss.sz.gov.cn/gzryzk/index.html",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "shenzhen-selection-program",
+          "status": "checked-no-active-campaign",
+          "attempts": 1,
+          "note": "官方公告、详情和可见附件已完成脚本检查；本轮未发现报名截止日未过且可进入资格判断的公务员/选调公告。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 1,
+            "afterFilter": 0,
+            "filterDescription": "官方公告与附件 → 仍在有效期内、可继续资格判断的公告"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://career.buaa.edu.cn/frontpage/buaa/html/newsList.html?id=5453aeeb99e74d78aea0b45fd456ae68",
+              "finalUrl": "https://career.buaa.edu.cn/frontpage/buaa/js/init.js",
+              "outcome": "official-page",
+              "recipe": "北航就业网选调生公开栏目 API → 城市应届选调公告详情/附件"
+            }
+          ],
+          "checkedAt": "2026-08-24T12:04:00+08:00"
+        },
+        {
+          "sourceId": "shenzhen-institutions",
+          "status": "checked-official-notice-feed",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T12:04:00+08:00",
+          "note": "已读取 8 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 8,
+            "afterFilter": 8,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://hrss.sz.gov.cn/gzryzk/index.html",
+              "finalUrl": "https://hrss.sz.gov.cn/gzryzk/index.html",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "central-institutions",
+          "status": "checked-official-notice-feed",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T12:04:00+08:00",
+          "note": "已读取 19 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 19,
+            "afterFilter": 19,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.mohrss.gov.cn/SYrlzyhshbzb/fwyd/SYkaoshizhaopin/zyhgjjgsydwgkzp/",
+              "finalUrl": "https://www.mohrss.gov.cn/SYrlzyhshbzb/fwyd/SYkaoshizhaopin/zyhgjjgsydwgkzp/",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "china-public-recruitment",
+          "status": "checked-official-notice-feed",
+          "attempts": 2,
+          "checkedAt": "2026-08-24T12:04:00+08:00",
+          "note": "已读取 23 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 23,
+            "afterFilter": 23,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://job.mohrss.gov.cn/cjobs/institution/listInstitution",
+              "outcome": "network-error",
+              "recipe": "官方入口本轮无法读取：Error。"
+            },
+            {
+              "requestedUrl": "http://job.mohrss.gov.cn/cjobs/institution/listInstitution",
+              "finalUrl": "http://job.mohrss.gov.cn/cjobs/institution/listInstitution",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "central-sasac-recruitment",
+          "status": "checked-official-notice-feed",
+          "attempts": 2,
+          "checkedAt": "2026-08-24T12:04:00+08:00",
+          "note": "已读取 16 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 16,
+            "afterFilter": 16,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.sasac.gov.cn/n2588035/n2588325/n2588350/index.html",
+              "outcome": "network-error",
+              "recipe": "官方入口本轮无法读取：Error。"
+            },
+            {
+              "requestedUrl": "http://wap.sasac.gov.cn/n2588035/n2588325/n2588350/index.html",
+              "finalUrl": "http://wap.sasac.gov.cn/n2588035/n2588325/n2588350/index.html",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "central-enterprise-roster",
+          "status": "checked-roster-current",
+          "attempts": 2,
+          "checkedAt": "2026-08-24T12:04:00+08:00",
+          "note": "已读取官方中央企业名录页；名录用于限定重点单位范围，不把名录本身当作招聘岗位。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 1,
+            "afterFilter": 0,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.sasac.gov.cn/n2588045/n27271785/n27271792/c14159097/content.html",
+              "outcome": "network-error",
+              "recipe": "官方入口本轮无法读取：Error。"
+            },
+            {
+              "requestedUrl": "http://wap.sasac.gov.cn/n2588045/n27271785/n27271792/c14159097/content.html",
+              "finalUrl": "http://wap.sasac.gov.cn/n2588045/n27271785/n27271792/c14159097/content.html",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "shenzhen-state-assets",
+          "status": "checked-official-notice-feed",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T12:04:00+08:00",
+          "note": "已读取 10 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 10,
+            "afterFilter": 10,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://gzw.sz.gov.cn/xyzp/index.html",
+              "finalUrl": "https://gzw.sz.gov.cn/xyzp/content/post_9397139.html",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "picc-campus",
+          "status": "checked-native-filtered",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T12:04:00+08:00",
+          "note": "已用本站公开结构化接口完成城市、招聘类型、全部分页和任职条件筛选：采集 24 条，专业可报 10 条。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 24,
+            "afterFilter": 10,
+            "filterDescription": "是否收录只按官方任职条件判断；岗位内容仅用于排序。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://picc.zhiye.com/custom/campus?hideAll=true",
+              "outcome": "official-structured-data",
+              "recipe": "人保官方校园招聘 API → 招聘类型=校园招聘 → 官方地点筛选 → 全部分页 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://picc.zhiye.com/api/Jobad/SearchAreasTreeConditions?PortalId=20e42367-7ff6-422b-8dd9-92f72842818a&categoryId=2",
+              "outcome": "official-structured-data",
+              "recipe": "人保官方校园招聘 API → 招聘类型=校园招聘 → 官方地点筛选 → 全部分页 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://picc.zhiye.com/api/Jobad/GetJobAdPageList#city=4403&category=2&page=0",
+              "outcome": "official-structured-data",
+              "recipe": "人保官方校园招聘 API → 招聘类型=校园招聘 → 官方地点筛选 → 全部分页 → 任职条件专业资格门禁"
+            }
+          ]
+        },
+        {
+          "sourceId": "boe-campus",
+          "status": "checked-native-filtered",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T12:04:00+08:00",
+          "note": "已用本站公开结构化接口完成城市、招聘类型、全部分页和任职条件筛选：采集 0 条，专业可报 0 条。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 0,
+            "afterFilter": 0,
+            "filterDescription": "是否收录只按官方任职条件判断；岗位内容仅用于排序。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://campus.boe.com/jobs?hideMenu=1",
+              "outcome": "official-structured-data",
+              "recipe": "京东方官方校园招聘 API → 校园招聘分类 → 官方地点选项"
+            },
+            {
+              "requestedUrl": "https://campus.boe.com/api/Jobad/SearchAreasTreeConditions?PortalId=e71a8ad7-a321-4305-80db-73f2f18f8d22&categoryId=15",
+              "outcome": "official-structured-data",
+              "recipe": "京东方官方校园招聘 API → 校园招聘分类 → 官方地点选项"
+            }
+          ]
+        },
+        {
+          "sourceId": "sinopharm-careers",
+          "status": "checked-official-notice-feed",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T12:04:00+08:00",
+          "note": "已读取 8 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 8,
+            "afterFilter": 8,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.sinopharm.com/recruitment.html",
+              "finalUrl": "https://www.sinopharm.com/recruitment.html",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "genertec-official",
+          "status": "checked-official-notice-feed",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T12:04:00+08:00",
+          "note": "已读取 13 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 13,
+            "afterFilter": 13,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://ky.gt.cn/rczp/",
+              "finalUrl": "https://ky.gt.cn/rczp/",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "crc-careers",
+          "status": "checked-native-filtered",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T12:04:00+08:00",
+          "note": "已用本站公开结构化接口完成城市、招聘类型、全部分页和任职条件筛选：采集 4128 条，专业可报 20 条。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 4128,
+            "afterFilter": 20,
+            "filterDescription": "是否收录只按官方任职条件判断；岗位内容仅用于排序。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://runjob.crc.com.cn/#/complex/homepage?id=1769554545615040514",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=1&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=2&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=3&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=4&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=5&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=6&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=7&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=8&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=9&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=10&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=11&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=12&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=13&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=14&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            }
+          ]
+        },
+        {
+          "sourceId": "casic-careers",
+          "status": "checked-official-notice-feed",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T12:04:00+08:00",
+          "note": "已读取 1 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 1,
+            "afterFilter": 1,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "http://wap.sasac.gov.cn/n2588035/n2588325/c35503679/content.html",
+              "finalUrl": "http://wap.sasac.gov.cn/n2588035/n2588325/c35503679/content.html",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "spacechina-careers",
+          "status": "checked-official-notice-feed",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T12:04:00+08:00",
+          "note": "已读取 1 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 1,
+            "afterFilter": 1,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://m.spacechina.com/index.html",
+              "finalUrl": "https://m.spacechina.com/index.html",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "buaa-career-discovery",
+          "status": "checked-native-filtered",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T12:04:00+08:00",
+          "note": "已完成 3 组本站筛选并读取 3 条去重候选。0 条通过应届硕士与专业相关性的初筛，进入官方回溯；3 条未进入回溯。已读取本轮全部已筛选分页。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 3,
+            "afterFilter": 0,
+            "filterDescription": "已使用本站城市、单位性质/关键词、应届硕士和生物医学相关性等条件完成预筛。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://career.buaa.edu.cn/frontpage/buaa/html/recruitmentinfoList.html?type=1",
+              "finalUrl": "https://career.buaa.edu.cn/frontpage/buaa/js/init.js",
+              "outcome": "official-page",
+              "recipe": "北航就业信息网公开城市＋单位性质筛选 → 已筛选分页 → 公开岗位详情 → 任职条件专业资格预筛"
+            }
+          ]
+        },
+        {
+          "sourceId": "national-college-employment",
+          "status": "accessible-incomplete",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T12:04:00+08:00",
+          "note": "已完成 11 组本站筛选并读取 300 条去重候选。0 条通过应届硕士与专业相关性的初筛，进入官方回溯；300 条未进入回溯。公开访问在已读取分页后受限：国家大学生就业服务平台在第 6 页要求登录，公开采集在此前分页停止。；未把未读取部分当作无岗位。",
+          "collectionMetrics": {
+            "state": "partial",
+            "collected": 300,
+            "afterFilter": 0,
+            "filterDescription": "已记录公开可读取分页的采集和筛选数量；后续分页要求登录或未能公开读取，不能把本轮结果理解为完整平台全集。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.ncss.cn/",
+              "finalUrl": "https://www.ncss.cn/student/jobs/jobslist/ajax/?areaCode=440300&jobName=%E7%94%9F%E7%89%A9%E5%8C%BB%E5%AD%A6%E5%B7%A5%E7%A8%8B&offset=1&limit=20",
+              "outcome": "official-page",
+              "recipe": "国家大学生就业服务平台公开城市＋专业可报关键词并集 → 已筛选分页 → 任职条件专业资格预筛"
+            }
+          ]
+        },
+        {
+          "sourceId": "iguopin-discovery",
+          "status": "checked-native-filtered",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T12:04:00+08:00",
+          "note": "已完成 11 组本站筛选并读取 331 条去重候选。28 条通过应届硕士与专业相关性的初筛，进入官方回溯；303 条未进入回溯。已读取本轮全部已筛选分页。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 331,
+            "afterFilter": 28,
+            "filterDescription": "已使用本站城市、单位性质/关键词、应届硕士和生物医学相关性等条件完成预筛。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.iguopin.com/",
+              "finalUrl": "https://www.iguopin.com/job/list?keyword=%E7%94%9F%E7%89%A9%E5%8C%BB%E5%AD%A6%E5%B7%A5%E7%A8%8B#district=000000.440000.440300&page=1",
+              "outcome": "official-page",
+              "recipe": "国聘公开城市＋专业可报关键词并集 → 已筛选分页 → 任职条件专业资格预筛"
+            }
+          ]
+        }
+      ],
+      "reviews": []
+    },
+    {
+      "id": "run-20260824-1140-aggregate-first-full-sync",
+      "scope": "full-city-run",
+      "checkedAt": "2026-08-24T11:40:00+08:00",
+      "trigger": "scheduled-or-manual-full-update",
+      "scheduledSourceIds": [
+        "national-civil",
+        "shenzhen-civil",
+        "shenzhen-personnel-exam",
+        "shenzhen-selection-program",
+        "shenzhen-institutions",
+        "central-institutions",
+        "china-public-recruitment",
+        "central-sasac-recruitment",
+        "central-enterprise-roster",
+        "shenzhen-state-assets",
+        "picc-campus",
+        "boe-campus",
+        "sinopharm-careers",
+        "genertec-official",
+        "crc-careers",
+        "casic-careers",
+        "spacechina-careers",
+        "buaa-career-discovery",
+        "national-college-employment",
+        "iguopin-discovery"
+      ],
+      "policyVersion": 7,
+      "screeningStrategyVersion": 2,
+      "candidateProcessingVersion": 4,
+      "coverageStatus": "aggregate-first-collection-and-source-health",
+      "status": "completed-partial",
+      "outcome": "aggregate-platform-discovery-plus-official-verification",
+      "summary": "本轮已执行公考、选调优培、三类聚合平台和重点单位的公开采集。北航就业信息网初筛 0 条，国聘初筛 28 条，国家大学生就业服务平台初筛 0 条；重点官网具体岗位：中国人保 10 条、京东方 0 条、华润 20 条；官方公告页保留 55 条待拆分公告。",
+      "metrics": {
+        "officialSystemsChecked": 20,
+        "officialSystemsSucceeded": 19,
+        "officialSystemsFailed": 1,
+        "newLeads": 192,
+        "reviewedItems": 0,
+        "accepted": 0,
+        "rejected": 0,
+        "deferred": 0,
+        "published": 30,
+        "updated": 0,
+        "closed": 0
+      },
+      "screeningMetrics": {
+        "portalResultsReported": 3233,
+        "nativeFilterQueries": 28,
+        "nativeFilteredResults": 3233,
+        "deduplicatedCandidates": 633,
+        "positionsBatchReviewed": 333,
+        "positionsOfficiallyVerified": 30,
+        "positionsEscalated": 0,
+        "positionsDeferredByBudget": 0,
+        "discoverySourcesChecked": 3,
+        "discoveryOfficialCandidates": 28
+      },
+      "sourceChecks": [
+        {
+          "sourceId": "national-civil",
+          "status": "checked-no-active-campaign",
+          "attempts": 2,
+          "note": "官方公告、详情和可见附件已完成脚本检查；本轮未发现报名截止日未过且可进入资格判断的公务员/选调公告；另有 4 条缺少可解析报名期限的历史/归档公告，未作为在招处理。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 29,
+            "afterFilter": 0,
+            "filterDescription": "官方公告与附件 → 仍在有效期内、可继续资格判断的公告"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "http://bm.scs.gov.cn/pp/gkweb/core/web/ui/business/home/gkhome.html",
+              "finalUrl": "http://bm.scs.gov.cn/pp/gkweb/core/web/ui/business/home/gkhome.html",
+              "outcome": "official-page",
+              "recipe": "官方 SPA 配置 → 官方 JSON 专题 → 公告详情/附件"
+            }
+          ],
+          "checkedAt": "2026-08-24T11:40:00+08:00"
+        },
+        {
+          "sourceId": "shenzhen-civil",
+          "status": "checked-no-active-campaign",
+          "attempts": 2,
+          "note": "官方公告、详情和可见附件已完成脚本检查；本轮未发现报名截止日未过且可进入资格判断的公务员/选调公告。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 49,
+            "afterFilter": 0,
+            "filterDescription": "官方公告与附件 → 仍在有效期内、可继续资格判断的公告"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.gdzz.gov.cn/gwygz/lypytzgg/index.html",
+              "finalUrl": "https://www.gdzz.gov.cn/gwygz/lypytzgg/index.html",
+              "outcome": "official-page",
+              "recipe": "广东组织工作网公告列表 → 公告详情 → 官方附件/压缩包"
+            }
+          ],
+          "checkedAt": "2026-08-24T11:40:00+08:00"
+        },
+        {
+          "sourceId": "shenzhen-personnel-exam",
+          "status": "checked-official-notice-feed",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T11:40:00+08:00",
+          "note": "已读取 8 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 8,
+            "afterFilter": 8,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://hrss.sz.gov.cn/gzryzk/index.html",
+              "finalUrl": "https://hrss.sz.gov.cn/gzryzk/index.html",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "shenzhen-selection-program",
+          "status": "checked-no-active-campaign",
+          "attempts": 1,
+          "note": "官方公告、详情和可见附件已完成脚本检查；本轮未发现报名截止日未过且可进入资格判断的公务员/选调公告。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 1,
+            "afterFilter": 0,
+            "filterDescription": "官方公告与附件 → 仍在有效期内、可继续资格判断的公告"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://career.buaa.edu.cn/frontpage/buaa/html/newsList.html?id=5453aeeb99e74d78aea0b45fd456ae68",
+              "finalUrl": "https://career.buaa.edu.cn/frontpage/buaa/js/init.js",
+              "outcome": "official-page",
+              "recipe": "北航就业网选调生公开栏目 API → 城市应届选调公告详情/附件"
+            }
+          ],
+          "checkedAt": "2026-08-24T11:40:00+08:00"
+        },
+        {
+          "sourceId": "shenzhen-institutions",
+          "status": "checked-official-notice-feed",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T11:40:00+08:00",
+          "note": "已读取 8 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 8,
+            "afterFilter": 8,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://hrss.sz.gov.cn/gzryzk/index.html",
+              "finalUrl": "https://hrss.sz.gov.cn/gzryzk/index.html",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "central-institutions",
+          "status": "checked-official-notice-feed",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T11:40:00+08:00",
+          "note": "已读取 19 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 19,
+            "afterFilter": 19,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.mohrss.gov.cn/SYrlzyhshbzb/fwyd/SYkaoshizhaopin/zyhgjjgsydwgkzp/",
+              "finalUrl": "https://www.mohrss.gov.cn/SYrlzyhshbzb/fwyd/SYkaoshizhaopin/zyhgjjgsydwgkzp/",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "china-public-recruitment",
+          "status": "checked-official-notice-feed",
+          "attempts": 2,
+          "checkedAt": "2026-08-24T11:40:00+08:00",
+          "note": "已读取 23 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 23,
+            "afterFilter": 23,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://job.mohrss.gov.cn/cjobs/institution/listInstitution",
+              "outcome": "network-error",
+              "recipe": "官方入口本轮无法读取：Error。"
+            },
+            {
+              "requestedUrl": "http://job.mohrss.gov.cn/cjobs/institution/listInstitution",
+              "finalUrl": "http://job.mohrss.gov.cn/cjobs/institution/listInstitution",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "central-sasac-recruitment",
+          "status": "checked-official-notice-feed",
+          "attempts": 2,
+          "checkedAt": "2026-08-24T11:40:00+08:00",
+          "note": "已读取 16 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 16,
+            "afterFilter": 16,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.sasac.gov.cn/n2588035/n2588325/n2588350/index.html",
+              "outcome": "network-error",
+              "recipe": "官方入口本轮无法读取：Error。"
+            },
+            {
+              "requestedUrl": "http://wap.sasac.gov.cn/n2588035/n2588325/n2588350/index.html",
+              "finalUrl": "http://wap.sasac.gov.cn/n2588035/n2588325/n2588350/index.html",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "central-enterprise-roster",
+          "status": "checked-roster-current",
+          "attempts": 2,
+          "checkedAt": "2026-08-24T11:40:00+08:00",
+          "note": "已读取官方中央企业名录页；名录用于限定重点单位范围，不把名录本身当作招聘岗位。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 1,
+            "afterFilter": 0,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.sasac.gov.cn/n2588045/n27271785/n27271792/c14159097/content.html",
+              "outcome": "network-error",
+              "recipe": "官方入口本轮无法读取：Error。"
+            },
+            {
+              "requestedUrl": "http://wap.sasac.gov.cn/n2588045/n27271785/n27271792/c14159097/content.html",
+              "finalUrl": "http://wap.sasac.gov.cn/n2588045/n27271785/n27271792/c14159097/content.html",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "shenzhen-state-assets",
+          "status": "checked-official-notice-feed",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T11:40:00+08:00",
+          "note": "已读取 10 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 10,
+            "afterFilter": 10,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://gzw.sz.gov.cn/xyzp/index.html",
+              "finalUrl": "https://gzw.sz.gov.cn/xyzp/content/post_9397139.html",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "picc-campus",
+          "status": "checked-native-filtered",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T11:40:00+08:00",
+          "note": "已用本站公开结构化接口完成城市、招聘类型、全部分页和任职条件筛选：采集 24 条，专业可报 10 条。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 24,
+            "afterFilter": 10,
+            "filterDescription": "是否收录只按官方任职条件判断；岗位内容仅用于排序。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://picc.zhiye.com/custom/campus?hideAll=true",
+              "outcome": "official-structured-data",
+              "recipe": "人保官方校园招聘 API → 招聘类型=校园招聘 → 官方地点筛选 → 全部分页 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://picc.zhiye.com/api/Jobad/SearchAreasTreeConditions?PortalId=20e42367-7ff6-422b-8dd9-92f72842818a&categoryId=2",
+              "outcome": "official-structured-data",
+              "recipe": "人保官方校园招聘 API → 招聘类型=校园招聘 → 官方地点筛选 → 全部分页 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://picc.zhiye.com/api/Jobad/GetJobAdPageList#city=4403&category=2&page=0",
+              "outcome": "official-structured-data",
+              "recipe": "人保官方校园招聘 API → 招聘类型=校园招聘 → 官方地点筛选 → 全部分页 → 任职条件专业资格门禁"
+            }
+          ]
+        },
+        {
+          "sourceId": "boe-campus",
+          "status": "checked-native-filtered",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T11:40:00+08:00",
+          "note": "已用本站公开结构化接口完成城市、招聘类型、全部分页和任职条件筛选：采集 0 条，专业可报 0 条。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 0,
+            "afterFilter": 0,
+            "filterDescription": "是否收录只按官方任职条件判断；岗位内容仅用于排序。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://campus.boe.com/jobs?hideMenu=1",
+              "outcome": "official-structured-data",
+              "recipe": "京东方官方校园招聘 API → 校园招聘分类 → 官方地点选项"
+            },
+            {
+              "requestedUrl": "https://campus.boe.com/api/Jobad/SearchAreasTreeConditions?PortalId=e71a8ad7-a321-4305-80db-73f2f18f8d22&categoryId=15",
+              "outcome": "official-structured-data",
+              "recipe": "京东方官方校园招聘 API → 校园招聘分类 → 官方地点选项"
+            }
+          ]
+        },
+        {
+          "sourceId": "sinopharm-careers",
+          "status": "checked-official-notice-feed",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T11:40:00+08:00",
+          "note": "已读取 8 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 8,
+            "afterFilter": 8,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.sinopharm.com/recruitment.html",
+              "finalUrl": "https://www.sinopharm.com/recruitment.html",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "genertec-official",
+          "status": "checked-official-notice-feed",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T11:40:00+08:00",
+          "note": "已读取 13 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 13,
+            "afterFilter": 13,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://ky.gt.cn/rczp/",
+              "finalUrl": "https://ky.gt.cn/rczp/",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "crc-careers",
+          "status": "checked-native-filtered",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T11:40:00+08:00",
+          "note": "已用本站公开结构化接口完成城市、招聘类型、全部分页和任职条件筛选：采集 4127 条，专业可报 20 条。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 4127,
+            "afterFilter": 20,
+            "filterDescription": "是否收录只按官方任职条件判断；岗位内容仅用于排序。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://runjob.crc.com.cn/#/complex/homepage?id=1769554545615040514",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=1&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=2&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=3&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=4&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=5&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=6&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=7&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=8&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=9&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=10&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=11&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=12&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=13&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=14&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            }
+          ]
+        },
+        {
+          "sourceId": "casic-careers",
+          "status": "checked-official-notice-feed",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T11:40:00+08:00",
+          "note": "已读取 1 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 1,
+            "afterFilter": 1,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "http://wap.sasac.gov.cn/n2588035/n2588325/c35503679/content.html",
+              "finalUrl": "http://wap.sasac.gov.cn/n2588035/n2588325/c35503679/content.html",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "spacechina-careers",
+          "status": "checked-official-notice-feed",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T11:40:00+08:00",
+          "note": "已读取 1 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 1,
+            "afterFilter": 1,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://m.spacechina.com/index.html",
+              "finalUrl": "https://m.spacechina.com/index.html",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "buaa-career-discovery",
+          "status": "checked-native-filtered",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T11:40:00+08:00",
+          "note": "已完成 3 组本站筛选并读取 3 条去重候选。0 条通过应届硕士与专业相关性的初筛，进入官方回溯；3 条未进入回溯。已读取本轮全部已筛选分页。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 3,
+            "afterFilter": 0,
+            "filterDescription": "已使用本站城市、单位性质/关键词、应届硕士和生物医学相关性等条件完成预筛。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://career.buaa.edu.cn/frontpage/buaa/html/recruitmentinfoList.html?type=1",
+              "finalUrl": "https://career.buaa.edu.cn/frontpage/buaa/js/init.js",
+              "outcome": "official-page",
+              "recipe": "北航就业信息网公开城市＋单位性质筛选 → 已筛选分页 → 公开岗位详情 → 任职条件专业资格预筛"
+            }
+          ]
+        },
+        {
+          "sourceId": "national-college-employment",
+          "status": "accessible-incomplete",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T11:40:00+08:00",
+          "note": "已完成 11 组本站筛选并读取 300 条去重候选。0 条通过应届硕士与专业相关性的初筛，进入官方回溯；300 条未进入回溯。公开访问在已读取分页后受限：国家大学生就业服务平台在第 6 页要求登录，公开采集在此前分页停止。；未把未读取部分当作无岗位。",
+          "collectionMetrics": {
+            "state": "partial",
+            "collected": 300,
+            "afterFilter": 0,
+            "filterDescription": "已记录公开可读取分页的采集和筛选数量；后续分页要求登录或未能公开读取，不能把本轮结果理解为完整平台全集。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.ncss.cn/",
+              "finalUrl": "https://www.ncss.cn/student/jobs/jobslist/ajax/?areaCode=440300&jobName=%E7%94%9F%E7%89%A9%E5%8C%BB%E5%AD%A6%E5%B7%A5%E7%A8%8B&offset=1&limit=20",
+              "outcome": "official-page",
+              "recipe": "国家大学生就业服务平台公开城市＋专业可报关键词并集 → 已筛选分页 → 任职条件专业资格预筛"
+            }
+          ]
+        },
+        {
+          "sourceId": "iguopin-discovery",
+          "status": "checked-native-filtered",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T11:40:00+08:00",
+          "note": "已完成 11 组本站筛选并读取 330 条去重候选。28 条通过应届硕士与专业相关性的初筛，进入官方回溯；302 条未进入回溯。已读取本轮全部已筛选分页。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 330,
+            "afterFilter": 28,
+            "filterDescription": "已使用本站城市、单位性质/关键词、应届硕士和生物医学相关性等条件完成预筛。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.iguopin.com/",
+              "finalUrl": "https://www.iguopin.com/job/list?keyword=%E7%94%9F%E7%89%A9%E5%8C%BB%E5%AD%A6%E5%B7%A5%E7%A8%8B#district=000000.440000.440300&page=1",
+              "outcome": "official-page",
+              "recipe": "国聘公开城市＋专业可报关键词并集 → 已筛选分页 → 任职条件专业资格预筛"
+            }
+          ]
+        }
+      ],
+      "reviews": []
+    },
+    {
+      "id": "run-20260824-1134-aggregate-first-full-sync",
+      "scope": "full-city-run",
+      "checkedAt": "2026-08-24T11:34:00+08:00",
+      "trigger": "scheduled-or-manual-full-update",
+      "scheduledSourceIds": [
+        "national-civil",
+        "shenzhen-civil",
+        "shenzhen-personnel-exam",
+        "shenzhen-selection-program",
+        "shenzhen-institutions",
+        "central-institutions",
+        "china-public-recruitment",
+        "central-sasac-recruitment",
+        "central-enterprise-roster",
+        "shenzhen-state-assets",
+        "picc-campus",
+        "boe-campus",
+        "sinopharm-careers",
+        "genertec-official",
+        "crc-careers",
+        "casic-careers",
+        "spacechina-careers",
+        "buaa-career-discovery",
+        "national-college-employment",
+        "iguopin-discovery"
+      ],
+      "policyVersion": 7,
+      "screeningStrategyVersion": 2,
+      "candidateProcessingVersion": 4,
+      "coverageStatus": "aggregate-first-collection-and-source-health",
+      "status": "completed-partial",
+      "outcome": "aggregate-platform-discovery-plus-official-verification",
+      "summary": "本轮已执行公考、选调优培、三类聚合平台和重点单位的公开采集。北航就业信息网初筛 0 条，国聘初筛 28 条，国家大学生就业服务平台初筛 0 条；重点官网具体岗位：中国人保 未完成、京东方 0 条、华润 20 条；官方公告页保留 55 条待拆分公告。",
+      "metrics": {
+        "officialSystemsChecked": 20,
+        "officialSystemsSucceeded": 18,
+        "officialSystemsFailed": 2,
+        "newLeads": 182,
+        "reviewedItems": 0,
+        "accepted": 0,
+        "rejected": 0,
+        "deferred": 0,
+        "published": 20,
+        "updated": 0,
+        "closed": 0
+      },
+      "screeningMetrics": {
+        "portalResultsReported": 3233,
+        "nativeFilterQueries": 28,
+        "nativeFilteredResults": 3233,
+        "deduplicatedCandidates": 631,
+        "positionsBatchReviewed": 331,
+        "positionsOfficiallyVerified": 20,
+        "positionsEscalated": 0,
+        "positionsDeferredByBudget": 0,
+        "discoverySourcesChecked": 3,
+        "discoveryOfficialCandidates": 28
+      },
+      "sourceChecks": [
+        {
+          "sourceId": "national-civil",
+          "status": "checked-no-active-campaign",
+          "attempts": 2,
+          "note": "官方公告、详情和可见附件已完成脚本检查；本轮未发现报名截止日未过且可进入资格判断的公务员/选调公告；另有 4 条缺少可解析报名期限的历史/归档公告，未作为在招处理。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 29,
+            "afterFilter": 0,
+            "filterDescription": "官方公告与附件 → 仍在有效期内、可继续资格判断的公告"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "http://bm.scs.gov.cn/pp/gkweb/core/web/ui/business/home/gkhome.html",
+              "finalUrl": "http://bm.scs.gov.cn/pp/gkweb/core/web/ui/business/home/gkhome.html",
+              "outcome": "official-page",
+              "recipe": "官方 SPA 配置 → 官方 JSON 专题 → 公告详情/附件"
+            }
+          ],
+          "checkedAt": "2026-08-24T11:34:00+08:00"
+        },
+        {
+          "sourceId": "shenzhen-civil",
+          "status": "checked-no-active-campaign",
+          "attempts": 2,
+          "note": "官方公告、详情和可见附件已完成脚本检查；本轮未发现报名截止日未过且可进入资格判断的公务员/选调公告。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 49,
+            "afterFilter": 0,
+            "filterDescription": "官方公告与附件 → 仍在有效期内、可继续资格判断的公告"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.gdzz.gov.cn/gwygz/lypytzgg/index.html",
+              "finalUrl": "https://www.gdzz.gov.cn/gwygz/lypytzgg/index.html",
+              "outcome": "official-page",
+              "recipe": "广东组织工作网公告列表 → 公告详情 → 官方附件/压缩包"
+            }
+          ],
+          "checkedAt": "2026-08-24T11:34:00+08:00"
+        },
+        {
+          "sourceId": "shenzhen-personnel-exam",
+          "status": "checked-official-notice-feed",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T11:34:00+08:00",
+          "note": "已读取 8 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 8,
+            "afterFilter": 8,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://hrss.sz.gov.cn/gzryzk/index.html",
+              "finalUrl": "https://hrss.sz.gov.cn/gzryzk/index.html",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "shenzhen-selection-program",
+          "status": "checked-no-active-campaign",
+          "attempts": 1,
+          "note": "官方公告、详情和可见附件已完成脚本检查；本轮未发现报名截止日未过且可进入资格判断的公务员/选调公告。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 1,
+            "afterFilter": 0,
+            "filterDescription": "官方公告与附件 → 仍在有效期内、可继续资格判断的公告"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://career.buaa.edu.cn/frontpage/buaa/html/newsList.html?id=5453aeeb99e74d78aea0b45fd456ae68",
+              "finalUrl": "https://career.buaa.edu.cn/frontpage/buaa/js/init.js",
+              "outcome": "official-page",
+              "recipe": "北航就业网选调生公开栏目 API → 城市应届选调公告详情/附件"
+            }
+          ],
+          "checkedAt": "2026-08-24T11:34:00+08:00"
+        },
+        {
+          "sourceId": "shenzhen-institutions",
+          "status": "checked-official-notice-feed",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T11:34:00+08:00",
+          "note": "已读取 8 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 8,
+            "afterFilter": 8,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://hrss.sz.gov.cn/gzryzk/index.html",
+              "finalUrl": "https://hrss.sz.gov.cn/gzryzk/index.html",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "central-institutions",
+          "status": "checked-official-notice-feed",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T11:34:00+08:00",
+          "note": "已读取 19 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 19,
+            "afterFilter": 19,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.mohrss.gov.cn/SYrlzyhshbzb/fwyd/SYkaoshizhaopin/zyhgjjgsydwgkzp/",
+              "finalUrl": "https://www.mohrss.gov.cn/SYrlzyhshbzb/fwyd/SYkaoshizhaopin/zyhgjjgsydwgkzp/",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "china-public-recruitment",
+          "status": "checked-official-notice-feed",
+          "attempts": 2,
+          "checkedAt": "2026-08-24T11:34:00+08:00",
+          "note": "已读取 23 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 23,
+            "afterFilter": 23,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://job.mohrss.gov.cn/cjobs/institution/listInstitution",
+              "outcome": "network-error",
+              "recipe": "官方入口本轮无法读取：Error。"
+            },
+            {
+              "requestedUrl": "http://job.mohrss.gov.cn/cjobs/institution/listInstitution",
+              "finalUrl": "http://job.mohrss.gov.cn/cjobs/institution/listInstitution",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "central-sasac-recruitment",
+          "status": "checked-official-notice-feed",
+          "attempts": 2,
+          "checkedAt": "2026-08-24T11:34:00+08:00",
+          "note": "已读取 16 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 16,
+            "afterFilter": 16,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.sasac.gov.cn/n2588035/n2588325/n2588350/index.html",
+              "outcome": "network-error",
+              "recipe": "官方入口本轮无法读取：Error。"
+            },
+            {
+              "requestedUrl": "http://wap.sasac.gov.cn/n2588035/n2588325/n2588350/index.html",
+              "finalUrl": "http://wap.sasac.gov.cn/n2588035/n2588325/n2588350/index.html",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "central-enterprise-roster",
+          "status": "checked-roster-current",
+          "attempts": 2,
+          "checkedAt": "2026-08-24T11:34:00+08:00",
+          "note": "已读取官方中央企业名录页；名录用于限定重点单位范围，不把名录本身当作招聘岗位。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 1,
+            "afterFilter": 0,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.sasac.gov.cn/n2588045/n27271785/n27271792/c14159097/content.html",
+              "outcome": "network-error",
+              "recipe": "官方入口本轮无法读取：Error。"
+            },
+            {
+              "requestedUrl": "http://wap.sasac.gov.cn/n2588045/n27271785/n27271792/c14159097/content.html",
+              "finalUrl": "http://wap.sasac.gov.cn/n2588045/n27271785/n27271792/c14159097/content.html",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "shenzhen-state-assets",
+          "status": "checked-official-notice-feed",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T11:34:00+08:00",
+          "note": "已读取 10 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 10,
+            "afterFilter": 10,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://gzw.sz.gov.cn/xyzp/index.html",
+              "finalUrl": "https://gzw.sz.gov.cn/xyzp/content/post_9397139.html",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "picc-campus",
+          "status": "temporarily-unavailable",
+          "attempts": 3,
+          "checkedAt": "2026-08-24T11:34:00+08:00",
+          "note": "本轮未能完成该来源的官方结构化采集；已发布的上次核验岗位会保留，不会被临时网络故障清空。",
+          "collectionMetrics": {
+            "state": "unavailable",
+            "collected": null,
+            "afterFilter": null,
+            "filterDescription": "fetch failed"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://picc.zhiye.com/custom/campus?hideAll=true",
+              "outcome": "network-error",
+              "recipe": "fetch failed"
+            }
+          ]
+        },
+        {
+          "sourceId": "boe-campus",
+          "status": "checked-native-filtered",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T11:34:00+08:00",
+          "note": "已用本站公开结构化接口完成城市、招聘类型、全部分页和任职条件筛选：采集 0 条，专业可报 0 条。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 0,
+            "afterFilter": 0,
+            "filterDescription": "是否收录只按官方任职条件判断；岗位内容仅用于排序。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://campus.boe.com/jobs?hideMenu=1",
+              "outcome": "official-structured-data",
+              "recipe": "京东方官方校园招聘 API → 校园招聘分类 → 官方地点选项"
+            },
+            {
+              "requestedUrl": "https://campus.boe.com/api/Jobad/SearchAreasTreeConditions?PortalId=e71a8ad7-a321-4305-80db-73f2f18f8d22&categoryId=15",
+              "outcome": "official-structured-data",
+              "recipe": "京东方官方校园招聘 API → 校园招聘分类 → 官方地点选项"
+            }
+          ]
+        },
+        {
+          "sourceId": "sinopharm-careers",
+          "status": "checked-official-notice-feed",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T11:34:00+08:00",
+          "note": "已读取 8 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 8,
+            "afterFilter": 8,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.sinopharm.com/recruitment.html",
+              "finalUrl": "https://www.sinopharm.com/recruitment.html",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "genertec-official",
+          "status": "checked-official-notice-feed",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T11:34:00+08:00",
+          "note": "已读取 13 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 13,
+            "afterFilter": 13,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://ky.gt.cn/rczp/",
+              "finalUrl": "https://ky.gt.cn/rczp/",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "crc-careers",
+          "status": "checked-native-filtered",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T11:34:00+08:00",
+          "note": "已用本站公开结构化接口完成城市、招聘类型、全部分页和任职条件筛选：采集 4127 条，专业可报 20 条。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 4127,
+            "afterFilter": 20,
+            "filterDescription": "是否收录只按官方任职条件判断；岗位内容仅用于排序。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://runjob.crc.com.cn/#/complex/homepage?id=1769554545615040514",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=1&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=2&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=3&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=4&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=5&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=6&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=7&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=8&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=9&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=10&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=11&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=12&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=13&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=14&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            }
+          ]
+        },
+        {
+          "sourceId": "casic-careers",
+          "status": "checked-official-notice-feed",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T11:34:00+08:00",
+          "note": "已读取 1 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 1,
+            "afterFilter": 1,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "http://wap.sasac.gov.cn/n2588035/n2588325/c35503679/content.html",
+              "finalUrl": "http://wap.sasac.gov.cn/n2588035/n2588325/c35503679/content.html",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "spacechina-careers",
+          "status": "checked-official-notice-feed",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T11:34:00+08:00",
+          "note": "已读取 1 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 1,
+            "afterFilter": 1,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://m.spacechina.com/index.html",
+              "finalUrl": "https://m.spacechina.com/index.html",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "buaa-career-discovery",
+          "status": "checked-native-filtered",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T11:34:00+08:00",
+          "note": "已完成 3 组本站筛选并读取 3 条去重候选。0 条通过应届硕士与专业相关性的初筛，进入官方回溯；3 条未进入回溯。已读取本轮全部已筛选分页。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 3,
+            "afterFilter": 0,
+            "filterDescription": "已使用本站城市、单位性质/关键词、应届硕士和生物医学相关性等条件完成预筛。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://career.buaa.edu.cn/frontpage/buaa/html/recruitmentinfoList.html?type=1",
+              "finalUrl": "https://career.buaa.edu.cn/frontpage/buaa/js/init.js",
+              "outcome": "official-page",
+              "recipe": "北航就业信息网公开城市＋单位性质筛选 → 已筛选分页 → 公开岗位详情 → 任职条件专业资格预筛"
+            }
+          ]
+        },
+        {
+          "sourceId": "national-college-employment",
+          "status": "accessible-incomplete",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T11:34:00+08:00",
+          "note": "已完成 11 组本站筛选并读取 300 条去重候选。0 条通过应届硕士与专业相关性的初筛，进入官方回溯；300 条未进入回溯。公开访问在已读取分页后受限：国家大学生就业服务平台在第 6 页要求登录，公开采集在此前分页停止。；未把未读取部分当作无岗位。",
+          "collectionMetrics": {
+            "state": "partial",
+            "collected": 300,
+            "afterFilter": 0,
+            "filterDescription": "已记录公开可读取分页的采集和筛选数量；后续分页要求登录或未能公开读取，不能把本轮结果理解为完整平台全集。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.ncss.cn/",
+              "finalUrl": "https://www.ncss.cn/student/jobs/jobslist/ajax/?areaCode=440300&jobName=%E7%94%9F%E7%89%A9%E5%8C%BB%E5%AD%A6%E5%B7%A5%E7%A8%8B&offset=1&limit=20",
+              "outcome": "official-page",
+              "recipe": "国家大学生就业服务平台公开城市＋专业可报关键词并集 → 已筛选分页 → 任职条件专业资格预筛"
+            }
+          ]
+        },
+        {
+          "sourceId": "iguopin-discovery",
+          "status": "checked-native-filtered",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T11:34:00+08:00",
+          "note": "已完成 11 组本站筛选并读取 328 条去重候选。28 条通过应届硕士与专业相关性的初筛，进入官方回溯；300 条未进入回溯。已读取本轮全部已筛选分页。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 328,
+            "afterFilter": 28,
+            "filterDescription": "已使用本站城市、单位性质/关键词、应届硕士和生物医学相关性等条件完成预筛。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.iguopin.com/",
+              "finalUrl": "https://www.iguopin.com/job/list?keyword=%E7%94%9F%E7%89%A9%E5%8C%BB%E5%AD%A6%E5%B7%A5%E7%A8%8B#district=000000.440000.440300&page=1",
+              "outcome": "official-page",
+              "recipe": "国聘公开城市＋专业可报关键词并集 → 已筛选分页 → 任职条件专业资格预筛"
+            }
+          ]
+        }
+      ],
+      "reviews": []
+    },
+    {
+      "id": "run-20260824-1128-aggregate-first-full-sync",
+      "scope": "full-city-run",
+      "checkedAt": "2026-08-24T11:28:00+08:00",
+      "trigger": "scheduled-or-manual-full-update",
+      "scheduledSourceIds": [
+        "national-civil",
+        "shenzhen-civil",
+        "shenzhen-personnel-exam",
+        "shenzhen-selection-program",
+        "shenzhen-institutions",
+        "central-institutions",
+        "china-public-recruitment",
+        "central-sasac-recruitment",
+        "central-enterprise-roster",
+        "shenzhen-state-assets",
+        "picc-campus",
+        "boe-campus",
+        "sinopharm-careers",
+        "genertec-official",
+        "crc-careers",
+        "casic-careers",
+        "spacechina-careers",
+        "buaa-career-discovery",
+        "national-college-employment",
+        "iguopin-discovery"
+      ],
+      "policyVersion": 7,
+      "screeningStrategyVersion": 2,
+      "candidateProcessingVersion": 4,
+      "coverageStatus": "aggregate-first-collection-and-source-health",
+      "status": "completed-partial",
+      "outcome": "aggregate-platform-discovery-plus-official-verification",
+      "summary": "本轮已执行公考、选调优培、三类聚合平台和重点单位的公开采集。北航就业信息网初筛 0 条，国聘初筛 28 条，国家大学生就业服务平台初筛 0 条；重点官网具体岗位：中国人保 10 条、京东方 0 条、华润 20 条；官方公告页保留 55 条待拆分公告。",
+      "metrics": {
+        "officialSystemsChecked": 20,
+        "officialSystemsSucceeded": 19,
+        "officialSystemsFailed": 1,
+        "newLeads": 192,
+        "reviewedItems": 0,
+        "accepted": 0,
+        "rejected": 0,
+        "deferred": 0,
+        "published": 30,
+        "updated": 0,
+        "closed": 0
+      },
+      "screeningMetrics": {
+        "portalResultsReported": 3233,
+        "nativeFilterQueries": 28,
+        "nativeFilteredResults": 3233,
+        "deduplicatedCandidates": 635,
+        "positionsBatchReviewed": 335,
+        "positionsOfficiallyVerified": 30,
+        "positionsEscalated": 0,
+        "positionsDeferredByBudget": 0,
+        "discoverySourcesChecked": 3,
+        "discoveryOfficialCandidates": 28
+      },
+      "sourceChecks": [
+        {
+          "sourceId": "national-civil",
+          "status": "checked-no-active-campaign",
+          "attempts": 2,
+          "note": "官方公告、详情和可见附件已完成脚本检查；本轮未发现报名截止日未过且可进入资格判断的公务员/选调公告；另有 4 条缺少可解析报名期限的历史/归档公告，未作为在招处理。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 29,
+            "afterFilter": 0,
+            "filterDescription": "官方公告与附件 → 仍在有效期内、可继续资格判断的公告"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "http://bm.scs.gov.cn/pp/gkweb/core/web/ui/business/home/gkhome.html",
+              "finalUrl": "http://bm.scs.gov.cn/pp/gkweb/core/web/ui/business/home/gkhome.html",
+              "outcome": "official-page",
+              "recipe": "官方 SPA 配置 → 官方 JSON 专题 → 公告详情/附件"
+            }
+          ],
+          "checkedAt": "2026-08-24T11:28:00+08:00"
+        },
+        {
+          "sourceId": "shenzhen-civil",
+          "status": "checked-no-active-campaign",
+          "attempts": 2,
+          "note": "官方公告、详情和可见附件已完成脚本检查；本轮未发现报名截止日未过且可进入资格判断的公务员/选调公告。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 49,
+            "afterFilter": 0,
+            "filterDescription": "官方公告与附件 → 仍在有效期内、可继续资格判断的公告"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.gdzz.gov.cn/gwygz/lypytzgg/index.html",
+              "finalUrl": "https://www.gdzz.gov.cn/gwygz/lypytzgg/index.html",
+              "outcome": "official-page",
+              "recipe": "广东组织工作网公告列表 → 公告详情 → 官方附件/压缩包"
+            }
+          ],
+          "checkedAt": "2026-08-24T11:28:00+08:00"
+        },
+        {
+          "sourceId": "shenzhen-personnel-exam",
+          "status": "checked-official-notice-feed",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T11:28:00+08:00",
+          "note": "已读取 8 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 8,
+            "afterFilter": 8,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://hrss.sz.gov.cn/gzryzk/index.html",
+              "finalUrl": "https://hrss.sz.gov.cn/gzryzk/index.html",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "shenzhen-selection-program",
+          "status": "checked-no-active-campaign",
+          "attempts": 1,
+          "note": "官方公告、详情和可见附件已完成脚本检查；本轮未发现报名截止日未过且可进入资格判断的公务员/选调公告。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 1,
+            "afterFilter": 0,
+            "filterDescription": "官方公告与附件 → 仍在有效期内、可继续资格判断的公告"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://career.buaa.edu.cn/frontpage/buaa/html/newsList.html?id=5453aeeb99e74d78aea0b45fd456ae68",
+              "finalUrl": "https://career.buaa.edu.cn/frontpage/buaa/js/init.js",
+              "outcome": "official-page",
+              "recipe": "北航就业网选调生公开栏目 API → 城市应届选调公告详情/附件"
+            }
+          ],
+          "checkedAt": "2026-08-24T11:28:00+08:00"
+        },
+        {
+          "sourceId": "shenzhen-institutions",
+          "status": "checked-official-notice-feed",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T11:28:00+08:00",
+          "note": "已读取 8 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 8,
+            "afterFilter": 8,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://hrss.sz.gov.cn/gzryzk/index.html",
+              "finalUrl": "https://hrss.sz.gov.cn/gzryzk/index.html",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "central-institutions",
+          "status": "checked-official-notice-feed",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T11:28:00+08:00",
+          "note": "已读取 19 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 19,
+            "afterFilter": 19,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.mohrss.gov.cn/SYrlzyhshbzb/fwyd/SYkaoshizhaopin/zyhgjjgsydwgkzp/",
+              "finalUrl": "https://www.mohrss.gov.cn/SYrlzyhshbzb/fwyd/SYkaoshizhaopin/zyhgjjgsydwgkzp/",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "china-public-recruitment",
+          "status": "checked-official-notice-feed",
+          "attempts": 2,
+          "checkedAt": "2026-08-24T11:28:00+08:00",
+          "note": "已读取 23 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 23,
+            "afterFilter": 23,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://job.mohrss.gov.cn/cjobs/institution/listInstitution",
+              "outcome": "network-error",
+              "recipe": "官方入口本轮无法读取：Error。"
+            },
+            {
+              "requestedUrl": "http://job.mohrss.gov.cn/cjobs/institution/listInstitution",
+              "finalUrl": "http://job.mohrss.gov.cn/cjobs/institution/listInstitution",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "central-sasac-recruitment",
+          "status": "checked-official-notice-feed",
+          "attempts": 2,
+          "checkedAt": "2026-08-24T11:28:00+08:00",
+          "note": "已读取 16 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 16,
+            "afterFilter": 16,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.sasac.gov.cn/n2588035/n2588325/n2588350/index.html",
+              "outcome": "network-error",
+              "recipe": "官方入口本轮无法读取：Error。"
+            },
+            {
+              "requestedUrl": "http://wap.sasac.gov.cn/n2588035/n2588325/n2588350/index.html",
+              "finalUrl": "http://wap.sasac.gov.cn/n2588035/n2588325/n2588350/index.html",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "central-enterprise-roster",
+          "status": "checked-roster-current",
+          "attempts": 2,
+          "checkedAt": "2026-08-24T11:28:00+08:00",
+          "note": "已读取官方中央企业名录页；名录用于限定重点单位范围，不把名录本身当作招聘岗位。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 1,
+            "afterFilter": 0,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.sasac.gov.cn/n2588045/n27271785/n27271792/c14159097/content.html",
+              "outcome": "network-error",
+              "recipe": "官方入口本轮无法读取：Error。"
+            },
+            {
+              "requestedUrl": "http://wap.sasac.gov.cn/n2588045/n27271785/n27271792/c14159097/content.html",
+              "finalUrl": "http://wap.sasac.gov.cn/n2588045/n27271785/n27271792/c14159097/content.html",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "shenzhen-state-assets",
+          "status": "checked-official-notice-feed",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T11:28:00+08:00",
+          "note": "已读取 10 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 10,
+            "afterFilter": 10,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://gzw.sz.gov.cn/xyzp/index.html",
+              "finalUrl": "https://gzw.sz.gov.cn/xyzp/content/post_9397139.html",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "picc-campus",
+          "status": "checked-native-filtered",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T11:28:00+08:00",
+          "note": "已用本站公开结构化接口完成城市、招聘类型、全部分页和任职条件筛选：采集 24 条，专业可报 10 条。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 24,
+            "afterFilter": 10,
+            "filterDescription": "是否收录只按官方任职条件判断；岗位内容仅用于排序。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://picc.zhiye.com/custom/campus?hideAll=true",
+              "outcome": "official-structured-data",
+              "recipe": "人保官方校园招聘 API → 招聘类型=校园招聘 → 官方地点筛选 → 全部分页 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://picc.zhiye.com/api/Jobad/SearchAreasTreeConditions?PortalId=20e42367-7ff6-422b-8dd9-92f72842818a&categoryId=2",
+              "outcome": "official-structured-data",
+              "recipe": "人保官方校园招聘 API → 招聘类型=校园招聘 → 官方地点筛选 → 全部分页 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://picc.zhiye.com/api/Jobad/GetJobAdPageList#city=4403&category=2&page=0",
+              "outcome": "official-structured-data",
+              "recipe": "人保官方校园招聘 API → 招聘类型=校园招聘 → 官方地点筛选 → 全部分页 → 任职条件专业资格门禁"
+            }
+          ]
+        },
+        {
+          "sourceId": "boe-campus",
+          "status": "checked-native-filtered",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T11:28:00+08:00",
+          "note": "已用本站公开结构化接口完成城市、招聘类型、全部分页和任职条件筛选：采集 0 条，专业可报 0 条。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 0,
+            "afterFilter": 0,
+            "filterDescription": "是否收录只按官方任职条件判断；岗位内容仅用于排序。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://campus.boe.com/jobs?hideMenu=1",
+              "outcome": "official-structured-data",
+              "recipe": "京东方官方校园招聘 API → 校园招聘分类 → 官方地点选项"
+            },
+            {
+              "requestedUrl": "https://campus.boe.com/api/Jobad/SearchAreasTreeConditions?PortalId=e71a8ad7-a321-4305-80db-73f2f18f8d22&categoryId=15",
+              "outcome": "official-structured-data",
+              "recipe": "京东方官方校园招聘 API → 校园招聘分类 → 官方地点选项"
+            }
+          ]
+        },
+        {
+          "sourceId": "sinopharm-careers",
+          "status": "checked-official-notice-feed",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T11:28:00+08:00",
+          "note": "已读取 8 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 8,
+            "afterFilter": 8,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.sinopharm.com/recruitment.html",
+              "finalUrl": "https://www.sinopharm.com/recruitment.html",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "genertec-official",
+          "status": "checked-official-notice-feed",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T11:28:00+08:00",
+          "note": "已读取 13 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 13,
+            "afterFilter": 13,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://ky.gt.cn/rczp/",
+              "finalUrl": "https://ky.gt.cn/rczp/",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "crc-careers",
+          "status": "checked-native-filtered",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T11:28:00+08:00",
+          "note": "已用本站公开结构化接口完成城市、招聘类型、全部分页和任职条件筛选：采集 4127 条，专业可报 20 条。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 4127,
+            "afterFilter": 20,
+            "filterDescription": "是否收录只按官方任职条件判断；岗位内容仅用于排序。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://runjob.crc.com.cn/#/complex/homepage?id=1769554545615040514",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=1&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=2&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=3&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=4&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=5&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=6&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=7&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=8&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=9&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=10&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=11&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=12&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=13&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://ssdp.crc.com.cn/ssdp/sys/rf/#page=14&pageSize=300",
+              "outcome": "official-structured-data",
+              "recipe": "华润官方公开网关 → 全部职位分页 → 招聘类型=校园招聘 → 城市 → 任职条件专业资格门禁"
+            }
+          ]
+        },
+        {
+          "sourceId": "casic-careers",
+          "status": "checked-official-notice-feed",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T11:28:00+08:00",
+          "note": "已读取 1 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 1,
+            "afterFilter": 1,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "http://wap.sasac.gov.cn/n2588035/n2588325/c35503679/content.html",
+              "finalUrl": "http://wap.sasac.gov.cn/n2588035/n2588325/c35503679/content.html",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "spacechina-careers",
+          "status": "checked-official-notice-feed",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T11:28:00+08:00",
+          "note": "已读取 1 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 1,
+            "afterFilter": 1,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://m.spacechina.com/index.html",
+              "finalUrl": "https://m.spacechina.com/index.html",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "buaa-career-discovery",
+          "status": "checked-native-filtered",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T11:28:00+08:00",
+          "note": "已完成 3 组本站筛选并读取 3 条去重候选。0 条通过应届硕士与专业相关性的初筛，进入官方回溯；3 条未进入回溯。已读取本轮全部已筛选分页。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 3,
+            "afterFilter": 0,
+            "filterDescription": "已使用本站城市、单位性质/关键词、应届硕士和生物医学相关性等条件完成预筛。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://career.buaa.edu.cn/frontpage/buaa/html/recruitmentinfoList.html?type=1",
+              "finalUrl": "https://career.buaa.edu.cn/frontpage/buaa/js/init.js",
+              "outcome": "official-page",
+              "recipe": "北航就业信息网公开城市＋单位性质筛选 → 已筛选分页 → 公开岗位详情 → 任职条件专业资格预筛"
+            }
+          ]
+        },
+        {
+          "sourceId": "national-college-employment",
+          "status": "accessible-incomplete",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T11:28:00+08:00",
+          "note": "已完成 11 组本站筛选并读取 300 条去重候选。0 条通过应届硕士与专业相关性的初筛，进入官方回溯；300 条未进入回溯。公开访问在已读取分页后受限：国家大学生就业服务平台在第 6 页要求登录，公开采集在此前分页停止。；未把未读取部分当作无岗位。",
+          "collectionMetrics": {
+            "state": "partial",
+            "collected": 300,
+            "afterFilter": 0,
+            "filterDescription": "已记录公开可读取分页的采集和筛选数量；后续分页要求登录或未能公开读取，不能把本轮结果理解为完整平台全集。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.ncss.cn/",
+              "finalUrl": "https://www.ncss.cn/student/jobs/jobslist/ajax/?areaCode=440300&jobName=%E7%94%9F%E7%89%A9%E5%8C%BB%E5%AD%A6%E5%B7%A5%E7%A8%8B&offset=1&limit=20",
+              "outcome": "official-page",
+              "recipe": "国家大学生就业服务平台公开城市＋专业可报关键词并集 → 已筛选分页 → 任职条件专业资格预筛"
+            }
+          ]
+        },
+        {
+          "sourceId": "iguopin-discovery",
+          "status": "checked-native-filtered",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T11:28:00+08:00",
+          "note": "已完成 11 组本站筛选并读取 332 条去重候选。28 条通过应届硕士与专业相关性的初筛，进入官方回溯；304 条未进入回溯。已读取本轮全部已筛选分页。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 332,
+            "afterFilter": 28,
+            "filterDescription": "已使用本站城市、单位性质/关键词、应届硕士和生物医学相关性等条件完成预筛。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.iguopin.com/",
+              "finalUrl": "https://www.iguopin.com/job/list?keyword=%E7%94%9F%E7%89%A9%E5%8C%BB%E5%AD%A6%E5%B7%A5%E7%A8%8B#district=000000.440000.440300&page=1",
+              "outcome": "official-page",
+              "recipe": "国聘公开城市＋专业可报关键词并集 → 已筛选分页 → 任职条件专业资格预筛"
+            }
+          ]
+        }
+      ],
+      "reviews": []
+    },
+    {
+      "id": "run-20260824-1031-aggregate-first-full-sync",
+      "scope": "full-city-run",
+      "checkedAt": "2026-08-24T10:31:00+08:00",
+      "trigger": "scheduled-or-manual-full-update",
+      "scheduledSourceIds": [
+        "national-civil",
+        "shenzhen-civil",
+        "shenzhen-personnel-exam",
+        "shenzhen-selection-program",
+        "shenzhen-institutions",
+        "central-institutions",
+        "china-public-recruitment",
+        "central-sasac-recruitment",
+        "central-enterprise-roster",
+        "shenzhen-state-assets",
+        "picc-campus",
+        "boe-campus",
+        "sinopharm-careers",
+        "genertec-official",
+        "crc-careers",
+        "casic-careers",
+        "spacechina-careers",
+        "buaa-career-discovery",
+        "national-college-employment",
+        "iguopin-discovery"
+      ],
+      "policyVersion": 7,
+      "screeningStrategyVersion": 2,
+      "candidateProcessingVersion": 4,
+      "coverageStatus": "aggregate-first-collection-and-source-health",
+      "status": "completed-partial",
+      "outcome": "aggregate-platform-discovery-plus-official-verification",
+      "summary": "本轮已执行公考、选调优培、三类聚合平台和重点单位的公开采集。北航就业信息网初筛 0 条，国聘初筛 34 条，国家大学生就业服务平台初筛 0 条；中国人保从 24 条城市校园岗位中核验出 15 条专业可报岗位。",
+      "metrics": {
+        "officialSystemsChecked": 20,
+        "officialSystemsSucceeded": 13,
+        "officialSystemsFailed": 7,
+        "newLeads": 128,
+        "reviewedItems": 0,
+        "accepted": 0,
+        "rejected": 0,
+        "deferred": 0,
+        "published": 15,
+        "updated": 0,
+        "closed": 0
+      },
+      "screeningMetrics": {
+        "portalResultsReported": 3233,
+        "nativeFilterQueries": 28,
+        "nativeFilteredResults": 3233,
+        "deduplicatedCandidates": 635,
+        "positionsBatchReviewed": 338,
+        "positionsOfficiallyVerified": 15,
+        "positionsEscalated": 0,
+        "positionsDeferredByBudget": 0,
+        "discoverySourcesChecked": 3,
+        "discoveryOfficialCandidates": 34
+      },
+      "sourceChecks": [
+        {
+          "sourceId": "national-civil",
+          "status": "checked-no-active-campaign",
+          "attempts": 2,
+          "note": "官方公告、详情和可见附件已完成脚本检查；本轮未发现报名截止日未过且可进入资格判断的公务员/选调公告；另有 4 条缺少可解析报名期限的历史/归档公告，未作为在招处理。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 29,
+            "afterFilter": 0,
+            "filterDescription": "官方公告与附件 → 仍在有效期内、可继续资格判断的公告"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "http://bm.scs.gov.cn/pp/gkweb/core/web/ui/business/home/gkhome.html",
+              "finalUrl": "http://bm.scs.gov.cn/pp/gkweb/core/web/ui/business/home/gkhome.html",
+              "outcome": "official-page",
+              "recipe": "官方 SPA 配置 → 官方 JSON 专题 → 公告详情/附件"
+            }
+          ],
+          "checkedAt": "2026-08-24T10:31:00+08:00"
+        },
+        {
+          "sourceId": "shenzhen-civil",
+          "status": "checked-no-active-campaign",
+          "attempts": 2,
+          "note": "官方公告、详情和可见附件已完成脚本检查；本轮未发现报名截止日未过且可进入资格判断的公务员/选调公告。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 49,
+            "afterFilter": 0,
+            "filterDescription": "官方公告与附件 → 仍在有效期内、可继续资格判断的公告"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.gdzz.gov.cn/gwygz/lypytzgg/index.html",
+              "finalUrl": "https://www.gdzz.gov.cn/gwygz/lypytzgg/index.html",
+              "outcome": "official-page",
+              "recipe": "广东组织工作网公告列表 → 公告详情 → 官方附件/压缩包"
+            }
+          ],
+          "checkedAt": "2026-08-24T10:31:00+08:00"
+        },
+        {
+          "sourceId": "shenzhen-personnel-exam",
+          "status": "temporarily-unavailable",
+          "attempts": 3,
+          "checkedAt": "2026-08-24T10:31:00+08:00",
+          "note": "本轮未取得可读取的官方公告/招聘页，不能据此判断无岗位。",
+          "collectionMetrics": {
+            "state": "unavailable",
+            "collected": null,
+            "afterFilter": null,
+            "filterDescription": "本轮未能完成该官方来源的公告列表、详情或站内筛选，不能把结果理解为 0 条。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://hrss.sz.gov.cn/gzryzk/index.html",
+              "outcome": "network-error",
+              "recipe": "官方入口本轮无法读取：TypeError。"
+            },
+            {
+              "requestedUrl": "https://hrss.sz.gov.cn/gzryzk/index.html",
+              "outcome": "network-error",
+              "recipe": "官方入口本轮无法读取：TypeError。"
+            },
+            {
+              "requestedUrl": "https://hrss.sz.gov.cn/gzryzk/index.html",
+              "outcome": "network-error",
+              "recipe": "官方入口本轮无法读取：TypeError。"
+            }
+          ]
+        },
+        {
+          "sourceId": "shenzhen-selection-program",
+          "status": "checked-no-active-campaign",
+          "attempts": 1,
+          "note": "官方公告、详情和可见附件已完成脚本检查；本轮未发现报名截止日未过且可进入资格判断的公务员/选调公告。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 1,
+            "afterFilter": 0,
+            "filterDescription": "官方公告与附件 → 仍在有效期内、可继续资格判断的公告"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://career.buaa.edu.cn/frontpage/buaa/html/newsList.html?id=5453aeeb99e74d78aea0b45fd456ae68",
+              "finalUrl": "https://career.buaa.edu.cn/frontpage/buaa/js/init.js",
+              "outcome": "official-page",
+              "recipe": "北航就业网选调生公开栏目 API → 城市应届选调公告详情/附件"
+            }
+          ],
+          "checkedAt": "2026-08-24T10:31:00+08:00"
+        },
+        {
+          "sourceId": "shenzhen-institutions",
+          "status": "temporarily-unavailable",
+          "attempts": 3,
+          "checkedAt": "2026-08-24T10:31:00+08:00",
+          "note": "本轮未取得可读取的官方公告/招聘页，不能据此判断无岗位。",
+          "collectionMetrics": {
+            "state": "unavailable",
+            "collected": null,
+            "afterFilter": null,
+            "filterDescription": "本轮未能完成该官方来源的公告列表、详情或站内筛选，不能把结果理解为 0 条。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://hrss.sz.gov.cn/gzryzk/index.html",
+              "outcome": "network-error",
+              "recipe": "官方入口本轮无法读取：TypeError。"
+            },
+            {
+              "requestedUrl": "https://hrss.sz.gov.cn/gzryzk/index.html",
+              "outcome": "network-error",
+              "recipe": "官方入口本轮无法读取：TypeError。"
+            },
+            {
+              "requestedUrl": "https://hrss.sz.gov.cn/gzryzk/index.html",
+              "outcome": "network-error",
+              "recipe": "官方入口本轮无法读取：TypeError。"
+            }
+          ]
+        },
+        {
+          "sourceId": "central-institutions",
+          "status": "accessible-incomplete",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T10:31:00+08:00",
+          "note": "已读取官方入口，但没有在静态正文中找到可安全跟进的同域招聘列表；该来源需要按登记的浏览器路线继续处理，不能按 0 条理解。",
+          "collectionMetrics": {
+            "state": "not-completed",
+            "collected": null,
+            "afterFilter": null,
+            "filterDescription": "本轮未能完成该官方来源的公告列表、详情或站内筛选，不能把结果理解为 0 条。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.mohrss.gov.cn/SYrlzyhshbzb/fwyd/SYkaoshizhaopin/zyhgjjgsydwgkzp/",
+              "finalUrl": "https://www.mohrss.gov.cn/SYrlzyhshbzb/fwyd/SYkaoshizhaopin/zyhgjjgsydwgkzp/",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "china-public-recruitment",
+          "status": "checked-official-notice-feed",
+          "attempts": 2,
+          "checkedAt": "2026-08-24T10:31:00+08:00",
+          "note": "已读取 10 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 10,
+            "afterFilter": 10,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://job.mohrss.gov.cn/cjobs/institution/listInstitution",
+              "outcome": "network-error",
+              "recipe": "官方入口本轮无法读取：TypeError。"
+            },
+            {
+              "requestedUrl": "http://job.mohrss.gov.cn/cjobs/institution/listInstitution",
+              "finalUrl": "http://job.mohrss.gov.cn/cjobs/institution/listInstitution",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "central-sasac-recruitment",
+          "status": "checked-official-notice-feed",
+          "attempts": 2,
+          "checkedAt": "2026-08-24T10:31:00+08:00",
+          "note": "已读取 18 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 18,
+            "afterFilter": 18,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.sasac.gov.cn/n2588035/n2588325/n2588350/index.html",
+              "outcome": "network-error",
+              "recipe": "官方入口本轮无法读取：TypeError。"
+            },
+            {
+              "requestedUrl": "http://wap.sasac.gov.cn/n2588035/n2588325/n2588350/index.html",
+              "finalUrl": "http://wap.sasac.gov.cn/n2588035/n2588325/n2588350/index.html",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "central-enterprise-roster",
+          "status": "checked-roster-current",
+          "attempts": 2,
+          "checkedAt": "2026-08-24T10:31:00+08:00",
+          "note": "已读取官方中央企业名录页；名录用于限定重点单位范围，不把名录本身当作招聘岗位。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 1,
+            "afterFilter": 0,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.sasac.gov.cn/n2588045/n27271785/n27271792/c14159097/content.html",
+              "outcome": "network-error",
+              "recipe": "官方入口本轮无法读取：TypeError。"
+            },
+            {
+              "requestedUrl": "http://wap.sasac.gov.cn/n2588045/n27271785/n27271792/c14159097/content.html",
+              "finalUrl": "http://wap.sasac.gov.cn/n2588045/n27271785/n27271792/c14159097/content.html",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "shenzhen-state-assets",
+          "status": "accessible-incomplete",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T10:31:00+08:00",
+          "note": "已读取官方入口，但没有在静态正文中找到可安全跟进的同域招聘列表；该来源需要按登记的浏览器路线继续处理，不能按 0 条理解。",
+          "collectionMetrics": {
+            "state": "not-completed",
+            "collected": null,
+            "afterFilter": null,
+            "filterDescription": "本轮未能完成该官方来源的公告列表、详情或站内筛选，不能把结果理解为 0 条。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://gzw.sz.gov.cn/xyzp/index.html",
+              "finalUrl": "https://gzw.sz.gov.cn/xyzp/index.html",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "picc-campus",
+          "status": "checked-native-filtered",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T10:31:00+08:00",
+          "note": "已用本站公开结构化接口完成城市、招聘类型、全部分页和任职条件筛选：采集 24 条，专业可报 15 条。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 24,
+            "afterFilter": 15,
+            "filterDescription": "是否收录只按官方任职条件判断；岗位内容仅用于排序。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://picc.zhiye.com/custom/campus?hideAll=true",
+              "outcome": "official-structured-data",
+              "recipe": "人保官方校园招聘 API → 招聘类型=校园招聘 → 官方地点筛选 → 全部分页 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://picc.zhiye.com/api/Jobad/SearchAreasTreeConditions?PortalId=20e42367-7ff6-422b-8dd9-92f72842818a&categoryId=2",
+              "outcome": "official-structured-data",
+              "recipe": "人保官方校园招聘 API → 招聘类型=校园招聘 → 官方地点筛选 → 全部分页 → 任职条件专业资格门禁"
+            },
+            {
+              "requestedUrl": "https://picc.zhiye.com/api/Jobad/GetJobAdPageList#city=4403&category=2&page=0",
+              "outcome": "official-structured-data",
+              "recipe": "人保官方校园招聘 API → 招聘类型=校园招聘 → 官方地点筛选 → 全部分页 → 任职条件专业资格门禁"
+            }
+          ]
+        },
+        {
+          "sourceId": "boe-campus",
+          "status": "accessible-incomplete",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T10:31:00+08:00",
+          "note": "已读取官方入口，但没有在静态正文中找到可安全跟进的同域招聘列表；该来源需要按登记的浏览器路线继续处理，不能按 0 条理解。",
+          "collectionMetrics": {
+            "state": "not-completed",
+            "collected": null,
+            "afterFilter": null,
+            "filterDescription": "本轮未能完成该官方来源的公告列表、详情或站内筛选，不能把结果理解为 0 条。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://campus.boe.com/jobs?hideMenu=1",
+              "finalUrl": "https://campus.boe.com/jobs?hideMenu=1",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "sinopharm-careers",
+          "status": "checked-official-notice-feed",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T10:31:00+08:00",
+          "note": "已读取 9 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 9,
+            "afterFilter": 9,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.sinopharm.com/recruitment.html",
+              "finalUrl": "https://www.sinopharm.com/recruitment.html",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "genertec-official",
+          "status": "checked-official-notice-feed",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T10:31:00+08:00",
+          "note": "已读取 3 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 3,
+            "afterFilter": 3,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.gt.cn/",
+              "finalUrl": "https://www.gt.cn/",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "crc-careers",
+          "status": "temporarily-unavailable",
+          "attempts": 2,
+          "checkedAt": "2026-08-24T10:31:00+08:00",
+          "note": "本轮未取得可读取的官方公告/招聘页，不能据此判断无岗位。",
+          "collectionMetrics": {
+            "state": "unavailable",
+            "collected": null,
+            "afterFilter": null,
+            "filterDescription": "本轮未能完成该官方来源的公告列表、详情或站内筛选，不能把结果理解为 0 条。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://runjob.crc.com.cn/#/complex/homepage?id=1769554545615040514",
+              "outcome": "network-error",
+              "recipe": "官方入口本轮无法读取：TypeError。"
+            },
+            {
+              "requestedUrl": "https://careers.crc.com.cn/index.html",
+              "outcome": "network-error",
+              "recipe": "官方入口本轮无法读取：TypeError。"
+            }
+          ]
+        },
+        {
+          "sourceId": "casic-careers",
+          "status": "checked-official-notice-feed",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T10:31:00+08:00",
+          "note": "已读取 1 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 1,
+            "afterFilter": 1,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "http://wap.sasac.gov.cn/n2588035/n2588325/c35503679/content.html",
+              "finalUrl": "http://wap.sasac.gov.cn/n2588035/n2588325/c35503679/content.html",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "spacechina-careers",
+          "status": "checked-official-notice-feed",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T10:31:00+08:00",
+          "note": "已读取 1 条同域招聘/公告正文；公告阶段不按医疗词删减，待取得具体岗位和官方资格字段后再判断专业是否可报。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 1,
+            "afterFilter": 1,
+            "filterDescription": "已从登记官方公告/招聘页提取同域招聘链接并读取公开正文；仅有公告而没有具体岗位字段时不会发布为岗位。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://m.spacechina.com/index.html",
+              "finalUrl": "https://m.spacechina.com/index.html",
+              "outcome": "official-page",
+              "recipe": "已读取官方公告/招聘页，抽取同域招聘链接后逐页检查。"
+            }
+          ]
+        },
+        {
+          "sourceId": "buaa-career-discovery",
+          "status": "checked-native-filtered",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T10:31:00+08:00",
+          "note": "已完成 3 组本站筛选并读取 3 条去重候选。0 条通过应届硕士与专业相关性的初筛，进入官方回溯；3 条未进入回溯。已读取本轮全部已筛选分页。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 3,
+            "afterFilter": 0,
+            "filterDescription": "已使用本站城市、单位性质/关键词、应届硕士和生物医学相关性等条件完成预筛。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://career.buaa.edu.cn/frontpage/buaa/html/recruitmentinfoList.html?type=1",
+              "finalUrl": "https://career.buaa.edu.cn/frontpage/buaa/js/init.js",
+              "outcome": "official-page",
+              "recipe": "北航就业信息网公开城市＋单位性质筛选 → 已筛选分页 → 公开岗位详情 → 任职条件专业资格预筛"
+            }
+          ]
+        },
+        {
+          "sourceId": "national-college-employment",
+          "status": "accessible-incomplete",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T10:31:00+08:00",
+          "note": "已完成 11 组本站筛选并读取 300 条去重候选。0 条通过应届硕士与专业相关性的初筛，进入官方回溯；300 条未进入回溯。公开访问在已读取分页后受限：国家大学生就业服务平台在第 6 页要求登录，公开采集在此前分页停止。；未把未读取部分当作无岗位。",
+          "collectionMetrics": {
+            "state": "not-completed",
+            "collected": null,
+            "afterFilter": null,
+            "filterDescription": "已记录公开可读取分页的采集和筛选数量；后续分页要求登录或未能公开读取，不能把本轮结果理解为完整平台全集。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.ncss.cn/",
+              "finalUrl": "https://www.ncss.cn/student/jobs/jobslist/ajax/?areaCode=440300&jobName=%E7%94%9F%E7%89%A9%E5%8C%BB%E5%AD%A6%E5%B7%A5%E7%A8%8B&offset=1&limit=20",
+              "outcome": "official-page",
+              "recipe": "国家大学生就业服务平台公开城市＋专业可报关键词并集 → 已筛选分页 → 任职条件专业资格预筛"
+            }
+          ]
+        },
+        {
+          "sourceId": "iguopin-discovery",
+          "status": "checked-native-filtered",
+          "attempts": 1,
+          "checkedAt": "2026-08-24T10:31:00+08:00",
+          "note": "已完成 11 组本站筛选并读取 332 条去重候选。34 条通过应届硕士与专业相关性的初筛，进入官方回溯；298 条未进入回溯。已读取本轮全部已筛选分页。",
+          "collectionMetrics": {
+            "state": "completed",
+            "collected": 332,
+            "afterFilter": 34,
+            "filterDescription": "已使用本站城市、单位性质/关键词、应届硕士和生物医学相关性等条件完成预筛。"
+          },
+          "accessEvidence": [
+            {
+              "requestedUrl": "https://www.iguopin.com/",
+              "finalUrl": "https://www.iguopin.com/job/list?keyword=%E7%94%9F%E7%89%A9%E5%8C%BB%E5%AD%A6%E5%B7%A5%E7%A8%8B#district=000000.440000.440300&page=1",
+              "outcome": "official-page",
+              "recipe": "国聘公开城市＋专业可报关键词并集 → 已筛选分页 → 任职条件专业资格预筛"
+            }
+          ]
+        }
+      ],
+      "reviews": []
+    },
     {
       "id": "run-20260824-0139-aggregate-first-full-sync",
       "scope": "full-city-run",
@@ -487,9 +5075,9 @@
           "checkedAt": "2026-08-24T01:39:00+08:00",
           "note": "已完成 6 组本站筛选并读取 194 条去重候选。0 条通过应届硕士与专业相关性的初筛，进入官方回溯；194 条未进入回溯。公开访问在已读取分页后受限：国家大学生就业服务平台在第 6 页要求登录，公开采集在此前分页停止。；未把未读取部分当作无岗位。",
           "collectionMetrics": {
-            "state": "partial",
-            "collected": 194,
-            "afterFilter": 0,
+            "state": "not-completed",
+            "collected": null,
+            "afterFilter": null,
             "filterDescription": "已记录公开可读取分页的采集和筛选数量；后续分页要求登录或未能公开读取，不能把本轮结果理解为完整平台全集。"
           },
           "accessEvidence": [

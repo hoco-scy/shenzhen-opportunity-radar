@@ -5,10 +5,14 @@
  * source has been verified separately.
  */
 import { readFile, writeFile } from "node:fs/promises";
+import { createHash } from "node:crypto";
 import { buildPublicExamRun } from "./run-public-exam-sync.mjs";
 import { collectBuaaDiscovery } from "./collect-buaa-discovery.mjs";
 import { collectIGuopinDiscovery } from "./collect-iguopin-discovery.mjs";
 import { collectNCSSDiscovery } from "./collect-ncss-discovery.mjs";
+import { collectPiccCampus } from "./collect-picc-campus.mjs";
+import { collectBoeCampus } from "./collect-boe-campus.mjs";
+import { collectCrcCareers } from "./collect-crc-careers.mjs";
 import { collectOfficialNoticeFeed } from "./collect-official-notice-feed.mjs";
 
 const root = new URL("../", import.meta.url);
@@ -123,12 +127,45 @@ function unavailableDiscoveryResult(sourceId, error) {
   };
 }
 
+function unavailableStructuredResult(sourceId, error) {
+  return { sourceId, collectionError: error?.message || `${sourceId} 官方结构化采集未完成。`, jobs: [] };
+}
+
+function verifiedJobsSourceCheck(source, result, checkedAt) {
+  if (result.collectionError) {
+    return {
+      sourceId: source.id, status: "temporarily-unavailable", attempts: 3, checkedAt,
+      note: "本轮未能完成该来源的官方结构化采集；已发布的上次核验岗位会保留，不会被临时网络故障清空。",
+      collectionMetrics: { state: "unavailable", collected: null, afterFilter: null, filterDescription: result.collectionError },
+      accessEvidence: [{ requestedUrl: source.collectionEntryUrl || source.entryUrl, outcome: "network-error", recipe: result.collectionError }]
+    };
+  }
+  return {
+    sourceId: source.id, status: result.status, attempts: 1, checkedAt,
+    note: `已用本站公开结构化接口完成城市、招聘类型、全部分页和任职条件筛选：采集 ${result.collected} 条，专业可报 ${result.afterFilter} 条。`,
+    collectionMetrics: { state: "completed", collected: result.collected, afterFilter: result.afterFilter, filterDescription: "是否收录只按官方任职条件判断；岗位内容仅用于排序。" },
+    accessEvidence: result.pagesVisited.map((requestedUrl) => ({ requestedUrl, outcome: "official-structured-data", recipe: result.collectionRoute }))
+  };
+}
+
 function normalizeCollectionMetrics(log, sources) {
   for (const run of log.runs || []) {
     if (Number(run.policyVersion || 0) < 7) continue;
+    const reviews = run.reviews || [];
+    if (run.metrics) {
+      run.metrics.reviewedItems = reviews.length;
+      run.metrics.accepted = reviews.filter((review) => review.decision === "accepted").length;
+      run.metrics.rejected = reviews.filter((review) => review.decision === "rejected").length;
+      run.metrics.deferred = reviews.filter((review) => review.decision === "deferred").length;
+    }
     for (const check of run.sourceChecks || []) {
       const metrics = check.collectionMetrics;
-      if (metrics && metrics.state !== "completed") {
+      if (metrics && ["not-completed", "unavailable"].includes(metrics.state)) {
+        metrics.collected = null;
+        metrics.afterFilter = null;
+      }
+      if (metrics?.state === "partial" && (!Number.isInteger(metrics.collected) || !Number.isInteger(metrics.afterFilter))) {
+        metrics.state = "not-completed";
         metrics.collected = null;
         metrics.afterFilter = null;
       }
@@ -167,7 +204,7 @@ function candidateFromDiscoveryLead(lead, sourceId, checkedAt) {
     status: "待用户确认",
     priority: hasDirectLink ? 68 : 64,
     matchLevel: "待确认",
-    matchReason: "已通过城市、应届硕士、专业相关性和纯计算机岗位排除的脚本初筛；尚未取得可作为正式发布依据的单位或政府原文。",
+    matchReason: "已通过城市、应届硕士、单位性质和公开专业条件的脚本初筛；尚未取得可作为正式发布依据的单位或政府原文。",
     sourceId,
     sourceUrl,
     officialAnnouncementUrl: sourceUrl,
@@ -182,32 +219,83 @@ function candidateFromDiscoveryLead(lead, sourceId, checkedAt) {
       automaticResult: hasDirectLink ? "已保留平台提供的直达链接，不把它自动视为官方核验。" : "平台未返回可验证的单位直达链接，脚本不会猜测或搜索拼接官网。"
     },
     collectionEvidence: lead.evidence,
-    tags: [sourceId === "national-college-employment" ? "国家大学生就业服务平台筛选" : "国聘/北航筛选", lead.employerNature || "平台未注明单位性质", "应届生", "生物医学相关", hasDirectLink ? "平台提供投递链接" : "需手动确认"]
+    tags: [sourceId === "national-college-employment" ? "国家大学生就业服务平台筛选" : "国聘/北航筛选", lead.employerNature || "平台未注明单位性质", "应届生", "专业条件可报", hasDirectLink ? "平台提供投递链接" : "需手动确认"]
+  };
+}
+
+const NON_ACTIONABLE_NOTICE = /(拟聘|公示|取消|录用结果|面试(?:公告|名单|安排)|资格审查结果|笔试成绩|访谈|就业服务攻坚|人才培养计划|培训基地|实习实践)/;
+const EXPERIENCED_ONLY_NOTICE = /(社会(?:公开)?招聘|成熟人才|博士后)/;
+const EARLY_CAREER_NOTICE = /(校园|校招|应届|毕业生|管培|优才|公开招聘|招聘工作人员|选调|优培|招录)/;
+
+function noticeCampaignIsCurrent(title, checkedAt) {
+  const checkedYear = Number(checkedAt.slice(0, 4));
+  const checkedMonth = Number(checkedAt.slice(5, 7));
+  const targetGraduateYear = checkedMonth >= 8 ? checkedYear + 1 : checkedYear;
+  const campaignYear = title.match(/(20\d{2})(?:届|年度)?(?:春季|夏季|秋季)?(?:校园招聘|校招)/)?.[1];
+  return !campaignYear || Number(campaignYear) >= targetGraduateYear;
+}
+
+function monitorFromOfficialNotice(item, source, checkedAt) {
+  const title = String(item.title || "").trim();
+  if (!title || NON_ACTIONABLE_NOTICE.test(title)) return null;
+  if (source.coverage?.includes("国有企业") && EXPERIENCED_ONLY_NOTICE.test(title) && !/(校园|校招|应届|毕业生)/.test(title)) return null;
+  if (source.coverage?.includes("国有企业") && !noticeCampaignIsCurrent(title, checkedAt)) return null;
+  if (!EARLY_CAREER_NOTICE.test(title)) return null;
+  const track = source.coverage?.includes("事业单位") ? "事业单位"
+    : source.coverage?.includes("国有企业") ? "央国企" : "招聘公告";
+  return {
+    id: `notice-${source.id}-${createHash("sha256").update(item.url).digest("hex").slice(0, 18)}`,
+    track,
+    title,
+    status: "待查看职位表",
+    note: "这是一则官方招聘公告；在职位表和报名条件拆分为具体岗位前，暂不列入岗位页。",
+    officialUrl: item.url,
+    checkedAt,
+    sourceId: source.id
   };
 }
 
 async function main() {
-  const [registry, recipes, sourcePlan, log, opportunities] = await Promise.all([
-    readJson("data/source-registry.json"), readJson("data/filter-recipes.json"), readJson("data/source-plan.json"), readJson("data/review-log.json"), readJson("data/opportunities.json")
+  const [registry, recipes, sourcePlan, collectorRoutes, log, opportunities] = await Promise.all([
+    readJson("data/source-registry.json"), readJson("data/filter-recipes.json"), readJson("data/source-plan.json"), readJson("data/collector-routes.json"), readJson("data/review-log.json"), readJson("data/opportunities.json")
   ]);
   const checkedAt = shanghaiMinute();
   const sources = new Map(registry.sources.map((source) => [source.id, source]));
-  const [publicExamRun, buaa, iguopin, ncss] = await Promise.all([
+  const [publicExamRun, buaa, iguopin, ncss, picc, boe, crc] = await Promise.all([
     buildPublicExamRun({ registry, recipes, checkedAt }),
     collectBuaaDiscovery({ city: recipes.city }).catch((error) => unavailableDiscoveryResult("buaa-career-discovery", error)),
     collectIGuopinDiscovery({ city: recipes.city }).catch((error) => unavailableDiscoveryResult("iguopin-discovery", error)),
-    collectNCSSDiscovery({ city: recipes.city }).catch((error) => unavailableDiscoveryResult("national-college-employment", error))
+    collectNCSSDiscovery({ city: recipes.city }).catch((error) => unavailableDiscoveryResult("national-college-employment", error)),
+    collectPiccCampus({ city: recipes.city }).catch((error) => unavailableStructuredResult("picc-campus", error)),
+    collectBoeCampus({ city: recipes.city }).catch((error) => unavailableStructuredResult("boe-campus", error)),
+    collectCrcCareers({ city: recipes.city }).catch((error) => unavailableStructuredResult("crc-careers", error))
   ]);
+  const structuredResults = new Map([picc, boe, crc].map((result) => [result.sourceId, result]));
   const publicExamChecks = new Map(publicExamRun.sourceChecks.map((check) => [check.sourceId, check]));
+  const officialNoticeResults = new Map();
   const scheduledIds = [...new Set([...(sourcePlan.coverage.everyRunOfficial || []), ...(sourcePlan.coverage.everyRunDiscovery || [])])];
   const sourceChecks = await Promise.all(scheduledIds.map(async (sourceId) => {
     const source = sources.get(sourceId);
     if (!source) throw new Error(`source-plan 引用了不存在的来源：${sourceId}`);
-    if (publicExamChecks.has(sourceId)) return publicExamChecks.get(sourceId);
-    if (sourceId === "buaa-career-discovery") return discoverySourceCheck(source, buaa, checkedAt);
-    if (sourceId === "iguopin-discovery") return discoverySourceCheck(source, iguopin, checkedAt);
-    if (sourceId === "national-college-employment") return discoverySourceCheck(source, ncss, checkedAt);
-    return officialNoticeSourceCheck(await collectOfficialNoticeFeed({ source }), checkedAt);
+    const route = collectorRoutes.routes?.[sourceId];
+    if (!route?.collector) throw new Error(`完整更新拒绝隐式兜底：${sourceId} 没有登记采集器路由`);
+    if (route.collector === "public-exam") {
+      const check = publicExamChecks.get(sourceId);
+      if (!check) throw new Error(`${sourceId} 已登记公考采集器，但本轮没有产生来源检查结果`);
+      return check;
+    }
+    if (route.collector === "buaa-discovery") return discoverySourceCheck(source, buaa, checkedAt);
+    if (route.collector === "iguopin-discovery") return discoverySourceCheck(source, iguopin, checkedAt);
+    if (route.collector === "ncss-discovery") return discoverySourceCheck(source, ncss, checkedAt);
+    if (route.collector === "picc-campus") return verifiedJobsSourceCheck(source, picc, checkedAt);
+    if (route.collector === "boe-campus") return verifiedJobsSourceCheck(source, boe, checkedAt);
+    if (route.collector === "crc-careers") return verifiedJobsSourceCheck(source, crc, checkedAt);
+    if (route.collector === "official-notice-feed") {
+      const result = await collectOfficialNoticeFeed({ source });
+      officialNoticeResults.set(sourceId, result);
+      return officialNoticeSourceCheck(result, checkedAt);
+    }
+    throw new Error(`${sourceId} 登记了不受支持的采集器：${route.collector}`);
   }));
   const incomplete = incompleteCount(sourceChecks);
   const publicMetrics = publicExamRun.screeningMetrics || {};
@@ -216,6 +304,9 @@ async function main() {
     ...iguopin.leads.map((lead) => candidateFromDiscoveryLead(lead, "iguopin-discovery", checkedAt)),
     ...ncss.leads.map((lead) => candidateFromDiscoveryLead(lead, "national-college-employment", checkedAt))
   ].sort((left, right) => right.priority - left.priority || left.title.localeCompare(right.title, "zh-CN"));
+  const officialNoticeMonitors = [...officialNoticeResults.entries()]
+    .flatMap(([sourceId, result]) => (result.noticeItems || []).map((item) => monitorFromOfficialNotice(item, sources.get(sourceId), checkedAt)))
+    .filter(Boolean);
   const run = {
     id: `run-${checkedAt.slice(0, 10).replaceAll("-", "")}-${checkedAt.slice(11, 16).replace(":", "")}-aggregate-first-full-sync`,
     scope: "full-city-run", checkedAt, trigger: "scheduled-or-manual-full-update", scheduledSourceIds: scheduledIds, policyVersion: 7,
@@ -223,12 +314,12 @@ async function main() {
     coverageStatus: "aggregate-first-collection-and-source-health",
     status: incomplete ? "completed-partial" : "completed",
     outcome: "aggregate-platform-discovery-plus-official-verification",
-    summary: `本轮已执行国考、本地公考、选调优培与三类聚合平台的公开采集，并对其余官方来源实际读取公告/招聘页、同域招聘链接和公开正文。北航就业信息网${buaa.collectionError ? "本轮未完成公开筛选" : `有 ${buaa.leads.length} 条通过初筛的线索`}，国聘${iguopin.collectionError ? "本轮未完成公开筛选" : `有 ${iguopin.leads.length} 条通过初筛的线索`}，国家大学生就业服务平台${ncss.collectionError ? "本轮未完成公开筛选" : `有 ${ncss.leads.length} 条通过初筛的线索`}；未取得单位或政府官方原文、或只取得公告但没有具体岗位字段的结果不会混入已核验岗位。`,
+    summary: `本轮已执行公考、选调优培、三类聚合平台和重点单位的公开采集。北航就业信息网${buaa.collectionError ? "本轮未完成" : `初筛 ${buaa.leads.length} 条`}，国聘${iguopin.collectionError ? "本轮未完成" : `初筛 ${iguopin.leads.length} 条`}，国家大学生就业服务平台${ncss.collectionError ? "本轮未完成" : `初筛 ${ncss.leads.length} 条`}；重点官网具体岗位：中国人保 ${picc.collectionError ? "未完成" : picc.afterFilter + " 条"}、京东方 ${boe.collectionError ? "未完成" : boe.afterFilter + " 条"}、华润 ${crc.collectionError ? "未完成" : crc.afterFilter + " 条"}；官方公告页保留 ${officialNoticeMonitors.length} 条待拆分公告。`,
     metrics: {
       officialSystemsChecked: sourceChecks.length, officialSystemsSucceeded: sourceChecks.length - incomplete, officialSystemsFailed: incomplete,
-      newLeads: (publicExamRun.metrics?.newLeads || 0) + buaa.leads.length + iguopin.leads.length + ncss.leads.length,
+      newLeads: (publicExamRun.metrics?.newLeads || 0) + buaa.leads.length + iguopin.leads.length + ncss.leads.length + officialNoticeMonitors.length + [...structuredResults.values()].reduce((sum, result) => sum + (result.jobs?.length || 0), 0),
       reviewedItems: publicExamRun.reviews.length, accepted: 0, rejected: 0, deferred: publicExamRun.reviews.length,
-      published: 0, updated: 0, closed: 0
+      published: [...structuredResults.values()].reduce((sum, result) => sum + (result.jobs?.length || 0), 0), updated: 0, closed: 0
     },
     screeningMetrics: {
       portalResultsReported: (publicMetrics.portalResultsReported || 0) + buaa.portalResultsReported + iguopin.portalResultsReported + ncss.portalResultsReported,
@@ -236,7 +327,7 @@ async function main() {
       nativeFilteredResults: (publicMetrics.nativeFilteredResults || 0) + buaa.nativeFilteredResults + iguopin.nativeFilteredResults + ncss.nativeFilteredResults,
       deduplicatedCandidates: (publicMetrics.deduplicatedCandidates || 0) + buaa.deduplicatedCandidates + iguopin.deduplicatedCandidates + ncss.deduplicatedCandidates,
       positionsBatchReviewed: (publicMetrics.positionsBatchReviewed || 0) + buaa.detailsChecked + iguopin.detailsChecked + ncss.detailsChecked,
-      positionsOfficiallyVerified: publicMetrics.positionsOfficiallyVerified || 0,
+      positionsOfficiallyVerified: (publicMetrics.positionsOfficiallyVerified || 0) + [...structuredResults.values()].reduce((sum, result) => sum + (result.positionsOfficiallyVerified || 0), 0),
       positionsEscalated: 0, positionsDeferredByBudget: publicMetrics.positionsDeferredByBudget || 0,
       discoverySourcesChecked: 3, discoveryOfficialCandidates: buaa.leads.length + iguopin.leads.length + ncss.leads.length
     },
@@ -253,12 +344,21 @@ async function main() {
   opportunities.meta.lastRunStatus = run.status;
   opportunities.meta.lastIncompleteSourceCount = incomplete;
   opportunities.meta.lastDeferredCandidateCount = run.screeningMetrics.positionsDeferredByBudget;
+  const structuredSourceIds = new Set(structuredResults.keys());
+  const otherJobs = (opportunities.jobs || []).filter((job) => !structuredSourceIds.has(job.sourceId));
+  const refreshedStructuredJobs = [...structuredResults.values()].flatMap((result) => result.collectionError
+    ? (opportunities.jobs || []).filter((job) => job.sourceId === result.sourceId)
+    : result.jobs);
+  opportunities.jobs = [...otherJobs, ...refreshedStructuredJobs];
   opportunities.candidates = discoveryCandidates;
+  const officialNoticeSourceIds = new Set(officialNoticeResults.keys());
+  const preservedMonitors = (opportunities.monitors || []).filter((monitor) => !officialNoticeSourceIds.has(monitor.sourceId));
+  opportunities.monitors = [...officialNoticeMonitors, ...preservedMonitors];
   await Promise.all([
     writeFile(new URL("data/review-log.json", root), `${JSON.stringify(log, null, 2)}\n`),
     writeFile(new URL("data/opportunities.json", root), `${JSON.stringify(opportunities, null, 2)}\n`)
   ]);
-  console.log(JSON.stringify({ written: true, city: recipes.city, checkedAt, buaaLeads: buaa.leads.length, iguopinLeads: iguopin.leads.length, ncssLeads: ncss.leads.length, incomplete }, null, 2));
+  console.log(JSON.stringify({ written: true, city: recipes.city, checkedAt, buaaLeads: buaa.leads.length, iguopinLeads: iguopin.leads.length, ncssLeads: ncss.leads.length, officialNoticeMonitors: officialNoticeMonitors.length, structured: Object.fromEntries([...structuredResults].map(([id, result]) => [id, { collected: result.collected ?? null, published: result.jobs?.length ?? null, error: result.collectionError || null }])), incomplete }, null, 2));
 }
 
 main().catch((error) => { console.error(error.message); process.exitCode = 1; });

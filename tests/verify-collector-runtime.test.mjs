@@ -11,6 +11,9 @@ test("all script-labelled sources have a stateless runnable collector contract",
   assert.ok(runtime.collectors.some((item) => item.sourceId === "buaa-career-discovery"));
   assert.ok(runtime.collectors.some((item) => item.sourceId === "iguopin-discovery"));
   assert.ok(runtime.collectors.some((item) => item.sourceId === "national-college-employment"));
+  assert.ok(runtime.collectors.some((item) => item.sourceId === "picc-campus"));
+  assert.ok(runtime.collectors.some((item) => item.sourceId === "boe-campus"));
+  assert.ok(runtime.collectors.some((item) => item.sourceId === "crc-careers"));
   assert.ok(!runtime.collectors.some((item) => item.sourceId === "chinatelecom-careers"));
   assert.ok(runtime.collectors.every((item) => item.scriptPresent));
   assert.ok(runtime.collectors.every((item) => item.hardGuard));

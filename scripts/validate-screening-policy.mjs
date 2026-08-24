@@ -31,8 +31,9 @@ if (policy.sourceCapabilityPolicy?.accessibleButIncompleteOutcome !== "accessibl
 const relevanceGate = policy.profileRelevanceGate || {};
 if (relevanceGate.discoveryTermsAreNotPublicationEvidence !== true) errors.push("发现词不得直接作为发布匹配依据");
 if (relevanceGate.candidateFocus !== "biomedical-engineering-and-adjacent-engineering") errors.push("岗位匹配必须面向生物医学工程及交叉工程背景");
-if (relevanceGate.pureComputingOutcome !== "core-profession-mismatch") errors.push("纯计算机岗位必须进入 core-profession-mismatch");
-if (!Array.isArray(relevanceGate.explicitBiomedicalBridges) || relevanceGate.explicitBiomedicalBridges.length < 4) errors.push("岗位匹配缺少明确的生物医学工程交叉依据");
+if (relevanceGate.roleTextNeverRejectsEligibleMajor !== true) errors.push("岗位内容不得否决已由官方专业条件确认可报的岗位");
+if (!Array.isArray(relevanceGate.eligibilityEvidenceFields) || relevanceGate.eligibilityEvidenceFields.length < 3) errors.push("资格门禁必须登记官方专业、学历和招录对象字段");
+if (!Array.isArray(relevanceGate.eligibleMajorScopes) || relevanceGate.eligibleMajorScopes.length < 4) errors.push("资格门禁缺少完整的可报专业口径");
 
 const model = policy.modelPolicy || {};
 if (model.routineModel !== "GPT-5.6 Terra") errors.push("常规任务模型必须是 GPT-5.6 Terra");
@@ -50,7 +51,7 @@ if (recipes.version !== 3 || !Array.isArray(recipes.recipes)) errors.push("filte
 if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:00[+-]\d{2}:\d{2}$/.test(recipes.verifiedAt || "")) errors.push("filter-recipes.json 缺少带时区的分钟级 verifiedAt");
 const recipeIds = new Set();
 const recipeStatuses = new Set([
-  "verified", "verified-no-native-filter", "route-verified", "browser-required",
+  "verified", "script-verified", "verified-no-native-filter", "route-verified", "browser-required",
   "announcement-discovery", "temporarily-unavailable", "pending-observation"
 ]);
 const collectionMethods = new Set(["browser", "script"]);

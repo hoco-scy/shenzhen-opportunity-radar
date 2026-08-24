@@ -8,6 +8,7 @@
  * never treated as final publication evidence.
  */
 import { pathToFileURL } from "node:url";
+import { evaluateProfessionalEligibility, mastersEducationEligible } from "./professional-eligibility.mjs";
 
 const ORIGIN = "https://www.iguopin.com";
 const LIST_URL = "https://gp-api.iguopin.com/api/jobs/v1/recom-job";
@@ -17,7 +18,7 @@ const CITY_FILTERS = {
   "广州": "000000.440000.440100",
   "深圳": "000000.440000.440300"
 };
-const KEYWORDS = ["生物医学工程", "生物医学", "医疗器械", "医学影像", "临床工程", "医疗"];
+const KEYWORDS = ["生物医学工程", "医学工程", "生物工程", "医疗器械", "医学影像", "仪器", "电子信息", "自动化", "工程类", "理工类", "专业不限"];
 const PAGE_SIZE = 20;
 const BIOMEDICAL_CONTEXT = /(生物医学|医疗器械|医学影像|临床工程|体外诊断|IVD|生物信号|医疗|健康|生物工程|生命科学)/i;
 const ENGINEERING_QUALIFICATION = /(生物医学工程|医学工程|医疗器械|医学影像|生物工程|临床工程|仪器|电子|自动化|机械|材料|物理|工学|理工)/i;
@@ -85,13 +86,11 @@ function classify(job) {
   const recruitmentType = job.nature_cn || job.recruitment_type_cn || "";
   const qualifications = [job.education_cn, job.experience_cn, text(job.major_cn)].filter(Boolean).join(" ");
   const roleText = [job.job_name, job.category_cn, job.department_cn, job.company_info?.industry_cn, job.contents].filter(Boolean).join(" ").replace(/医疗保险|补充医疗|社会保险|五险一金/g, " ");
-  if (/博士后/.test(roleText) || (/博士/.test(qualifications) && !/(本科|硕士)/.test(qualifications))) return { outcome: "academic-degree-mismatch" };
+  if (!mastersEducationEligible(qualifications)) return { outcome: "academic-degree-mismatch" };
   if (NON_GRADUATE_RECRUITMENT.test(recruitmentType) || (recruitmentType && !CAMPUS_RECRUITMENT.test(recruitmentType))) return { outcome: "non-graduate-recruitment" };
   if (REQUIRED_EXPERIENCE.test(String(job.experience_cn || ""))) return { outcome: "experience-mismatch" };
-  if (PURE_COMPUTING.test(roleText) && !DIRECT_BIOMEDICAL_BRIDGE.test(roleText)) return { outcome: "core-profession-mismatch" };
-  if (!ELIGIBLE_MAJOR_EVIDENCE.test(qualifications)) return { outcome: "no-eligible-major-evidence" };
-  if (BROAD_ENGINEERING_EVIDENCE.test(qualifications) && !DIRECT_MAJOR_EVIDENCE.test(qualifications) && !DIRECT_BIOMEDICAL_BRIDGE.test(roleText)) return { outcome: "broad-major-without-direct-biomedical-role" };
-  if (!DIRECT_BIOMEDICAL_BRIDGE.test(roleText) && !BIOMEDICAL_CONTEXT.test(roleText)) return { outcome: "no-biomedical-context" };
+  const professionalEligibility = evaluateProfessionalEligibility(qualifications);
+  if (!professionalEligibility.eligible) return { outcome: "no-eligible-major-evidence" };
   const locations = (job.district_list || []).map((item) => item.area_cn).filter(Boolean).join("；") || "官方未注明";
   return {
     outcome: "candidate",
@@ -109,7 +108,8 @@ function classify(job) {
       officialUrl: `${ORIGIN}/job/detail?id=${encodeURIComponent(job.job_id)}`,
       employerApplyUrl: publicApplicationUrl(job.apply_instruction),
       applicationInstruction: text(job.apply_instruction),
-      evidence: "国聘公开岗位页的城市和生物医学相关关键词筛选结果；平台没有提供可核验的官方原文时，保留为待用户确认线索。"
+      professionalEligibility,
+      evidence: "国聘公开岗位页的城市和专业可报关键词筛选结果；岗位名称只参与排序，平台没有提供单位官方原文时保留为待确认线索。"
     }
   };
 }
@@ -173,7 +173,7 @@ export async function collectIGuopinDiscovery({ city, fetchImpl = fetch, maxPage
     sourceId: "iguopin-discovery",
     city,
     collectionMethod: "script",
-    collectionRoute: "国聘公开城市＋生物医学相关关键词筛选 → 已筛选分页 → 岗位正文语义预筛",
+    collectionRoute: "国聘公开城市＋专业可报关键词并集 → 已筛选分页 → 任职条件专业资格预筛",
     portalResultsReported,
     nativeFilterQueries: KEYWORDS.length,
     nativeFilteredResults,

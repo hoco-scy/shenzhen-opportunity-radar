@@ -9,6 +9,7 @@
  * publication evidence.
  */
 import { pathToFileURL } from "node:url";
+import { evaluateProfessionalEligibility, mastersEducationEligible } from "./professional-eligibility.mjs";
 
 const ORIGIN = "https://career.buaa.edu.cn";
 const CONFIG_URL = `${ORIGIN}/frontpage/buaa/js/init.js`;
@@ -77,10 +78,9 @@ function classifyDetail(detail, listItem, city) {
   const roleText = [info.title, info.corporationName, ...positions.map((item) => item.positionName), ...positions.map((item) => item.positionDescription)].filter(Boolean).join(" ");
   const end = String(info.endTime || "").slice(0, 10);
   if (end && end < minuteNow()) return { outcome: "expired" };
-  if (/博士后/.test(roleText) || (/博士/.test(qualifications) && !/(本科|硕士)/.test(qualifications))) return { outcome: "academic-degree-mismatch" };
-  if (PURE_COMPUTING.test(roleText) && !DIRECT_BIOMEDICAL_BRIDGE.test(roleText)) return { outcome: "core-profession-mismatch" };
-  if (!ELIGIBLE_MAJOR_EVIDENCE.test(qualifications)) return { outcome: "no-eligible-major-evidence" };
-  if (!DIRECT_BIOMEDICAL_BRIDGE.test(roleText) && !BIOMEDICAL_CONTEXT.test(roleText)) return { outcome: "no-biomedical-context" };
+  if (!mastersEducationEligible(qualifications)) return { outcome: "academic-degree-mismatch" };
+  const professionalEligibility = evaluateProfessionalEligibility(qualifications);
+  if (!professionalEligibility.eligible) return { outcome: "no-eligible-major-evidence" };
   const employerUrl = String(info.onlineApplicationUrl || "").trim();
   return { outcome: "candidate", lead: {
     id: info.id,
@@ -93,7 +93,8 @@ function classifyDetail(detail, listItem, city) {
     deadline: end || "官方未注明",
     officialUrl: officialUrl(`/frontpage/buaa/html/recruitmentinfoForm.html?positionDetailId=${encodeURIComponent(info.id)}`),
     employerApplyUrl: /^https?:\/\//i.test(employerUrl) ? employerUrl : null,
-    evidence: "北航就业信息网的城市、单位性质筛选结果；仍须回溯单位或政府官方页面后才可公开发布。"
+    professionalEligibility,
+    evidence: "北航就业信息网的城市、单位性质筛选结果；专业可报性只按公开任职条件判断，仍须回溯单位或政府官方页面后才可公开发布。"
   }};
 }
 
@@ -136,7 +137,7 @@ export async function collectBuaaDiscovery({ city, fetchImpl = fetch, maxPagesPe
     if (classified.lead) leads.push(classified.lead);
   }
   return {
-    sourceId: "buaa-career-discovery", city, collectionMethod: "script", collectionRoute: "北航就业信息网公开城市＋单位性质筛选 → 已筛选分页 → 公开岗位详情与生物医学工程语义预筛",
+    sourceId: "buaa-career-discovery", city, collectionMethod: "script", collectionRoute: "北航就业信息网公开城市＋单位性质筛选 → 已筛选分页 → 公开岗位详情 → 任职条件专业资格预筛",
     portalResultsReported, nativeFilterQueries, nativeFilteredResults, deduplicatedCandidates: raw.size,
     detailsChecked, detailOutcomes, leads, truncated, pagesVisited
   };
