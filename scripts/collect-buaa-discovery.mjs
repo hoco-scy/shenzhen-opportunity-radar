@@ -9,7 +9,7 @@
  * publication evidence.
  */
 import { pathToFileURL } from "node:url";
-import { evaluateProfessionalEligibility, mastersEducationEligible } from "./professional-eligibility.mjs";
+import { evaluateProfessionalEligibility, mastersEducationEligible, roleIsProfileRelevant } from "./professional-eligibility.mjs";
 
 const ORIGIN = "https://career.buaa.edu.cn";
 const CONFIG_URL = `${ORIGIN}/frontpage/buaa/js/init.js`;
@@ -47,6 +47,12 @@ function officialUrl(path) {
   return url.toString();
 }
 
+function normalizedLocation(values, fallback) {
+  const unique = [...new Set(values.map((value) => String(value || "").trim()).filter(Boolean))];
+  const mostSpecific = unique.filter((value) => !unique.some((candidate) => candidate !== value && candidate.startsWith(value)));
+  return mostSpecific.join("；") || fallback || "官方未注明";
+}
+
 async function publicToken(fetchImpl) {
   const response = await fetchImpl(CONFIG_URL, { headers: { "user-agent": "Mozilla/5.0" }, signal: AbortSignal.timeout(30_000) });
   const script = await response.text();
@@ -73,7 +79,7 @@ function classifyDetail(detail, listItem, city) {
   const info = detail?.object?.recruitmentinfo;
   if (!info?.id || info.isFrontShow === "0") return { outcome: "not-public" };
   const positions = Array.isArray(info.recruitmentPositionList) ? info.recruitmentPositionList : [];
-  const location = positions.map((item) => item.cityName).filter(Boolean).join("；") || info.corporationinfo?.areaName || info.corporationArea || "官方未注明";
+  const location = normalizedLocation(positions.map((item) => item.cityName), info.corporationinfo?.areaName || info.corporationArea);
   const qualifications = [info.majorName, info.education, ...positions.map((item) => item.majorName), ...positions.map((item) => item.studentType)].filter(Boolean).join("；");
   const roleText = [info.title, info.corporationName, ...positions.map((item) => item.positionName), ...positions.map((item) => item.positionDescription)].filter(Boolean).join(" ");
   const end = String(info.endTime || "").slice(0, 10);
@@ -81,6 +87,7 @@ function classifyDetail(detail, listItem, city) {
   if (!mastersEducationEligible(qualifications)) return { outcome: "academic-degree-mismatch" };
   const professionalEligibility = evaluateProfessionalEligibility(qualifications);
   if (!professionalEligibility.eligible) return { outcome: "no-eligible-major-evidence" };
+  if (!roleIsProfileRelevant(roleText)) return { outcome: "pure-computing-role-mismatch" };
   const employerUrl = String(info.onlineApplicationUrl || "").trim();
   return { outcome: "candidate", lead: {
     id: info.id,
@@ -94,7 +101,7 @@ function classifyDetail(detail, listItem, city) {
     officialUrl: officialUrl(`/frontpage/buaa/html/recruitmentinfoForm.html?positionDetailId=${encodeURIComponent(info.id)}`),
     employerApplyUrl: /^https?:\/\//i.test(employerUrl) ? employerUrl : null,
     professionalEligibility,
-    evidence: "北航就业信息网的城市、单位性质筛选结果；专业可报性只按公开任职条件判断，仍须回溯单位或政府官方页面后才可公开发布。"
+    evidence: "北航就业信息网的城市、单位性质筛选结果；已核对公开专业条件，并排除无生物医学交叉场景的纯计算机岗位，仍须回溯单位或政府官方页面。"
   }};
 }
 

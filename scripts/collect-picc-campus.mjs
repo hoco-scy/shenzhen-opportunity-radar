@@ -2,7 +2,7 @@
 /** Structured, no-login collector for the official PICC campus portal. */
 import { readFile } from "node:fs/promises";
 import { pathToFileURL } from "node:url";
-import { evaluateProfessionalEligibility, matchLevelForPriority, mastersEducationEligible, objectiveRiskFlags, rankProfessionalOpportunity } from "./professional-eligibility.mjs";
+import { evaluateProfessionalEligibility, matchLevelForPriority, mastersEducationEligible, objectiveRiskFlags, rankProfessionalOpportunity, roleIsProfileRelevant } from "./professional-eligibility.mjs";
 
 const ORIGIN = "https://picc.zhiye.com";
 const ENTRY_URL = `${ORIGIN}/custom/campus?hideAll=true`;
@@ -81,6 +81,7 @@ export function classifyPiccRow(row, city, checkedAt) {
   const eligibility = evaluateProfessionalEligibility(requirement);
   if (!eligibility.eligible) return { outcome: `professional-${eligibility.basis}`, reason: eligibility.reason };
   const roleText = clean(`${row.JobAdName} ${row.Duty}`);
+  if (!roleIsProfileRelevant(roleText)) return { outcome: "pure-computing-role-mismatch" };
   const priority = rankProfessionalOpportunity(eligibility, roleText);
   const jobCode = codeFromTitle(row.JobAdName, row.JobAdId);
   const risks = objectiveRiskFlags(roleText);
@@ -94,7 +95,7 @@ export function classifyPiccRow(row, city, checkedAt) {
     responsibilities: lines(row.Duty), requirements: lines(row.Require), publishedAt: String(row.PostDate || "").slice(0, 10) || "官方未注明",
     deadline: deadline(row), deadlineType: /^\d{4}-\d{2}-\d{2}$/.test(deadline(row)) ? "官方岗位截止日" : "动态截止",
     status: "招聘中", priority, matchLevel: level,
-    matchReason: `${eligibility.reason}（命中“${eligibility.evidence}”）；岗位内容只影响排序，不参与报名资格门禁。`,
+    matchReason: `${eligibility.reason}（命中“${eligibility.evidence}”）；已排除无生物医学交叉的纯计算机岗位，其他岗位内容只影响排序。`,
     riskNotes: risks.length ? [`官方职责出现客观工作强度/环境提示：${risks.join("、")}`] : [],
     tags: [city, eligibility.evidence, level].filter(Boolean), sourceId: "picc-campus", officialAnnouncementUrl: ENTRY_URL, officialApplyUrl: detailUrl,
     applyInstruction: `打开中国人保官方岗位页并核对职位代码 ${jobCode}`, verifiedAt: checkedAt, lastSeenAt: checkedAt, lastSeenStatus: "live",

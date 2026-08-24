@@ -4,7 +4,7 @@ import { readFile } from "node:fs/promises";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import { pathToFileURL } from "node:url";
-import { evaluateProfessionalEligibility, matchLevelForPriority, mastersEducationEligible, objectiveRiskFlags, rankProfessionalOpportunity } from "./professional-eligibility.mjs";
+import { evaluateProfessionalEligibility, matchLevelForPriority, mastersEducationEligible, objectiveRiskFlags, rankProfessionalOpportunity, roleIsProfileRelevant } from "./professional-eligibility.mjs";
 
 const ENTRY_URL = "https://runjob.crc.com.cn/#/complex/homepage?id=1769554545615040514";
 const GATEWAY = "https://ssdp.crc.com.cn/ssdp/sys/rf/";
@@ -116,6 +116,7 @@ export function classifyCrcRow(row, city, checkedAt) {
   const eligibility = evaluateProfessionalEligibility(requirement);
   if (!eligibility.eligible) return { outcome: `professional-${eligibility.basis}`, reason: eligibility.reason };
   const roleText = clean(`${row.pubPositionName} ${row.rmJobDuty}`);
+  if (!roleIsProfileRelevant(roleText)) return { outcome: "pure-computing-role-mismatch" };
   const priority = rankProfessionalOpportunity(eligibility, roleText);
   const risks = objectiveRiskFlags(roleText);
   const level = matchLevelForPriority(priority, eligibility);
@@ -129,7 +130,7 @@ export function classifyCrcRow(row, city, checkedAt) {
     education: clean(row.rmEducationalRqmtDescr) || "官方任职条件未单列学历", degree: "以官方岗位条件为准", majors: majorLines(requirement),
     politicalStatus: "官方未单列", experience: "应届生岗位", responsibilities: lines(row.rmJobDuty), requirements: lines(row.rmJobRqmt),
     publishedAt: clean(row.publishDate) || "官方未注明", deadline: "岗位招满即停，以官方招聘系统实时状态为准", deadlineType: "动态截止",
-    status: "招聘中", priority, matchLevel: level, matchReason: `${eligibility.reason}（命中“${eligibility.evidence}”）；岗位内容只影响排序，不参与报名资格门禁。`,
+    status: "招聘中", priority, matchLevel: level, matchReason: `${eligibility.reason}（命中“${eligibility.evidence}”）；已排除无生物医学交叉的纯计算机岗位，其他岗位内容只影响排序。`,
     riskNotes: risks.length ? [`官方职责出现客观工作强度/环境提示：${risks.join("、")}`] : [], tags: [city, eligibility.evidence, level].filter(Boolean),
     sourceId: "crc-careers", officialAnnouncementUrl: ENTRY_URL, officialApplyUrl: detailUrl, applyInstruction: "打开华润集团官方职位页核对并投递",
     verifiedAt: checkedAt, lastSeenAt: checkedAt, lastSeenStatus: "live", statusEvidence: "华润集团公开职位网关当前返回的校园招聘岗位。",

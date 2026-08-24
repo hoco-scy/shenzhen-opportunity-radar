@@ -271,7 +271,7 @@
       ],
       "entryUrl": "https://campus.boe.com/jobs?hideMenu=1",
       "collectionAccessMode": "script-official-structured-list",
-      "collectionNote": "专用脚本读取官方校园招聘分类和城市筛选后的全部分页；专业可报即保留，岗位内容只影响排序。",
+      "collectionNote": "专用脚本读取官方校园招聘分类和城市筛选后的全部分页；专业可报后继续排除无生物医学交叉场景的纯计算机岗位。",
       "alternateEntryUrls": [
         "https://campus.boe.com/custom/xzzw?hideMenu=1"
       ],

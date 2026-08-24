@@ -27,8 +27,9 @@
     "candidateFocus": "biomedical-engineering-and-adjacent-engineering",
     "eligibilityEvidenceFields": ["官方专业要求", "官方学历要求", "官方招录对象"],
     "eligibleMajorScopes": ["生物医学工程及等同专业", "医学、生物、医药等相近专业", "工学、理工及相近工程门类", "专业不限"],
-    "roleTextAffects": "ranking-only",
-    "roleTextNeverRejectsEligibleMajor": true
+    "roleTextAffects": "ranking-and-pure-computing-exclusion",
+    "roleTextNeverRejectsEligibleMajor": false,
+    "pureComputingRequiresBiomedicalBridge": true
   },
   "geographyCadence": {
     "shenzhen": "every-run",

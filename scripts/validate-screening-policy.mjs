@@ -31,7 +31,7 @@ if (policy.sourceCapabilityPolicy?.accessibleButIncompleteOutcome !== "accessibl
 const relevanceGate = policy.profileRelevanceGate || {};
 if (relevanceGate.discoveryTermsAreNotPublicationEvidence !== true) errors.push("发现词不得直接作为发布匹配依据");
 if (relevanceGate.candidateFocus !== "biomedical-engineering-and-adjacent-engineering") errors.push("岗位匹配必须面向生物医学工程及交叉工程背景");
-if (relevanceGate.roleTextNeverRejectsEligibleMajor !== true) errors.push("岗位内容不得否决已由官方专业条件确认可报的岗位");
+if (relevanceGate.roleTextNeverRejectsEligibleMajor !== false || relevanceGate.pureComputingRequiresBiomedicalBridge !== true) errors.push("纯计算机岗位必须有生物医学交叉场景");
 if (!Array.isArray(relevanceGate.eligibilityEvidenceFields) || relevanceGate.eligibilityEvidenceFields.length < 3) errors.push("资格门禁必须登记官方专业、学历和招录对象字段");
 if (!Array.isArray(relevanceGate.eligibleMajorScopes) || relevanceGate.eligibleMajorScopes.length < 4) errors.push("资格门禁缺少完整的可报专业口径");
 

@@ -9,7 +9,7 @@
  * evidence for a verified job.
  */
 import { pathToFileURL } from "node:url";
-import { evaluateProfessionalEligibility, mastersEducationEligible } from "./professional-eligibility.mjs";
+import { evaluateProfessionalEligibility, mastersEducationEligible, roleIsProfileRelevant } from "./professional-eligibility.mjs";
 
 const ORIGIN = "https://www.ncss.cn";
 const LIST_URL = `${ORIGIN}/student/jobs/jobslist/ajax/`;
@@ -117,6 +117,7 @@ function classify(job, detail) {
   const roleText = [job.jobName, job.recName, detail].filter(Boolean).join(" ").replace(/医疗保险|补充医疗|社会保险|五险一金/g, " ");
   if (NON_GRADUATE_RECRUITMENT.test(roleText)) return { outcome: "non-graduate-recruitment" };
   if (REQUIRED_EXPERIENCE.test(roleText)) return { outcome: "experience-mismatch" };
+  if (!roleIsProfileRelevant(roleText)) return { outcome: "pure-computing-role-mismatch" };
   const professionalEligibility = evaluateProfessionalEligibility(qualifications);
   return {
     outcome: "candidate",
@@ -134,7 +135,7 @@ function classify(job, detail) {
       officialUrl: detailUrl(job.jobId),
       employerApplyUrl: null,
       professionalEligibility,
-      evidence: "国家大学生就业服务平台公开职位列表经城市与专业可报关键词筛选；岗位内容只参与排序，仍需用户核对单位官方投递页。"
+      evidence: "国家大学生就业服务平台公开职位列表经城市、专业资格与纯计算机交叉场景筛选；仍需用户核对单位官方投递页。"
     }
   };
 }

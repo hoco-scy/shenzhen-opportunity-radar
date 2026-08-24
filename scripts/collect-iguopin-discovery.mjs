@@ -8,7 +8,7 @@
  * never treated as final publication evidence.
  */
 import { pathToFileURL } from "node:url";
-import { evaluateProfessionalEligibility, mastersEducationEligible } from "./professional-eligibility.mjs";
+import { evaluateProfessionalEligibility, mastersEducationEligible, roleIsProfileRelevant } from "./professional-eligibility.mjs";
 
 const ORIGIN = "https://www.iguopin.com";
 const LIST_URL = "https://gp-api.iguopin.com/api/jobs/v1/recom-job";
@@ -51,6 +51,12 @@ function text(value) {
   return String(value || "");
 }
 
+function normalizedLocation(values) {
+  const unique = [...new Set(values.map((value) => String(value || "").trim()).filter(Boolean))];
+  const mostSpecific = unique.filter((value) => !unique.some((candidate) => candidate !== value && candidate.startsWith(value)));
+  return mostSpecific.join("；") || "官方未注明";
+}
+
 // 国聘的公开接口有时会在投递说明中给出一条外部投递链接；有时则只
 // 给出平台内页。只保留平台已经公开提供的链接，不猜测单位官网、更不
 // 用搜索结果把线索伪装成官方核验。
@@ -91,7 +97,8 @@ function classify(job) {
   if (REQUIRED_EXPERIENCE.test(String(job.experience_cn || ""))) return { outcome: "experience-mismatch" };
   const professionalEligibility = evaluateProfessionalEligibility(qualifications);
   if (!professionalEligibility.eligible) return { outcome: "no-eligible-major-evidence" };
-  const locations = (job.district_list || []).map((item) => item.area_cn).filter(Boolean).join("；") || "官方未注明";
+  if (!roleIsProfileRelevant(roleText)) return { outcome: "pure-computing-role-mismatch" };
+  const locations = normalizedLocation((job.district_list || []).map((item) => item.area_cn));
   return {
     outcome: "candidate",
     lead: {
@@ -109,7 +116,7 @@ function classify(job) {
       employerApplyUrl: publicApplicationUrl(job.apply_instruction),
       applicationInstruction: text(job.apply_instruction),
       professionalEligibility,
-      evidence: "国聘公开岗位页的城市和专业可报关键词筛选结果；岗位名称只参与排序，平台没有提供单位官方原文时保留为待确认线索。"
+      evidence: "国聘公开岗位页的城市和专业可报关键词筛选结果；无生物医学交叉场景的纯计算机岗位已排除，平台没有提供单位官方原文时保留为待确认线索。"
     }
   };
 }

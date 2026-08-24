@@ -2,7 +2,7 @@
 /** Structured, no-login collector for BOE's official campus portal. */
 import { readFile } from "node:fs/promises";
 import { pathToFileURL } from "node:url";
-import { evaluateProfessionalEligibility, matchLevelForPriority, mastersEducationEligible, objectiveRiskFlags, rankProfessionalOpportunity } from "./professional-eligibility.mjs";
+import { evaluateProfessionalEligibility, matchLevelForPriority, mastersEducationEligible, objectiveRiskFlags, rankProfessionalOpportunity, roleIsProfileRelevant } from "./professional-eligibility.mjs";
 
 const ORIGIN = "https://campus.boe.com";
 const ENTRY_URL = `${ORIGIN}/jobs?hideMenu=1`;
@@ -75,6 +75,7 @@ export function classifyBoeRow(row, city, checkedAt) {
   const eligibility = evaluateProfessionalEligibility(requirement);
   if (!eligibility.eligible) return { outcome: `professional-${eligibility.basis}`, reason: eligibility.reason };
   const roleText = clean(`${row.JobAdName} ${row.Duty}`);
+  if (!roleIsProfileRelevant(roleText)) return { outcome: "pure-computing-role-mismatch" };
   const jobCode = codeFromTitle(row.JobAdName, row.JobAdId);
   const risks = objectiveRiskFlags(roleText);
   const priority = rankProfessionalOpportunity(eligibility, roleText);
@@ -88,7 +89,7 @@ export function classifyBoeRow(row, city, checkedAt) {
     education: educationText(requirement), degree: "以官方岗位条件为准", majors: majorLines(requirement), politicalStatus: "官方未单列", experience: "应届生岗位",
     responsibilities: lines(row.Duty), requirements: lines(row.Require), publishedAt: String(row.PostDate || "").slice(0, 10) || "官方未注明",
     deadline, deadlineType: /^\d{4}-\d{2}-\d{2}$/.test(deadline) ? "官方岗位截止日" : "动态截止", status: "招聘中",
-    priority, matchLevel: level, matchReason: `${eligibility.reason}（命中“${eligibility.evidence}”）；岗位内容只影响排序，不参与报名资格门禁。`,
+    priority, matchLevel: level, matchReason: `${eligibility.reason}（命中“${eligibility.evidence}”）；已排除无生物医学交叉的纯计算机岗位，其他岗位内容只影响排序。`,
     riskNotes: risks.length ? [`官方职责出现客观工作强度/环境提示：${risks.join("、")}`] : [], tags: [city, eligibility.evidence, level].filter(Boolean),
     sourceId: "boe-campus", officialAnnouncementUrl: ENTRY_URL, officialApplyUrl: `${ORIGIN}/15/detail?jobAdId=${encodeURIComponent(row.JobAdId)}&hideMenu=1`,
     applyInstruction: `打开京东方官方岗位页并核对职位代码 ${jobCode}`, verifiedAt: checkedAt, lastSeenAt: checkedAt, lastSeenStatus: "live",

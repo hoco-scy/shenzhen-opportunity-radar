@@ -143,7 +143,7 @@ function verifiedJobsSourceCheck(source, result, checkedAt) {
   return {
     sourceId: source.id, status: result.status, attempts: 1, checkedAt,
     note: `已用本站公开结构化接口完成城市、招聘类型、全部分页和任职条件筛选：采集 ${result.collected} 条，专业可报 ${result.afterFilter} 条。`,
-    collectionMetrics: { state: "completed", collected: result.collected, afterFilter: result.afterFilter, filterDescription: "是否收录只按官方任职条件判断；岗位内容仅用于排序。" },
+    collectionMetrics: { state: "completed", collected: result.collected, afterFilter: result.afterFilter, filterDescription: "已按官方任职条件筛选，并排除无生物医学交叉场景的纯计算机岗位。" },
     accessEvidence: result.pagesVisited.map((requestedUrl) => ({ requestedUrl, outcome: "official-structured-data", recipe: result.collectionRoute }))
   };
 }
